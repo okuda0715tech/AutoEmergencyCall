@@ -1,3 +1,40 @@
 <resources>
     <string name="app_name">AutoEmergencyCall</string>
+
+    <!-- ドロワーメニュー -->
+    <string name="header_label">メニュー</string>
+    <string name="home">ホーム</string>
+    <string name="privacy_policy">プライバシーポリシー</string>
+    <string name="open_in_outer_browser_icon_description">外部ブラウザで開く</string>
+
+    <!-- 画面名 -->
+    <string name="no_title"> </string>
+    <string name="home_screen_title">ホーム</string>
+
+    <!-- 共通 -->
+    <string name="menu_icon_description">メニュー</string>
+    <string name="common_delete">削除</string>
+    <string name="common_back">戻る</string>
+    <string name="common_save">保存</string>
+    <string name="common_add">追加</string>
+    <string name="common_register">登録</string>
+    <!-- 「変更」は変更画面に遷移する際に使用 -->
+    <string name="common_edit">変更</string>
+    <!-- 「更新」はデータを実際に保存する際に使用 -->
+    <string name="common_update">更新</string>
+    <string name="common_select">選択</string>
+    <string name="common_register_successfully">登録しました。</string>
+    <string name="common_update_successfully">更新しました。</string>
+    <string name="common_save_successfully">保存しました。</string>
+    <string name="common_save_failed">保存に失敗しました。</string>
+    <string name="common_delete_successfully">削除しました。</string>
+    <string name="common_delete_failed">削除に失敗しました。</string>
+    <string name="common_detach_successfully">解除しました。</string>
+    <string name="common_detach_failed">解除に失敗しました。</string>
+    <string name="common_yes">はい</string>
+    <string name="common_no">いいえ</string>
+    <string name="common_close">閉じる</string>
+    <string name="common_required_field">必須項目です。</string>
+    <string name="common_length_needs_to_be_within_100">100文字以内で入力してください。</string>
+    <string name="common_unexpected_error">予期せぬエラーが発生しました。</string>"
 </resources>

@@ -13,6 +13,8 @@ import com.kurodai0715.autoemergencycall.ui.screen.register_contact.Screen as Re
 @Composable
 fun AppNavGraph(
     navController: NavHostController = rememberNavController(),
+    modifier: Modifier,
+    onChangeTitle: (Int) -> Unit,
     startDestination: Any,
 ) {
     NavHost(
