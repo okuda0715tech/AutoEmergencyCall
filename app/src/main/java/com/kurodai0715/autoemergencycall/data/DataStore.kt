@@ -1,4 +1,4 @@
-package com.kurodai0715.autoemergencycall
+package com.kurodai0715.autoemergencycall.data
 
 import android.content.Context
 import androidx.datastore.preferences.core.longPreferencesKey

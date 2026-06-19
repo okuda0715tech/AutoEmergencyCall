@@ -3,6 +3,7 @@ package com.kurodai0715.autoemergencycall
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.kurodai0715.autoemergencycall.data.saveChargingStartedAt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
