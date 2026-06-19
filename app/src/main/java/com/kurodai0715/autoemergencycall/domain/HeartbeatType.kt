@@ -1,4 +1,4 @@
-package com.kurodai0715.autoemergencycall
+package com.kurodai0715.autoemergencycall.domain
 
 enum class HeartbeatType {
     CHARGING_STARTED,
