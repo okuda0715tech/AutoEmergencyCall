@@ -21,13 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AutoEmergencyCallTheme {
-                Scaffold { padding ->
-                    AppBaseScreen(
-                        modifier = Modifier
-                            .padding(padding)
-                            .consumeWindowInsets(padding),
-                    )
-                }
+                AppBaseScreen()
             }
         }
     }
