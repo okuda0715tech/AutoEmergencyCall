@@ -1,6 +1,7 @@
 package com.kurodai0715.autoemergencycall.domain
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -18,6 +19,8 @@ class EmergencyCheckWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
+
+        Log.i("EmergencyCheckWorker", "Worker started")
 
         val lastChargingTime =
             preferences.getLastChargingTime()

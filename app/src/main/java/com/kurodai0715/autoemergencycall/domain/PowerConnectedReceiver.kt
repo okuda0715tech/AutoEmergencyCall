@@ -3,6 +3,7 @@ package com.kurodai0715.autoemergencycall.domain
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +18,8 @@ class PowerConnectedReceiver : BroadcastReceiver() {
         context: Context,
         intent: Intent
     ) {
+
+        Log.i("PowerConnectedReceiver", "Charging started")
 
         if (
             intent.action !=

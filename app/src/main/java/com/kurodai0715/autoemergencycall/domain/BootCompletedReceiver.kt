@@ -3,11 +3,18 @@ package com.kurodai0715.autoemergencycall.domain
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.kurodai0715.autoemergencycall.data.EmergencyPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
+
+/*
+以下の adb コマンドで再起動のブロードキャストの送信が可能。
+ただし、 Android のバージョンやメーカーによっては制限されることがあります。
+adb shell am broadcast -a android.intent.action.BOOT_COMPLETED
+ */
 
 class BootCompletedReceiver : BroadcastReceiver() {
 
@@ -15,6 +22,8 @@ class BootCompletedReceiver : BroadcastReceiver() {
         context: Context,
         intent: Intent
     ) {
+
+        Log.i("BootCompletedReceiver", "Boot completed")
 
         if (
             intent.action != Intent.ACTION_BOOT_COMPLETED
