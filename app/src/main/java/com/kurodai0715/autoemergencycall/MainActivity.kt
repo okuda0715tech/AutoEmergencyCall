@@ -12,10 +12,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.kurodai0715.autoemergencycall.domain.EmergencyCheckWorker
 import com.kurodai0715.autoemergencycall.domain.PowerSignalManager
 import com.kurodai0715.autoemergencycall.ui.screen.AppBaseScreen
 import com.kurodai0715.autoemergencycall.ui.theme.AutoEmergencyCallTheme
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -31,11 +36,29 @@ class MainActivity : ComponentActivity() {
         // Activity のライフサイクルにマネージャーを登録（これだけで onStart / onStop が連動します）
         lifecycle.addObserver(powerSignalManager)
 
+        // 2. 【見守り番兵】WorkManager の定期ジョブを登録
+        setupEmergencyWorker()
+
         enableEdgeToEdge()
         setContent {
             AutoEmergencyCallTheme {
                 AppBaseScreen()
             }
         }
+    }
+
+    private fun setupEmergencyWorker() {
+        // 1時間に1回実行する定期リクエストを作成
+        // （※Androidの仕様上、定期実行の間隔は最短15分まで指定可能です）
+        val checkRequest = PeriodicWorkRequestBuilder<EmergencyCheckWorker>(
+            1, TimeUnit.HOURS
+        ).build()
+
+        // ユニークワークとして登録（既存のスケジュールがあればそれを維持し、二重登録を防ぐ）
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            "emergency_guardian_job",
+            ExistingPeriodicWorkPolicy.KEEP, // すでに登録済みなら何もしない（タスクを上書きしない）
+            checkRequest
+        )
     }
 }
