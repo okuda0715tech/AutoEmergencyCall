@@ -22,16 +22,11 @@ class EmergencyCheckWorker @AssistedInject constructor(
 
         Log.i("EmergencyCheckWorker", "Worker started")
 
-        val lastChargingTime =
-            preferences.getLastChargingTime()
-                ?: return Result.success()
+        val lastChargingTime = preferences.getLastChargingTime() ?: return Result.success()
 
-        val elapsed =
-            System.currentTimeMillis() -
-                    lastChargingTime
+        val elapsed = System.currentTimeMillis() - lastChargingTime
 
-        val limit =
-            TimeUnit.HOURS.toMillis(48)
+        val limit = TimeUnit.HOURS.toMillis(48)
 
         if (elapsed < limit) {
             return Result.success()
