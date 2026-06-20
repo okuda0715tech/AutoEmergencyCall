@@ -34,7 +34,6 @@ class EmergencyPreferences @Inject constructor(
     }
 
     suspend fun getLastChargingTime(): Long? {
-        return context.dataStore.data.first()
-            .get(Keys.LAST_CHARGING_TIME)
+        return context.dataStore.data.first()[Keys.LAST_CHARGING_TIME]
     }
 }
