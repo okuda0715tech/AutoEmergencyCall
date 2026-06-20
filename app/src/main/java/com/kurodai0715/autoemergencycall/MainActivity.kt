@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
         // Activity のライフサイクルにマネージャーを登録（これだけで onStart / onStop が連動します）
         lifecycle.addObserver(powerSignalManager)
 
-        // 2. 【見守り番兵】WorkManager の定期ジョブを登録
+        // 1 時間に 1 回見回りする WorkManager の定期ジョブを登録
         setupEmergencyWorker()
 
         enableEdgeToEdge()
