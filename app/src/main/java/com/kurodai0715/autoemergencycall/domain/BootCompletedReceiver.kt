@@ -12,8 +12,10 @@ import java.util.concurrent.TimeUnit
 
 /*
 以下の adb コマンドで再起動のブロードキャストの送信が可能。
-ただし、 Android のバージョンやメーカーによっては制限されることがあります。
+
 adb shell am broadcast -a android.intent.action.BOOT_COMPLETED
+
+ただし、 Android のバージョンやメーカーによっては制限されることがあります。
  */
 
 class BootCompletedReceiver : BroadcastReceiver() {
