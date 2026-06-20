@@ -7,6 +7,7 @@ import android.os.BatteryManager
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.kurodai0715.autoemergencycall.data.EmergencyPreferences
+import com.kurodai0715.autoemergencycall.domain.broadcast_receiver.PowerConnectionReceiver
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
