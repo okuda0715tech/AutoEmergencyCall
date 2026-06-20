@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
 
         // ユニークワークとして登録（既存のスケジュールがあればそれを維持し、二重登録を防ぐ）
         WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
-            "emergency_guardian_job",
+            EmergencyCheckWorker.NAME,
             ExistingPeriodicWorkPolicy.KEEP, // すでに登録済みなら何もしない（タスクを上書きしない）
             checkRequest
         )

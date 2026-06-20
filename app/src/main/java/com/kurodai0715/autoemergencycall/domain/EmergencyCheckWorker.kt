@@ -23,6 +23,10 @@ class EmergencyCheckWorker @AssistedInject constructor(
     private val preferences: EmergencyPreferences
 ) : CoroutineWorker(context, workerParams) {
 
+    companion object {
+        const val NAME = "EmergencyCheckWorker"
+    }
+
     override suspend fun doWork(): Result {
         Log.d("EmergencyWorker", "見守り番兵が起動しました")
 
@@ -30,7 +34,10 @@ class EmergencyCheckWorker @AssistedInject constructor(
         if (isCurrentlyCharging()) {
             val now = System.currentTimeMillis()
             preferences.updateLastChargingTime(now)
-            Log.d("EmergencyWorker", "現在充電中のため、最終充電時刻を更新して終了します: ${formatTime(now)}")
+            Log.d(
+                "EmergencyWorker",
+                "現在充電中のため、最終充電時刻を更新して終了します: ${formatTime(now)}"
+            )
             return Result.success()
         }
 
@@ -52,8 +59,12 @@ class EmergencyCheckWorker @AssistedInject constructor(
             // 4. 【緊急事態】SMS送信処理を実行
             sendEmergencySms()
         } else {
-            val remainingHours = (fortyEightHoursInMillis - (currentTime - lastChargingTime)) / (1000 * 60 * 60)
-            Log.d("EmergencyWorker", "安全確認完了（最終充電: ${formatTime(lastChargingTime)}、残り約 ${remainingHours} 時間）")
+            val remainingHours =
+                (fortyEightHoursInMillis - (currentTime - lastChargingTime)) / (1000 * 60 * 60)
+            Log.d(
+                "EmergencyWorker",
+                "安全確認完了（最終充電: ${formatTime(lastChargingTime)}、残り約 ${remainingHours} 時間）"
+            )
         }
 
         return Result.success()
@@ -79,7 +90,8 @@ class EmergencyCheckWorker @AssistedInject constructor(
         try {
             // TODO: 本来は preferences などからユーザーが設定した連絡先とメッセージを取得する
             val phoneNumber = "090XXXXXXXX"
-            val message = "【緊急通報】対象のスマートフォンで48時間以上充電（生存シグナル）が確認できません。安否のご確認をお願いします。"
+            val message =
+                "【緊急通報】対象のスマートフォンで48時間以上充電（生存シグナル）が確認できません。安否のご確認をお願いします。"
 
             // Android 12 (API 31) 以降を考慮した SmsManager の取得方法
             val smsManager: SmsManager = context.getSystemService(SmsManager::class.java)
