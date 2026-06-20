@@ -1,5 +1,6 @@
 package com.kurodai0715.autoemergencycall
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,6 +9,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.kurodai0715.autoemergencycall.domain.EmergencyCheckWorker
+import com.kurodai0715.autoemergencycall.domain.EmergencyService
 import com.kurodai0715.autoemergencycall.domain.PowerSignalManager
 import com.kurodai0715.autoemergencycall.ui.screen.AppBaseScreen
 import com.kurodai0715.autoemergencycall.ui.theme.AutoEmergencyCallTheme
@@ -30,6 +32,10 @@ class MainActivity : ComponentActivity() {
 
         // 1 時間に 1 回見回りする WorkManager の定期ジョブを登録
         setupEmergencyWorker()
+
+        // 💡 アプリ起動時にフォアグラウンドサービスを開始する
+        val serviceIntent = Intent(this, EmergencyService::class.java)
+        startForegroundService(serviceIntent)
 
         enableEdgeToEdge()
         setContent {
