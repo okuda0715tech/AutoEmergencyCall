@@ -11,11 +11,17 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 /*
+【再起動のテスト方法】
 以下の adb コマンドで再起動のブロードキャストの送信が可能。
 
 adb shell am broadcast -a android.intent.action.BOOT_COMPLETED
 
 ただし、 Android のバージョンやメーカーによっては制限されることがあります。
+
+【logcat確認方法】
+以下の adb コマンドで、ターミナルから logcat を確認することができます。
+
+adb logcat | findstr BootCompletedReceiver
  */
 
 class BootCompletedReceiver : BroadcastReceiver() {
