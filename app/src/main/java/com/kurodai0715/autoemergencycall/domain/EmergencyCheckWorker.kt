@@ -71,7 +71,7 @@ class EmergencyCheckWorker @AssistedInject constructor(
     }
 
     /**
-     * 現在端末が充電中かどうかを判定
+     * 現在、端末が充電中かどうかを判定
      */
     private fun isCurrentlyCharging(): Boolean {
         val batteryStatus = context.registerReceiver(
