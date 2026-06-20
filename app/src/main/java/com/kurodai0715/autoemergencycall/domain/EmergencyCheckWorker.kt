@@ -1,9 +1,6 @@
 package com.kurodai0715.autoemergencycall.domain
 
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.os.BatteryManager
 import android.telephony.SmsManager
 import android.util.Log
 import androidx.hilt.work.HiltWorker
@@ -23,64 +20,47 @@ class EmergencyCheckWorker @AssistedInject constructor(
     private val preferences: EmergencyPreferences
 ) : CoroutineWorker(context, workerParams) {
 
-    companion object {
-        const val NAME = "EmergencyCheckWorker"
-    }
-
     override suspend fun doWork(): Result {
-        Log.i("EmergencyWorker", "EmergencyCheckWorker started.")
+        Log.d("EmergencyWorker", "見守り番兵（定期チェック）が起動しました")
 
-        // 1. 【最優先】今まさに充電中（または満充電）かチェック
-        if (isCurrentlyCharging()) {
+        // 1. 保存されている「最後の生存確認時刻（充電の抜き差し時など）」を取得
+        val lastChargingTime = preferences.getLastChargingTime()
+
+        // 過去に一度も保存されていない（アプリ初回起動時など）場合は、
+        // 安全のため現在時刻を初期値として保存し、次のチェックへ回す
+        if (lastChargingTime == null) {
             val now = System.currentTimeMillis()
             preferences.updateLastChargingTime(now)
-            Log.d(
-                "EmergencyWorker",
-                "現在充電中のため、最終充電時刻を更新して終了します: ${formatTime(now)}"
-            )
+            Log.d("EmergencyWorker", "初回起動：基準時刻を初期化しました: ${formatTime(now)}")
             return Result.success()
         }
 
-        // 2. 充電中でなければ、保存されている「最後の充電時刻」を取得
-        // 過去に一度も保存されていない（初回起動など）場合は、現在時刻を仮保存して終了
-        val lastChargingTime = preferences.getLastChargingTime()
-        if (lastChargingTime == null) {
-            preferences.updateLastChargingTime(System.currentTimeMillis())
-            return Result.success()
-        }
-
-        // 3. 48時間以上経過しているか判定
+        // 2. 現在時刻との差分から、48時間以上経過しているか判定
         val currentTime = System.currentTimeMillis()
         val fortyEightHoursInMillis = 48L * 60 * 60 * 1000 // 48時間をミリ秒に換算
 
-        if (currentTime - lastChargingTime > fortyEightHoursInMillis) {
-            Log.e("EmergencyWorker", "⚠️ 48時間以上充電が検知されません！緊急SMSを送信します。")
+        // 経過時間を計算
+        val timeDiff = currentTime - lastChargingTime
 
-            // 4. 【緊急事態】SMS送信処理を実行
+        if (timeDiff > fortyEightHoursInMillis) {
+            // 【緊急事態】充電しっぱなし、または放置されて48時間が経過
+            Log.e("EmergencyWorker", "48時間以上ユーザーのアクション（生存シグナル）が確認できません！")
+
+            // SMS送信処理を実行
             sendEmergencySms()
         } else {
-            val remainingHours =
-                (fortyEightHoursInMillis - (currentTime - lastChargingTime)) / (1000 * 60 * 60)
+            // 【正常】まだ48時間以内
+            val remainingMillis = fortyEightHoursInMillis - timeDiff
+            val remainingHours = remainingMillis / (1000 * 60 * 60)
+            val remainingMinutes = (remainingMillis % (1000 * 60 * 60)) / (1000 * 60)
+
             Log.d(
                 "EmergencyWorker",
-                "安全確認完了（最終充電: ${formatTime(lastChargingTime)}、残り約 ${remainingHours} 時間）"
+                "安全確認完了（最終シグナル: ${formatTime(lastChargingTime)}、SMS送信まで残り約 ${remainingHours}時間${remainingMinutes}分）"
             )
         }
 
         return Result.success()
-    }
-
-    /**
-     * 現在、端末が充電中かどうかを判定
-     */
-    private fun isCurrentlyCharging(): Boolean {
-        val batteryStatus = context.registerReceiver(
-            null,
-            IntentFilter(Intent.ACTION_BATTERY_CHANGED)
-        )
-        val status = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
-        return status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                status == BatteryManager.BATTERY_STATUS_FULL
     }
 
     /**
@@ -90,16 +70,12 @@ class EmergencyCheckWorker @AssistedInject constructor(
         try {
             // TODO: 本来は preferences などからユーザーが設定した連絡先とメッセージを取得する
             val phoneNumber = "090XXXXXXXX"
-            val message =
-                "【緊急通報】対象のスマートフォンで48時間以上充電（生存シグナル）が確認できません。安否のご確認をお願いします。"
+            val message = "【緊急通報】対象のスマートフォンで48時間以上充電の抜き差し（生存確認）が検知できません。至急安否のご確認をお願いします。"
 
-            // Android 12 (API 31) 以降を考慮した SmsManager の取得方法
             val smsManager: SmsManager = context.getSystemService(SmsManager::class.java)
-
-            // SMS送信（長文に対応する場合は sendMultipartTextMessage を検討してください）
             smsManager.sendTextMessage(phoneNumber, null, message, null, null)
 
-            Log.d("EmergencyWorker", "SMSの送信リクエストが完了しました")
+            Log.d("EmergencyWorker", "緊急SMSを送信しました")
         } catch (e: Exception) {
             Log.e("EmergencyWorker", "SMS送信中にエラーが発生しました", e)
         }
