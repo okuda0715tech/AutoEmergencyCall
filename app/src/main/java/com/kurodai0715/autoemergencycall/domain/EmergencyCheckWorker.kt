@@ -28,7 +28,7 @@ class EmergencyCheckWorker @AssistedInject constructor(
     }
 
     override suspend fun doWork(): Result {
-        Log.d("EmergencyWorker", "見守り番兵が起動しました")
+        Log.i("EmergencyWorker", "EmergencyCheckWorker started.")
 
         // 1. 【最優先】今まさに充電中（または満充電）かチェック
         if (isCurrentlyCharging()) {
