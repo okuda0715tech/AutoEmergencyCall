@@ -41,10 +41,10 @@ class EmergencyCheckWorker @AssistedInject constructor(
 
         // 2. 最終生存確認時刻から48時間以上経過しているか判定
         val currentTime = System.currentTimeMillis()
-        val fortyEightHoursInMillis = 48L * 60 * 60 * 1000 // 48時間をミリ秒に換算
-
         // 経過時間を計算
         val timeDiff = currentTime - lastChargingTime
+
+        val fortyEightHoursInMillis = 48L * 60 * 60 * 1000 // 48時間をミリ秒に換算
 
         if (timeDiff > fortyEightHoursInMillis) {
             // 【緊急事態】充電しっぱなし、または放置されて48時間が経過
