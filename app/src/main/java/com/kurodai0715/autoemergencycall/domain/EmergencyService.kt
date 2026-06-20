@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import com.kurodai0715.autoemergencycall.R
 import com.kurodai0715.autoemergencycall.data.EmergencyPreferences
 import com.kurodai0715.autoemergencycall.domain.broadcast_receiver.PowerConnectionReceiver
 import dagger.hilt.android.AndroidEntryPoint
@@ -72,14 +73,18 @@ class EmergencyService : Service() {
         val manager = getSystemService(NotificationManager::class.java)
 
         if (manager.getNotificationChannel(channelId) == null) {
-            val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW)
+            val channel = NotificationChannel(
+                channelId, channelName, NotificationManager.IMPORTANCE_LOW)
             manager.createNotificationChannel(channel)
         }
 
         return NotificationCompat.Builder(this, channelId)
             .setContentTitle("あんしん見守り中")
             .setContentText("48時間の生存確認センサーが稼働しています。")
-            // .setSmallIcon(R.drawable.ic_notification) // あなたのアプリのアイコン
+            .setSmallIcon(R.drawable.ic_launcher_background)
+            // ユーザーがスワイプでこの通知を消去できないように固定する
+            // 一部、消せてしまうデバイスもある
+            .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
     }
