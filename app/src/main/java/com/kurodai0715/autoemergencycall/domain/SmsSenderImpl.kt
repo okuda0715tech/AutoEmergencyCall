@@ -9,7 +9,7 @@ class SmsSenderImpl @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) : SmsSender {
 
-    override fun send(
+    override fun sendSms(
         phoneNumber: String,
         message: String,
     ) {
