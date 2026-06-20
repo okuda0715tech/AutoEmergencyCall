@@ -63,6 +63,10 @@ class EmergencyService : Service() {
     private fun saveCurrentTime() {
         serviceScope.launch {
             preferences.updateLastChargingTime(System.currentTimeMillis())
+
+            // 抜き差しを検知したついでに、通知を再発行して画面に復活させる
+            // ただし、常に非表示にしたいユーザーもいると思うので設定で復活させないことも検討
+            startForeground(1, createNotification())
         }
     }
 
