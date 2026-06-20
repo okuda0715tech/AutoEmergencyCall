@@ -39,7 +39,7 @@ class EmergencyCheckWorker @AssistedInject constructor(
             return Result.success()
         }
 
-        // 2. 現在時刻と最終生存確認時刻の差分が、48時間以上経過しているか判定
+        // 2. 最終生存確認時刻から48時間以上経過しているか判定
         val currentTime = System.currentTimeMillis()
         val fortyEightHoursInMillis = 48L * 60 * 60 * 1000 // 48時間をミリ秒に換算
 
