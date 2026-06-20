@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.kurodai0715.autoemergencycall.R
 import com.kurodai0715.autoemergencycall.ui.screen.home.Screen as HomeScreen
 import com.kurodai0715.autoemergencycall.ui.screen.register_contact.Screen as RegisterContactScreen
 
@@ -25,6 +26,7 @@ fun AppNavGraph(
         composable<Home> {
             HomeScreen()
 
+            onChangeTitle(R.string.home_screen_title)
         }
 
         composable<RegisterContact> {
