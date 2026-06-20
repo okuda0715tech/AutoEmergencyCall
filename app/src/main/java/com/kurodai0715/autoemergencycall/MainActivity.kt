@@ -14,7 +14,6 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.kurodai0715.autoemergencycall.domain.EmergencyCheckWorker
 import com.kurodai0715.autoemergencycall.domain.EmergencyService
-import com.kurodai0715.autoemergencycall.domain.PowerSignalManager
 import com.kurodai0715.autoemergencycall.ui.screen.AppBaseScreen
 import com.kurodai0715.autoemergencycall.ui.theme.AutoEmergencyCallTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,15 +23,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    // Hilt が自動でマネージャーを生成して注入してくれます
-    @Inject
-    lateinit var powerSignalManager: PowerSignalManager
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Activity のライフサイクルにマネージャーを登録（これだけで onStart / onStop が連動します）
-        lifecycle.addObserver(powerSignalManager)
 
         // 1 時間に 1 回見回りする WorkManager の定期ジョブを登録
         setupEmergencyWorker()
