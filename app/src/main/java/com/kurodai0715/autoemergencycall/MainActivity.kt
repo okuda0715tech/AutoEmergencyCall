@@ -4,14 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -50,7 +42,7 @@ class MainActivity : ComponentActivity() {
     private fun setupEmergencyWorker() {
         // 1時間に1回実行する定期リクエストを作成
         // （※Androidの仕様上、定期実行の間隔は最短15分まで指定可能です）
-        val checkRequest = PeriodicWorkRequestBuilder<EmergencyCheckWorker>(
+        val workRequest = PeriodicWorkRequestBuilder<EmergencyCheckWorker>(
             1, TimeUnit.HOURS
         ).build()
 
@@ -58,7 +50,7 @@ class MainActivity : ComponentActivity() {
         WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
             EmergencyCheckWorker.NAME,
             ExistingPeriodicWorkPolicy.KEEP, // すでに登録済みなら何もしない（タスクを上書きしない）
-            checkRequest
+            workRequest
         )
     }
 }
