@@ -27,7 +27,7 @@ class EmergencyCheckWorker @AssistedInject constructor(
         val lastChargingTime = preferences.getLastChargingTime()
 
         // 過去に一度も保存されていない（アプリ初回起動時など）場合は、
-        // 安全のため現在時刻を初期値として保存し、次のチェックへ回す
+        // 安全のため現在時刻を初期値として保存し、次回から生存確認を開始する。
         if (lastChargingTime == null) {
             val now = System.currentTimeMillis()
             preferences.updateLastChargingTime(now)
