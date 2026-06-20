@@ -17,18 +17,22 @@ class EmergencyWorkScheduler @Inject constructor(
 
     companion object {
         private const val WORK_NAME = "emergency_check"
+
+        private const val LIMIT_HOURS = 48L
     }
 
     /**
      * 指定した時間経過後に実行される Worker を登録する。
      */
-    fun schedule(delay: Long = 48) {
+    fun schedule(
+        delayMillis: Long = TimeUnit.HOURS.toMillis(LIMIT_HOURS)
+    ) {
 
         val request =
             OneTimeWorkRequestBuilder<EmergencyCheckWorker>()
                 .setInitialDelay(
-                    delay,
-                    TimeUnit.HOURS
+                    delayMillis,
+                    TimeUnit.MILLISECONDS
                 )
                 .build()
 
