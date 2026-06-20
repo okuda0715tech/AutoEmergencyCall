@@ -24,6 +24,7 @@ class PowerConnectedReceiver : BroadcastReceiver() {
             return
         }
 
+        // EntryPointAccessors は Hilt が管理していないクラスから Hilt の依存オブジェクトを取得するための仕組み
         val entryPoint =
             EntryPointAccessors.fromApplication(
                 context,
