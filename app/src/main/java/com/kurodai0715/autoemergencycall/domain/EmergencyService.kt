@@ -36,7 +36,7 @@ class EmergencyService : Service() {
         // 1. フォアグラウンドサービスに必要な「常時表示の通知」を作成
         startForeground(1, createNotification())
 
-        // 2. 💡 ここで動的レシーバーを登録！サービスが生きている間、ずっと登録しっぱなしになります
+        // 2. ここで動的レシーバーを登録！サービスが生きている間、ずっと登録しっぱなしになります
         val filter = IntentFilter().apply {
             addAction(Intent.ACTION_POWER_CONNECTED)
             addAction(Intent.ACTION_POWER_DISCONNECTED)
