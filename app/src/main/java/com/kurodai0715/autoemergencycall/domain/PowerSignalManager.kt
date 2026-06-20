@@ -55,11 +55,21 @@ class PowerSignalManager @Inject constructor(
      * 現在端末が充電中かどうかを判定
      */
     private fun isCurrentlyCharging(): Boolean {
+        // 現時点のバッテリーステータスを取得
         val batteryStatus = context.registerReceiver(
+            // 今回はブロードキャストを受け取る必要がないので null
+            // null を指定すると現在の状態を即座に返す。
             null,
+            // バッテリー残量や状態の変化を意図する Intent
             IntentFilter(Intent.ACTION_BATTERY_CHANGED)
         )
-        val status = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
+
+        val status = batteryStatus?.getIntExtra(
+            BatteryManager.EXTRA_STATUS,
+            // うまく取得できなかった場合のデフォルト値
+            -1
+        ) ?: -1 // null の場合のデフォルト値
+
         return status == BatteryManager.BATTERY_STATUS_CHARGING ||
                 status == BatteryManager.BATTERY_STATUS_FULL
     }
