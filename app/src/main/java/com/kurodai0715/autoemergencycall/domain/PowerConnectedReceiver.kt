@@ -21,10 +21,7 @@ class PowerConnectedReceiver : BroadcastReceiver() {
 
         Log.i("PowerConnectedReceiver", "Charging started")
 
-        if (
-            intent.action !=
-            Intent.ACTION_POWER_CONNECTED
-        ) {
+        if (intent.action != Intent.ACTION_POWER_CONNECTED) {
             return
         }
 
@@ -34,11 +31,9 @@ class PowerConnectedReceiver : BroadcastReceiver() {
                 ReceiverEntryPoint::class.java
             )
 
-        val preferences =
-            entryPoint.preferences()
+        val preferences = entryPoint.preferences()
 
-        val scheduler =
-            entryPoint.scheduler()
+        val scheduler = entryPoint.scheduler()
 
         CoroutineScope(Dispatchers.IO).launch {
 
