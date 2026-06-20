@@ -31,17 +31,12 @@ class PowerSignalManager @Inject constructor(
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
 
-        // 1. 動的レシーバーの登録
+        // 純粋に「充電器が挿された瞬間」「抜かれた瞬間」だけをキャッチするレシーバーを登録
         val filter = IntentFilter().apply {
             addAction(Intent.ACTION_POWER_CONNECTED)
             addAction(Intent.ACTION_POWER_DISCONNECTED)
         }
         context.registerReceiver(receiver, filter)
-
-        // 2. 起動時チェック（今すでに充電中なら、その時刻を保存する）
-        if (isCurrentlyCharging()) {
-            saveCurrentTime()
-        }
     }
 
     // Activity の onStop() に連動して自動で呼ばれる
@@ -49,29 +44,6 @@ class PowerSignalManager @Inject constructor(
         // メモリリーク防止のため、レシーバーを確実に解除
         context.unregisterReceiver(receiver)
         super.onStop(owner)
-    }
-
-    /**
-     * 現在端末が充電中かどうかを判定
-     */
-    private fun isCurrentlyCharging(): Boolean {
-        // 現時点のバッテリーステータスを取得
-        val batteryStatus = context.registerReceiver(
-            // 今回はブロードキャストを受け取る必要がないので null
-            // null を指定すると現在の状態を即座に返す。
-            null,
-            // バッテリー残量や状態の変化を意図する Intent
-            IntentFilter(Intent.ACTION_BATTERY_CHANGED)
-        )
-
-        val status = batteryStatus?.getIntExtra(
-            BatteryManager.EXTRA_STATUS,
-            // うまく取得できなかった場合のデフォルト値
-            -1
-        ) ?: -1 // null の場合のデフォルト値
-
-        return status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                status == BatteryManager.BATTERY_STATUS_FULL
     }
 
     /**
