@@ -20,6 +20,7 @@ fun AppNavGraph(
     NavHost(
         navController = navController,
         startDestination = startDestination,
+        modifier = modifier,
     ) {
         composable<Home> {
             HomeScreen()
