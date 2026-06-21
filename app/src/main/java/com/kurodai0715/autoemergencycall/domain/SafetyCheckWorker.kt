@@ -15,8 +15,6 @@ class SafetyCheckWorker(
 
     companion object {
         private const val TIMEOUT_MILLIS = 24 * 60 * 60 * 1000L // 24時間
-        const val PHASE_CHARGING = "CHARGING"
-        const val PHASE_NON_CHARGING = "NON_CHARGING"
     }
 
     override suspend fun doWork(): Result {
