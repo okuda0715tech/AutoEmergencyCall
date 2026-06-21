@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.kurodai0715.autoemergencycall.domain.SafetyCheckScheduler
 import com.kurodai0715.autoemergencycall.ui.screen.AppBaseScreen
 import com.kurodai0715.autoemergencycall.ui.theme.AutoEmergencyCallTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,6 +24,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // アプリ起動時に安否確認のスケジュールを登録（または維持）します。
+        // applicationContext を渡すことで、メモリリークを防ぎ安全に初期化できます。
+        SafetyCheckScheduler.setupPeriodicWork(applicationContext)
 
         enableEdgeToEdge()
         setContent {
