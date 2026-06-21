@@ -32,7 +32,7 @@ class SafetyCheckWorker(
         val lastLevel = safetyData.lastBatteryLevel ?: currentLevel
         var phase = safetyData.currentPhase
         // 初回起動時のみアクティブ時刻を現在時刻で初期化
-        var lastActiveTime = safetyData.lastActiveTime ?: currentTime
+        val lastActiveTime = safetyData.lastActiveTime ?: currentTime
 
         var newActiveTime = lastActiveTime
         var isActionDetected = false
