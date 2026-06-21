@@ -28,7 +28,6 @@ class SafetyCheckStore(private val context: Context) {
         val currentPhase: String
     )
 
-    // 【修正箇所①】 async fun を suspend fun に変更
     suspend fun loadSafetyData(): SafetyData {
         val preferences = context.dataStore.data.first()
         return SafetyData(
@@ -38,7 +37,6 @@ class SafetyCheckStore(private val context: Context) {
         )
     }
 
-    // 【修正箇所②】 async fun を suspend fun に変更
     suspend fun updateSafetyData(batteryLevel: Int, activeTime: Long?, phase: String) {
         context.dataStore.edit { preferences ->
             preferences[KEY_LAST_BATTERY] = batteryLevel
