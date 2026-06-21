@@ -19,7 +19,6 @@ class SafetyCheckWorker(
         private const val PHASE_DECREASE_WAIT = "DECREASE_WAIT"
     }
 
-    // CoroutineWorkerでは doWork() が suspend 関数になります
     override suspend fun doWork(): Result {
         val store = SafetyCheckStore(context)
         val currentTime = System.currentTimeMillis()
