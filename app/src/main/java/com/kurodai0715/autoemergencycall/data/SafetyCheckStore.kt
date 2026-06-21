@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.kurodai0715.autoemergencycall.domain.SafetyCheckWorker
 import kotlinx.coroutines.flow.first
 
 // Contextの拡張プロパティとしてDataStoreを定義
@@ -25,7 +26,7 @@ class SafetyCheckStore(private val context: Context) {
     data class SafetyData(
         val lastBatteryLevel: Int?,
         val lastActiveTime: Long?,
-        val currentPhase: String
+        val previousPhase: String
     )
 
     suspend fun loadSafetyData(): SafetyData {
@@ -33,7 +34,7 @@ class SafetyCheckStore(private val context: Context) {
         return SafetyData(
             lastBatteryLevel = preferences[KEY_LAST_BATTERY],
             lastActiveTime = preferences[KEY_LAST_ACTIVE_TIME],
-            currentPhase = preferences[KEY_CURRENT_PHASE] ?: "INCREASE_WAIT"
+            previousPhase = preferences[KEY_CURRENT_PHASE] ?: SafetyCheckWorker.PHASE_CHARGING
         )
     }
 

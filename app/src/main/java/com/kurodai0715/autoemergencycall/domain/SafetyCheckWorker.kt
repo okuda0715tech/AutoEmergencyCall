@@ -15,8 +15,8 @@ class SafetyCheckWorker(
 
     companion object {
         private const val TIMEOUT_MILLIS = 24 * 60 * 60 * 1000L // 24時間
-        private const val PHASE_INCREASE_WAIT = "INCREASE_WAIT"
-        private const val PHASE_DECREASE_WAIT = "DECREASE_WAIT"
+        const val PHASE_CHARGING = "CHARGING"
+        const val PHASE_NON_CHARGING = "NON_CHARGING"
     }
 
     override suspend fun doWork(): Result {
@@ -30,20 +30,21 @@ class SafetyCheckWorker(
         val safetyData = store.loadSafetyData()
 
         val lastLevel = safetyData.lastBatteryLevel ?: currentLevel
-        var phase = safetyData.currentPhase
-        // 初回起動時のみアクティブ時刻を現在時刻で初期化
+        val currentPhase = if (currentLevel >= lastLevel) PHASE_CHARGING else PHASE_NON_CHARGING
+        val previousPhase = safetyData.previousPhase
+        // 初回起動時は null のため現在時刻で初期化
         val lastActiveTime = safetyData.lastActiveTime ?: currentTime
 
         var isActionDetected = false
 
         // 3. 判定ロジック
-        if (phase == PHASE_INCREASE_WAIT && currentLevel > lastLevel) {
-            // 充電開始（増えた）を検知
-            phase = PHASE_DECREASE_WAIT
-            isActionDetected = true
-        } else if (phase == PHASE_DECREASE_WAIT && currentLevel < lastLevel) {
+        if (previousPhase == PHASE_CHARGING && currentPhase == PHASE_NON_CHARGING) {
             // 充電終了（減った）を検知
-            phase = PHASE_INCREASE_WAIT
+
+            isActionDetected = true
+        } else if (previousPhase == PHASE_NON_CHARGING && currentPhase == PHASE_CHARGING) {
+            // 充電開始（増えた）を検知
+
             isActionDetected = true
         }
 
@@ -53,7 +54,7 @@ class SafetyCheckWorker(
         store.updateSafetyData(
             batteryLevel = currentLevel,
             activeTime = newActiveTime,
-            phase = phase
+            phase = currentPhase
         )
 
         // 5. タイムリミット（24時間放置）のチェック
