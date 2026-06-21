@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.kurodai0715.autoemergencycall.domain.EmergencyService
 
 
 @Composable
@@ -27,8 +26,6 @@ fun Screen(
 
     Column {
         SmsPermissionScreen()
-
-        NotificationPermissionScreen()
 
         Button(
             onClick = {
@@ -81,30 +78,5 @@ fun SmsPermissionScreen(
         }
     ) {
         Text("SMS送信権限を付与する")
-    }
-}
-
-@Composable
-fun NotificationPermissionScreen() {
-    // ※ Accompanist などのパーミッション用ライブラリを使うと簡単
-    val context = LocalContext.current
-    val notificationPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            // 許可されたので、安心してフォアグラウンドサービスを起動できる
-            val intent = Intent(context, EmergencyService::class.java)
-            context.startForegroundService(intent)
-        } else {
-            // 拒否された場合の処理（「通知を許可しないと見守り機能が動作しません」と警告を出すなど）
-        }
-    }
-
-    Button(onClick = {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-    }) {
-        Text("通知権限を付与する")
     }
 }

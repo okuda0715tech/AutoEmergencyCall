@@ -31,21 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- ストア申請画面で以下を記述する。
-
-        本アプリは一人暮らしの高齢者の孤独死を防止するための緊急通報アプリです。ユーザーがスマートフォンに対して「充電器を抜き差しする」「画面ロックを解除する」といった日常のアクション（生存シグナル）を48時間以上行わなかった場合に、自動で緊急連絡先にSMSを送信します。
-
-        これらの瞬間的なユーザーのアクションをバックグラウンドで1回も漏らさずにリアルタイム検知するためには、動的ブロードキャストレシーバーを常時稼働させる必要があり、OSによる強制終了を回避するためにフォアグラウンドサービス（specialUse）の利用が不可欠です。
-        -->
-        <service
-            android:name=".domain.EmergencyService"
-            android:exported="false"
-            android:foregroundServiceType="specialUse">
-            <property
-                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="This service maintains a dynamic BroadcastReceiver to detect power connections/disconnections and screen unlocks as emergency life signals for elderly solo dwellers." />
-        </service>
     </application>
 
 </manifest>
