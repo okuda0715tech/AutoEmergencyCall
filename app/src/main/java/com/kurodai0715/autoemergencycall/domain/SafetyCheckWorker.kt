@@ -34,7 +34,6 @@ class SafetyCheckWorker(
         // 初回起動時のみアクティブ時刻を現在時刻で初期化
         val lastActiveTime = safetyData.lastActiveTime ?: currentTime
 
-        var newActiveTime = lastActiveTime
         var isActionDetected = false
 
         // 3. 判定ロジック
@@ -48,10 +47,7 @@ class SafetyCheckWorker(
             isActionDetected = true
         }
 
-        // アクションがあれば生存時刻を更新
-        if (isActionDetected) {
-            newActiveTime = currentTime
-        }
+        val newActiveTime = if (isActionDetected) currentTime else lastActiveTime
 
         // 4. 最新の状態をDataStoreに非同期で安全に保存
         store.updateSafetyData(
