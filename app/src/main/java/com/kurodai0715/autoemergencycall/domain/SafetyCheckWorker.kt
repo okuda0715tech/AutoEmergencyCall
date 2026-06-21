@@ -73,15 +73,21 @@ class SafetyCheckWorker(
     }
 
     private fun getBatteryLevel(): Int {
+        // バッテリーの現在の状態を取得
         val batteryStatus: Intent? = context.registerReceiver(
             null,
             IntentFilter(Intent.ACTION_BATTERY_CHANGED)
         )
+        // 現在のバッテリー残量を取得
         val level = batteryStatus?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
+        // バッテリーの最大値を取得
+        // デバイスによっては最大値が 100 ではない場合があるため
         val scale = batteryStatus?.getIntExtra(BatteryManager.EXTRA_SCALE, -1) ?: -1
         return if (level >= 0 && scale > 0) {
+            // バッテリー残量を % に変換する
             ((level / scale.toFloat()) * 100).toInt()
         } else {
+            // バッテリーのステータスが取得できなかった場合のセーフティー
             50
         }
     }
