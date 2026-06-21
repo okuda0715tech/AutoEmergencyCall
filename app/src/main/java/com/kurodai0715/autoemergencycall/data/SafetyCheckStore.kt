@@ -3,12 +3,11 @@ package com.kurodai0715.autoemergencycall.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.kurodai0715.autoemergencycall.domain.SafetyCheckWorker
 import kotlinx.coroutines.flow.first
 
 // Contextの拡張プロパティとしてDataStoreを定義
@@ -19,14 +18,14 @@ class SafetyCheckStore(private val context: Context) {
     companion object {
         val KEY_LAST_BATTERY = intPreferencesKey("last_battery_level")
         val KEY_LAST_ACTIVE_TIME = longPreferencesKey("last_active_time")
-        val KEY_CURRENT_PHASE = stringPreferencesKey("current_phase")
+        val KEY_LAST_IS_CHARGING = booleanPreferencesKey("last_is_charging")
     }
 
     // 保存されているデータを一括で取得するデータクラス
     data class SafetyData(
         val lastBatteryLevel: Int?,
         val lastActiveTime: Long?,
-        val previousPhase: String
+        val lastIsCharging: Boolean?,
     )
 
     suspend fun loadSafetyData(): SafetyData {
@@ -34,14 +33,14 @@ class SafetyCheckStore(private val context: Context) {
         return SafetyData(
             lastBatteryLevel = preferences[KEY_LAST_BATTERY],
             lastActiveTime = preferences[KEY_LAST_ACTIVE_TIME],
-            previousPhase = preferences[KEY_CURRENT_PHASE] ?: SafetyCheckWorker.PHASE_CHARGING
+            lastIsCharging = preferences[KEY_LAST_IS_CHARGING],
         )
     }
 
-    suspend fun updateSafetyData(batteryLevel: Int, activeTime: Long?, phase: String) {
+    suspend fun updateSafetyData(batteryLevel: Int, activeTime: Long?, phase: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[KEY_LAST_BATTERY] = batteryLevel
-            preferences[KEY_CURRENT_PHASE] = phase
+            preferences[KEY_LAST_IS_CHARGING] = phase
             if (activeTime != null) {
                 preferences[KEY_LAST_ACTIVE_TIME] = activeTime
             }

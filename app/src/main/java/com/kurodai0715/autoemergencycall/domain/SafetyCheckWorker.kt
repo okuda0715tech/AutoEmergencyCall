@@ -23,41 +23,29 @@ class SafetyCheckWorker(
         val store = SafetyCheckStore(context)
         val currentTime = System.currentTimeMillis()
 
-        // 1. 現在のバッテリー残量を取得
+        // 現在のバッテリー残量を取得
         val currentLevel = getBatteryLevel()
 
-        // 2. DataStoreから前回保存したデータを安全に読み込む
+        // DataStoreから前回保存したデータを安全に読み込む
         val safetyData = store.loadSafetyData()
 
+        // 初回起動時は null のため現在の値で初期化
         val lastLevel = safetyData.lastBatteryLevel ?: currentLevel
-        val currentPhase = if (currentLevel >= lastLevel) PHASE_CHARGING else PHASE_NON_CHARGING
-        val previousPhase = safetyData.previousPhase
-        // 初回起動時は null のため現在時刻で初期化
+        val isCharging = currentLevel >= lastLevel
+        val lastIsCharging = safetyData.lastIsCharging ?: isCharging
         val lastActiveTime = safetyData.lastActiveTime ?: currentTime
 
-        var isActionDetected = false
+        // 充電状態に変化があれば安全確認時刻を更新
+        val newActiveTime = if (lastIsCharging != isCharging) currentTime else lastActiveTime
 
-        // 3. 判定ロジック
-        if (previousPhase == PHASE_CHARGING && currentPhase == PHASE_NON_CHARGING) {
-            // 充電終了（減った）を検知
-
-            isActionDetected = true
-        } else if (previousPhase == PHASE_NON_CHARGING && currentPhase == PHASE_CHARGING) {
-            // 充電開始（増えた）を検知
-
-            isActionDetected = true
-        }
-
-        val newActiveTime = if (isActionDetected) currentTime else lastActiveTime
-
-        // 4. 最新の状態をDataStoreに非同期で安全に保存
+        // 最新の状態を DataStore に非同期で安全に保存
         store.updateSafetyData(
             batteryLevel = currentLevel,
             activeTime = newActiveTime,
-            phase = currentPhase
+            phase = isCharging
         )
 
-        // 5. タイムリミット（24時間放置）のチェック
+        // タイムリミット（24時間放置）のチェック
         if (currentTime - newActiveTime >= TIMEOUT_MILLIS) {
             triggerEmergencyAlert()
         }
