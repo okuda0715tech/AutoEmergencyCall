@@ -72,6 +72,9 @@ class SafetyCheckWorker(
         return Result.success()
     }
 
+    /**
+     * 現在のバッテリー残量を取得する。単位は % とする.
+     */
     private fun getBatteryLevel(): Int {
         // バッテリーの現在の状態を取得
         val batteryStatus: Intent? = context.registerReceiver(
