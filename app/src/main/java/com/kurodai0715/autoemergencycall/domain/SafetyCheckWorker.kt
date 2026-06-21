@@ -14,7 +14,9 @@ class SafetyCheckWorker(
 ) : CoroutineWorker(context, workerParams) { // CoroutineWorkerに変更
 
     companion object {
-        private const val TIMEOUT_MILLIS = 24 * 60 * 60 * 1000L // 24時間
+        private const val SELF_CHECK_THRESHOLD = 24 * 60 * 60 * 1000L // 24時間のミリ秒表現
+        private const val EMERGENCY_SMS_TRIGGER_THRESHOLD = 48 * 60 * 60 * 1000L // 48時間のミリ秒表現
+
     }
 
     override suspend fun doWork(): Result {
@@ -44,8 +46,12 @@ class SafetyCheckWorker(
         )
 
         // タイムリミット（24時間放置）のチェック
-        if (currentTime - newActiveTime >= TIMEOUT_MILLIS) {
+        if (currentTime - newActiveTime >= SELF_CHECK_THRESHOLD) {
             triggerEmergencyAlert()
+        }
+
+        if (currentTime - newActiveTime >= EMERGENCY_SMS_TRIGGER_THRESHOLD) {
+            triggerEmergencySmsSend()
         }
 
         return Result.success()
@@ -76,5 +82,9 @@ class SafetyCheckWorker(
 
     private fun triggerEmergencyAlert() {
         // TODO: ローカルでの緊急警報処理
+    }
+
+    private fun triggerEmergencySmsSend() {
+        TODO()
     }
 }
