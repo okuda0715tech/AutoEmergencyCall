@@ -81,13 +81,20 @@ class SafetyCheckWorker(
         }
     }
 
-    private fun getIsPlugged(context: Context): Boolean {
-        // 今、何から給電されているかを取得（AC、USB、ワイヤレス充電など）
-        val plugged = batteryStatus?.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) ?: -1
+    /**
+     * 充電装置が接続されているかどうか.
+     *
+     * ワイヤレス充電、 USB 充電、どれでも充電装置が接続されていれば true 。そうでなければ false .
+     */
+    private fun getIsConnected(): Boolean {
+        val status = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
 
-        // plugged が 0 より大きい＝何らかの充電器（AC, USB, Wireless）が挿さっている状態
-        // plugged が 0 ＝ 完全にバッテリー駆動（ケーブルが抜けている状態）
-        return plugged > 0
+        // CHARGING（充電中）と FULL（満充電）は充電ケーブルが刺さっている状態。
+        // 満充電でケーブルが抜かれると即座に DISCHARGING に変わる。
+        // 満充電でケーブルが刺さっている状態で、どれだけデバイスが処理を行っても
+        // DISCHARGING にはならず FULL のままとなる。
+        return status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                status == BatteryManager.BATTERY_STATUS_FULL
     }
 
     private fun triggerEmergencyAlert() {
