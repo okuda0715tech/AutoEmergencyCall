@@ -48,7 +48,7 @@ class SafetyCheckWorker(
         store.updateSafetyData(
             batteryLevel = currentLevel,
             activeTime = newActiveTime,
-            phase = isCharging
+            isConnected = isCharging
         )
 
         // タイムリミット（24時間放置）のチェック
