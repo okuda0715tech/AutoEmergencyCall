@@ -19,6 +19,12 @@ class SafetyCheckWorker(
 
     }
 
+    // バッテリーの現在の状態を取得
+    val batteryStatus: Intent? = context.registerReceiver(
+        null,
+        IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+    )
+
     override suspend fun doWork(): Result {
         val store = SafetyCheckStore(context)
         val currentTime = System.currentTimeMillis()
@@ -61,11 +67,6 @@ class SafetyCheckWorker(
      * 現在のバッテリー残量を取得する。単位は % とする.
      */
     private fun getBatteryLevel(): Int {
-        // バッテリーの現在の状態を取得
-        val batteryStatus: Intent? = context.registerReceiver(
-            null,
-            IntentFilter(Intent.ACTION_BATTERY_CHANGED)
-        )
         // 現在のバッテリー残量を取得
         val level = batteryStatus?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
         // バッテリーの最大値を取得
@@ -81,11 +82,6 @@ class SafetyCheckWorker(
     }
 
     private fun getIsPlugged(context: Context): Boolean {
-        val batteryStatus: Intent? = context.registerReceiver(
-            null,
-            IntentFilter(Intent.ACTION_BATTERY_CHANGED)
-        )
-
         // 今、何から給電されているかを取得（AC、USB、ワイヤレス充電など）
         val plugged = batteryStatus?.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) ?: -1
 
