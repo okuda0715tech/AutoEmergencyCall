@@ -105,6 +105,7 @@ fun SafetyCheckTestScreen() {
     // テスト実行ボタン
     Button(
         onClick = {
+            Log.i("SafetyCheckTestScreen", "Execute SafetyCheckUseCase")
             // 3. コルーチンを起動して非同期で処理を実行
             coroutineScope.launch {
                 // 1時間待たずに、今この瞬間のバッテリー状態で安否判定を実行
