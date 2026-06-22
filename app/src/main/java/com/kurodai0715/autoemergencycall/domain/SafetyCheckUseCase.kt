@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
+import android.util.Log
 import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
 
 class SafetyCheckUseCase(private val context: Context) {
@@ -35,9 +36,15 @@ class SafetyCheckUseCase(private val context: Context) {
 
         val newActiveTime = when {
             // 充電状態が減少から増加に転じている場合
-            isIncreased && !lastIsIncreased -> currentTime
+            isIncreased && !lastIsIncreased -> {
+                Log.i("SafetyCheck", "The battery level changed from decreasing to increasing.")
+                currentTime
+            }
             // 充電装置の接続有無が変化した場合
-            isConnected != lastIsConnected -> currentTime
+            isConnected != lastIsConnected -> {
+                Log.i("SafetyCheck", "The connection status of the charging device has changed.")
+                currentTime
+            }
             // 何も更新イベントが発生しなかった場合
             else -> lastActiveTime
         }
