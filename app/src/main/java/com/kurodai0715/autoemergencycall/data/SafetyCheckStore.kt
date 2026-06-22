@@ -25,7 +25,7 @@ class SafetyCheckStore(private val context: Context) {
     data class SafetyData(
         val lastBatteryLevel: Int?,
         val lastActiveTime: Long?,
-        val lastIsCharging: Boolean?,
+        val lastIsIncreased: Boolean?,
     )
 
     suspend fun loadSafetyData(): SafetyData {
@@ -33,14 +33,14 @@ class SafetyCheckStore(private val context: Context) {
         return SafetyData(
             lastBatteryLevel = preferences[KEY_LAST_BATTERY],
             lastActiveTime = preferences[KEY_LAST_ACTIVE_TIME],
-            lastIsCharging = preferences[KEY_LAST_IS_CONNECTED],
+            lastIsIncreased = preferences[KEY_LAST_IS_CONNECTED],
         )
     }
 
-    suspend fun updateSafetyData(batteryLevel: Int, activeTime: Long?, isConnected: Boolean) {
+    suspend fun updateSafetyData(batteryLevel: Int, activeTime: Long?, isIncreased: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[KEY_LAST_BATTERY] = batteryLevel
-            preferences[KEY_LAST_IS_CONNECTED] = isConnected
+            preferences[KEY_LAST_IS_CONNECTED] = isIncreased
             if (activeTime != null) {
                 preferences[KEY_LAST_ACTIVE_TIME] = activeTime
             }

@@ -37,18 +37,18 @@ class SafetyCheckWorker(
 
         // 初回起動時は null のため現在の値で初期化
         val lastLevel = safetyData.lastBatteryLevel ?: currentLevel
-        val isCharging = currentLevel >= lastLevel
-        val lastIsCharging = safetyData.lastIsCharging ?: isCharging
+        val isIncreased = currentLevel > lastLevel
+        val lastIsIncreased = safetyData.lastIsIncreased ?: isIncreased
         val lastActiveTime = safetyData.lastActiveTime ?: currentTime
 
-        // 充電状態に変化があれば安全確認時刻を更新
-        val newActiveTime = if (lastIsCharging != isCharging) currentTime else lastActiveTime
+        // 充電状態が減少から増加に転じていれば、安全確認時刻を更新
+        val newActiveTime = if (isIncreased && !lastIsIncreased) currentTime else lastActiveTime
 
         // 最新の状態を DataStore に非同期で安全に保存
         store.updateSafetyData(
             batteryLevel = currentLevel,
             activeTime = newActiveTime,
-            isConnected = isCharging
+            isIncreased = isIncreased
         )
 
         // タイムリミット（24時間放置）のチェック
