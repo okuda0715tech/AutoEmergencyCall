@@ -80,6 +80,20 @@ class SafetyCheckWorker(
         }
     }
 
+    private fun getIsPlugged(context: Context): Boolean {
+        val batteryStatus: Intent? = context.registerReceiver(
+            null,
+            IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+        )
+
+        // 今、何から給電されているかを取得（AC、USB、ワイヤレス充電など）
+        val plugged = batteryStatus?.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) ?: -1
+
+        // plugged が 0 より大きい＝何らかの充電器（AC, USB, Wireless）が挿さっている状態
+        // plugged が 0 ＝ 完全にバッテリー駆動（ケーブルが抜けている状態）
+        return plugged > 0
+    }
+
     private fun triggerEmergencyAlert() {
         // TODO: ローカルでの緊急警報処理
     }
