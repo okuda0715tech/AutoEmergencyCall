@@ -19,6 +19,7 @@ class SafetyCheckStore(private val context: Context) {
         val KEY_LAST_BATTERY = intPreferencesKey("last_battery_level")
         val KEY_LAST_ACTIVE_TIME = longPreferencesKey("last_active_time")
         val KEY_LAST_IS_INCREASED = booleanPreferencesKey("last_is_increased")
+        val KEY_LAST_IS_CONNECTED = booleanPreferencesKey("last_is_connected")
     }
 
     // 保存されているデータを一括で取得するデータクラス
@@ -26,6 +27,7 @@ class SafetyCheckStore(private val context: Context) {
         val lastBatteryLevel: Int?,
         val lastActiveTime: Long?,
         val lastIsIncreased: Boolean?,
+        val lastIsConnected: Boolean?,
     )
 
     suspend fun loadSafetyData(): SafetyData {
@@ -34,16 +36,23 @@ class SafetyCheckStore(private val context: Context) {
             lastBatteryLevel = preferences[KEY_LAST_BATTERY],
             lastActiveTime = preferences[KEY_LAST_ACTIVE_TIME],
             lastIsIncreased = preferences[KEY_LAST_IS_INCREASED],
+            lastIsConnected = preferences[KEY_LAST_IS_CONNECTED],
         )
     }
 
-    suspend fun updateSafetyData(batteryLevel: Int, activeTime: Long?, isIncreased: Boolean) {
+    suspend fun updateSafetyData(
+        batteryLevel: Int,
+        activeTime: Long?,
+        isIncreased: Boolean,
+        isConnected: Boolean,
+    ) {
         context.dataStore.edit { preferences ->
             preferences[KEY_LAST_BATTERY] = batteryLevel
             preferences[KEY_LAST_IS_INCREASED] = isIncreased
             if (activeTime != null) {
                 preferences[KEY_LAST_ACTIVE_TIME] = activeTime
             }
+            preferences[KEY_LAST_IS_CONNECTED] = isConnected
         }
     }
 }
