@@ -7,16 +7,27 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.telephony.SmsManager
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kurodai0715.autoemergencycall.domain.SafetyCheckUseCase
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -34,6 +45,8 @@ fun Screen(
         ) {
             Text(text = "送信する")
         }
+
+        SafetyCheckTestScreen()
     }
 }
 
@@ -78,5 +91,30 @@ fun SmsPermissionScreen(
         }
     ) {
         Text("SMS送信権限を付与する")
+    }
+}
+
+@Composable
+fun SafetyCheckTestScreen() {
+    // 1. Compose 内で Context を取得
+    val context = LocalContext.current
+
+    // 2. ボタンタップ時に suspend 関数を呼び出すためのコルーチンスコープ
+    val coroutineScope = rememberCoroutineScope()
+
+    // テスト実行ボタン
+    Button(
+        onClick = {
+            // 3. コルーチンを起動して非同期で処理を実行
+            coroutineScope.launch {
+                // 1時間待たずに、今この瞬間のバッテリー状態で安否判定を実行
+                SafetyCheckUseCase(context.applicationContext).executeCheck()
+
+                // 完了通知
+                Toast.makeText(context, "安否確認を即座に実行しました", Toast.LENGTH_SHORT).show()
+            }
+        }
+    ) {
+        Text(text = "今すぐチェック処理を実行 (Force Run)")
     }
 }
