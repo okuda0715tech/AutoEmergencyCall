@@ -15,7 +15,6 @@ import com.kurodai0715.autoemergencycall.ui.screen.contact_edit.ContactEditScree
 import com.kurodai0715.autoemergencycall.ui.screen.contact_list.ContactListScreen
 import com.kurodai0715.autoemergencycall.ui.screen.contact_list.ContactViewModel
 import com.kurodai0715.autoemergencycall.ui.screen.home.Screen as HomeScreen
-import com.kurodai0715.autoemergencycall.ui.screen.register_contact.Screen as RegisterContactScreen
 
 @Composable
 fun AppNavGraph(
@@ -33,10 +32,6 @@ fun AppNavGraph(
             HomeScreen()
 
             onChangeTitle(R.string.home_screen_title)
-        }
-
-        composable<RegisterContact> {
-            RegisterContactScreen()
         }
 
         navigation<Contact.Root>(startDestination = Contact.List) {
