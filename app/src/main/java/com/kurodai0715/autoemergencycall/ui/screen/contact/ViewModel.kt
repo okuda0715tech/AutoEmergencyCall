@@ -1,4 +1,4 @@
-package com.kurodai0715.autoemergencycall.ui.screen.contact_list
+package com.kurodai0715.autoemergencycall.ui.screen.contact
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.kurodai0715.autoemergencycall.ui.screen.contact_list
+package com.kurodai0715.autoemergencycall.ui.screen.contact
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
