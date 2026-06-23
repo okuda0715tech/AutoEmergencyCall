@@ -22,6 +22,10 @@ fun ConfigEditScreen(
 
     // 入力フォーム状態
     var hoursInput by remember { mutableStateOf(existingConfig?.thresholdHours?.toString() ?: "") }
+    // 入力された時間が24時間以上かどうかを判定
+    val inputHours = hoursInput.toIntOrNull()
+    val isHoursValid = inputHours != null && inputHours >= 24
+
     // 選択された連絡先IDのセット（複数選択の管理用）
     var selectedContactIds by remember { mutableStateOf(existingConfig?.targetContactIds?.toSet() ?: emptySet()) }
 
@@ -65,7 +69,7 @@ fun ConfigEditScreen(
                     Button(
                         onClick = {
                             val hours = hoursInput.toIntOrNull()
-                            if (hours != null) {
+                            if (hours != null && hours >= 24) {
                                 viewModel.saveConfig(
                                     id = configId,
                                     thresholdHours = hours,
@@ -76,7 +80,8 @@ fun ConfigEditScreen(
                                 }
                             }
                         },
-                        enabled = hoursInput.toIntOrNull() != null && selectedContactIds.isNotEmpty(), // 時間正当性 ＆ 1件以上選択必須
+                        // 24時間以上 ＆ 1件以上選択必須
+                        enabled = isHoursValid && selectedContactIds.isNotEmpty(),
                         modifier = Modifier.weight(1f)
                     ) { Text("保存") }
                 }
@@ -96,6 +101,12 @@ fun ConfigEditScreen(
                 singleLine = true,
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                isError = hoursInput.isNotEmpty() && !isHoursValid,
+                supportingText = {
+                    if (hoursInput.isNotEmpty() && !isHoursValid) {
+                        Text(text = "※誤通報防止のため、24時間以上の値を入力してください。", color = MaterialTheme.colorScheme.error)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             )
 
