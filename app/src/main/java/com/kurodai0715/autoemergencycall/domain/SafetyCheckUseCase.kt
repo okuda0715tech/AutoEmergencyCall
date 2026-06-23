@@ -12,6 +12,7 @@ import javax.inject.Inject
 class SafetyCheckUseCase @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val store: SafetyCheckStore,
+    private val smsSender: SmsSender,
 ) {
 
     companion object {
@@ -100,5 +101,9 @@ class SafetyCheckUseCase @Inject constructor(
 
     private fun triggerEmergencySmsSend() {
         // TODO: SMS送信処理
+        smsSender.sendSms(
+            "09099999999",
+            "テスト"
+        )
     }
 }
