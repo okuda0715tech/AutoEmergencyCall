@@ -174,7 +174,7 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "📱 最終生存確認（充電など）", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                    Text(text = "📱 最終生存確認時刻", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                     Text(text = lastActiveTimeText, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 }
 
