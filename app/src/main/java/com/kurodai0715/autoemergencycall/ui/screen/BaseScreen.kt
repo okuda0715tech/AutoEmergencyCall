@@ -155,18 +155,6 @@ fun AppDrawerContent(
         )
 
         NavigationDrawerItem(
-            label = { Text(text = stringResource(R.string.contact)) },
-            selected = currentDest is Contact.Root,
-            onClick = { debouncedClick { onClickItem(Contact.Root) } }
-        )
-
-        NavigationDrawerItem(
-            label = { Text(text = stringResource(R.string.alert_config)) },
-            selected = currentDest is Config.Root,
-            onClick = { debouncedClick { onClickItem(Config.Root) } }
-        )
-
-        NavigationDrawerItem(
             label = { Text(text = stringResource(R.string.developer)) },
             selected = currentDest is Developer,
             onClick = { debouncedClick { onClickItem(Developer) } }
