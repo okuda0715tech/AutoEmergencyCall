@@ -45,6 +45,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true // BuildConfigの自動生成を有効にする
     }
 }
 
