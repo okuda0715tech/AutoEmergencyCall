@@ -37,7 +37,9 @@ fun TestSmsScreen(
     Scaffold(
         bottomBar = {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 OutlinedButton(
@@ -75,7 +77,11 @@ fun TestSmsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(text = "SMS送信テスト", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+            Text(
+                text = "SMS送信テスト",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
 
             // 💡 ストア審査対策 ＆ 誤操作防止の注意書き
             Card(
@@ -83,7 +89,11 @@ fun TestSmsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = "💡 テスト機能について", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = "💡 テスト機能について",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "登録された連絡先へ実際にSMSが届くシステムテストを行えます。ボタンを押すと即座に送信され、ご契約のプランに応じたSMS送信料（通信料）が発生しますのでご注意ください。",
@@ -95,10 +105,16 @@ fun TestSmsScreen(
             Text(text = "送信先を1つ選択してください", style = MaterialTheme.typography.titleMedium)
 
             if (contacts.isEmpty()) {
-                Text(text = "連絡先が登録されていません。先に連絡先一覧から追加してください。", color = MaterialTheme.colorScheme.error)
+                Text(
+                    text = "連絡先が登録されていません。先に連絡先一覧から追加してください。",
+                    color = MaterialTheme.colorScheme.error
+                )
             }
 
-            LazyColumn(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 items(contacts) { contact ->
                     Row(
                         modifier = Modifier
@@ -113,8 +129,16 @@ fun TestSmsScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {
-                            Text(text = contact.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
-                            Text(text = "${contact.relation} : ${contact.phoneNumber}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                text = contact.name,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${contact.relation} : ${contact.phoneNumber}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                 }
