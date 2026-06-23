@@ -3,11 +3,6 @@ package com.kurodai0715.autoemergencycall.ui.screen.home
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
-import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -26,59 +21,46 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.PackageManagerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun HomeScreen(
     onNavigateToContacts: () -> Unit,
     onNavigateToConfigs: () -> Unit,
     onNavigateToTest: () -> Unit,
+    viewModel: HomeViewModel = hiltViewModel() // Hiltによるインジェクション
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
     val scrollState = rememberScrollState()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    // ① SMS権限の状態
-    var isSmsPermissionGranted by remember {
-        mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED)
-    }
+    // ViewModel から状態を監視
+    val isSmsPermissionGranted by viewModel.isSmsPermissionGranted.collectAsState()
+    val isAutoRevokeDisabled by viewModel.isAutoRevokeDisabled.collectAsState()
 
-    // ② 💡【ここで使用】自動削除が無効（安全な状態）かどうかを管理するState
-    var isAutoRevokeDisabled by remember { mutableStateOf(true) }
+    var showSettingsGuideDialog by remember { mutableStateOf(false) }
 
-    // 画面の更新タイミングを制御するためのカウンターキー
-    var refreshTrigger by remember { mutableStateOf(0) }
-
-    // ユーザーが設定アプリから戻ってきた（ON_RESUME）ら状態チェックを促す
+    // 💡 ライフサイクルイベントの購読：ON_RESUMEのタイミングでViewModelへリフレッシュを通知
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                isSmsPermissionGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED
-                refreshTrigger++ // トリガーを引いて LaunchedEffect を動かす
+                viewModel.refreshStatuses(context)
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    // バックグラウンドで自動リセットのステータスを安全に取得
-    LaunchedEffect(refreshTrigger) {
-        val status = checkUnusedAppRestrictionsStatus(context)
-        // 1: 機能なし(古いOS), 2: DISABLED(自動削除オフで安全) の場合は true（＝警告不要）
-        isAutoRevokeDisabled = (status == 2 || status == 1)
-    }
-
-    // 永久拒否時のダイアログ制御
-    var showSettingsGuideDialog by remember { mutableStateOf(false) }
-
+    // 権限リクエストランチャー
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        isSmsPermissionGranted = isGranted
+        // リクエスト直後も一度状態をリフレッシュ
+        viewModel.refreshStatuses(context)
+
         if (!isGranted && activity != null) {
             val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.SEND_SMS)
             if (!showRationale) {
@@ -87,7 +69,7 @@ fun HomeScreen(
         }
     }
 
-    // 永久拒否された高齢者を救うための専用案内ダイアログ
+    // 永久拒否時のエスコートダイアログ
     if (showSettingsGuideDialog) {
         AlertDialog(
             onDismissRequest = { showSettingsGuideDialog = false },
@@ -97,9 +79,7 @@ fun HomeScreen(
                 Button(
                     onClick = {
                         showSettingsGuideDialog = false
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                            data = Uri.fromParts("package", context.packageName, null)
-                        }
+                        val intent = viewModel.createApplicationDetailsIntent(context)
                         context.startActivity(intent)
                     }
                 ) { Text("設定画面を開く") }
@@ -127,7 +107,7 @@ fun HomeScreen(
 
         HorizontalDivider()
 
-        // Google Play審査対応：目立つ事前開示カード（完全復活版）
+        // 事前開示カード
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
             modifier = Modifier.fillMaxWidth()
@@ -153,7 +133,7 @@ fun HomeScreen(
             }
         }
 
-        // SMS状態確認 ＆ タップ処理
+        // SMS状態確認カード ＆ タップ処理
         Card(
             colors = CardDefaults.cardColors(
                 containerColor = if (isSmsPermissionGranted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f)
@@ -161,17 +141,15 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    if (!isSmsPermissionGranted) {
-                        if (activity != null) {
-                            val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.SEND_SMS)
-                            val hasRequestedBefore = context.getSharedPreferences("prefs", Context.MODE_PRIVATE).getBoolean("has_requested_sms", false)
+                    if (!isSmsPermissionGranted && activity != null) {
+                        val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.SEND_SMS)
+                        val hasRequestedBefore = context.getSharedPreferences("prefs", Context.MODE_PRIVATE).getBoolean("has_requested_sms", false)
 
-                            if (!showRationale && hasRequestedBefore) {
-                                showSettingsGuideDialog = true
-                            } else {
-                                context.getSharedPreferences("prefs", Context.MODE_PRIVATE).edit().putBoolean("has_requested_sms", true).apply()
-                                requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
-                            }
+                        if (!showRationale && hasRequestedBefore) {
+                            showSettingsGuideDialog = true
+                        } else {
+                            context.getSharedPreferences("prefs", Context.MODE_PRIVATE).edit().putBoolean("has_requested_sms", true).apply()
+                            requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
                         }
                     }
                 }
@@ -190,15 +168,21 @@ fun HomeScreen(
             }
         }
 
-        // 💡 【修正点】自動削除が有効（危険状態：false）のときだけ、警告カードをしっかり表示！
+        // アプリ自動停止の警告カード
         if (!isAutoRevokeDisabled) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f)),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        // ユーザーを設定画面の適切な場所へエスコート
-                        openUnusedAppRestrictionsSettings(context)
+                        val intent = viewModel.createUnusedAppRestrictionsIntent(context)
+                        // 安全にインテントを開く（11環境でのフォールバック等はViewModelが担保）
+                        try {
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            val fallback = viewModel.createApplicationDetailsIntent(context)
+                            context.startActivity(fallback)
+                        }
                     }
             ) {
                 Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -221,48 +205,12 @@ fun HomeScreen(
             Button(onClick = onNavigateToConfigs, modifier = Modifier.weight(1f)) { Text("動作設定一覧") }
         }
 
-        // 送信テスト画面へのアウトラインボタン
         OutlinedButton(
             onClick = onNavigateToTest,
             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("送信テストを実行する")
-        }
-    }
-}
-
-/**
- * 権限自動リセットの状態チェック（非同期呼び出し用）
- */
-private fun checkUnusedAppRestrictionsStatus(context: Context): Int {
-    return try {
-        PackageManagerCompat.getUnusedAppRestrictionsStatus(context).get()
-    } catch (e: Exception) {
-        0
-    }
-}
-
-/**
- * 自動リセット解除のための設定画面ワープ関数
- */
-private fun openUnusedAppRestrictionsSettings(context: Context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = Uri.fromParts("package", context.packageName, null)
-        }
-        context.startActivity(intent)
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        val intent = Intent("android.settings.UNUSED_APP_RESTRICTIONS").apply {
-            data = Uri.fromParts("package", context.packageName, null)
-        }
-        try {
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            val fallbackIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.fromParts("package", context.packageName, null)
-            }
-            context.startActivity(fallbackIntent)
         }
     }
 }
