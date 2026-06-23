@@ -5,16 +5,21 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.util.Log
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 
-class SafetyCheckWorker(
-    private val context: Context,
-    workerParams: WorkerParameters
+@HiltWorker
+class SafetyCheckWorker @AssistedInject constructor(
+    @Assisted private val context: Context,
+    @Assisted workerParams: WorkerParameters,
+    private val safetyCheckUseCase: SafetyCheckUseCase,
 ) : CoroutineWorker(context, workerParams) { // CoroutineWorkerに変更
 
-    companion object{
+    companion object {
         private const val TAG = "SafetyCheckWorker"
     }
 
@@ -22,7 +27,7 @@ class SafetyCheckWorker(
 
         Log.i(TAG, "SafetyCheckWorker is running")
 
-        SafetyCheckUseCase(context).executeCheck()
+        safetyCheckUseCase.executeCheck()
         return Result.success()
     }
 }

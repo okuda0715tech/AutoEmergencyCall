@@ -10,7 +10,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class SafetyCheckUseCase @Inject constructor(
-    @param:ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context,
+    private val store: SafetyCheckStore,
 ) {
 
     companion object {
@@ -20,7 +21,6 @@ class SafetyCheckUseCase @Inject constructor(
 
     // 以前の doWork 内のコアロジックをここに移植
     suspend fun executeCheck() {
-        val store = SafetyCheckStore(context)
         val currentTime = System.currentTimeMillis()
 
         // 判定を行う「その瞬間」の最新バッテリー情報を取得

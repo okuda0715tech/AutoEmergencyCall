@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kurodai0715.autoemergencycall.domain.SafetyCheckUseCase
+import com.kurodai0715.directdebitmanager.ui.util.debouncedClick
 import kotlinx.coroutines.launch
 
 
@@ -46,7 +47,7 @@ fun Screen(
             Text(text = "送信する")
         }
 
-        SafetyCheckTestScreen()
+        SafetyCheckTestScreen(onClickTestButton = viewModel::onTestButtonClicked)
     }
 }
 
@@ -95,7 +96,7 @@ fun SmsPermissionScreen(
 }
 
 @Composable
-fun SafetyCheckTestScreen() {
+fun SafetyCheckTestScreen(onClickTestButton: () -> Unit) {
     // 1. Compose 内で Context を取得
     val context = LocalContext.current
 
@@ -105,14 +106,13 @@ fun SafetyCheckTestScreen() {
     // テスト実行ボタン
     Button(
         onClick = {
-            Log.i("SafetyCheckTestScreen", "Execute SafetyCheckUseCase")
-            // 3. コルーチンを起動して非同期で処理を実行
-            coroutineScope.launch {
-                // 1時間待たずに、今この瞬間のバッテリー状態で安否判定を実行
-                SafetyCheckUseCase(context.applicationContext).executeCheck()
+            debouncedClick {
+                Log.i("SafetyCheckTestScreen", "Execute SafetyCheckUseCase")
 
-                // 完了通知
-                Toast.makeText(context, "安否確認を即座に実行しました", Toast.LENGTH_SHORT).show()
+                onClickTestButton()
+
+                // 実行通知
+                Toast.makeText(context, "安否確認を即座に開始しました", Toast.LENGTH_SHORT).show()
             }
         }
     ) {
