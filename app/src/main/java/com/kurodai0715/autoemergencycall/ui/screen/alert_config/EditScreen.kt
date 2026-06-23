@@ -27,7 +27,11 @@ fun ConfigEditScreen(
     val isHoursValid = inputHours != null && inputHours >= 24
 
     // 選択された連絡先IDのセット（複数選択の管理用）
-    var selectedContactIds by remember { mutableStateOf(existingConfig?.targetContactIds?.toSet() ?: emptySet()) }
+    var selectedContactIds by remember {
+        mutableStateOf(
+            existingConfig?.targetContactIds?.toSet() ?: emptySet()
+        )
+    }
 
     var showSuccessDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
@@ -46,9 +50,16 @@ fun ConfigEditScreen(
     Scaffold(
         bottomBar = {
             Column(modifier = Modifier.padding(16.dp)) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     // 1. 戻る
-                    OutlinedButton(onClick = onNavigateBack, modifier = Modifier.weight(1f)) { Text("戻る") }
+                    OutlinedButton(onClick = onNavigateBack, modifier = Modifier.weight(1f)) {
+                        Text(
+                            "戻る"
+                        )
+                    }
 
                     // 2. 削除
                     Button(
@@ -75,7 +86,8 @@ fun ConfigEditScreen(
                                     thresholdHours = hours,
                                     targetContactIds = selectedContactIds.toList()
                                 ) {
-                                    dialogMessage = if (configId == null) "動作設定を新規登録しました。" else "動作設定を更新しました。"
+                                    dialogMessage =
+                                        if (configId == null) "動作設定を新規登録しました。" else "動作設定を更新しました。"
                                     showSuccessDialog = true
                                 }
                             }
@@ -89,10 +101,16 @@ fun ConfigEditScreen(
         }
     ) { innerPadding ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(innerPadding).padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(text = if (configId == null) "動作設定の新規追加" else "動作設定の編集", style = MaterialTheme.typography.headlineMedium)
+            Text(
+                text = if (configId == null) "動作設定の新規追加" else "動作設定の編集",
+                style = MaterialTheme.typography.headlineMedium
+            )
 
             OutlinedTextField(
                 value = hoursInput,
@@ -104,23 +122,37 @@ fun ConfigEditScreen(
                 isError = hoursInput.isNotEmpty() && !isHoursValid,
                 supportingText = {
                     if (hoursInput.isNotEmpty() && !isHoursValid) {
-                        Text(text = "※誤通報防止のため、24時間以上の値を入力してください。", color = MaterialTheme.colorScheme.error)
+                        Text(
+                            text = "※誤通報防止のため、24時間以上の値を入力してください。",
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Text(text = "送信対象の連絡先を選択（複数選択可）", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = "送信対象の連絡先を選択（複数選択可）",
+                style = MaterialTheme.typography.titleMedium
+            )
 
             if (availableContacts.isEmpty()) {
-                Text(text = "先に「連絡先一覧」画面から緊急連絡先を登録してください。", color = MaterialTheme.colorScheme.error)
+                Text(
+                    text = "先に「連絡先一覧」画面から緊急連絡先を登録してください。",
+                    color = MaterialTheme.colorScheme.error
+                )
             }
 
             // 連絡先選択用のチェックボックス一覧
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.weight(1f)) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.weight(1f)
+            ) {
                 items(availableContacts) { contact ->
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Checkbox(
@@ -134,7 +166,7 @@ fun ConfigEditScreen(
                             }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        val displayText = if(contact.relation.isEmpty())
+                        val displayText = if (contact.relation.isEmpty())
                             contact.name
                         else
                             "${contact.name} (${contact.relation})"
