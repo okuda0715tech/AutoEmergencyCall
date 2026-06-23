@@ -17,6 +17,7 @@ import com.kurodai0715.autoemergencycall.ui.screen.alert_config.ConfigViewModel
 import com.kurodai0715.autoemergencycall.ui.screen.contact_edit.ContactEditScreen
 import com.kurodai0715.autoemergencycall.ui.screen.contact_list.ContactListScreen
 import com.kurodai0715.autoemergencycall.ui.screen.contact_list.ContactViewModel
+import com.kurodai0715.autoemergencycall.ui.screen.developer.DeveloperScreen
 import com.kurodai0715.autoemergencycall.ui.screen.test.TestSmsScreen
 import com.kurodai0715.autoemergencycall.ui.screen.home.Screen as HomeScreen
 
@@ -128,6 +129,12 @@ fun AppNavGraph(
 
                 onChangeTitle(R.string.alert_config_edit_screen_title)
             }
+        }
+
+        composable<Developer> {
+            DeveloperScreen()
+
+            onChangeTitle(R.string.developer_screen_title)
         }
     }
 }

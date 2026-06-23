@@ -36,6 +36,7 @@ import com.kurodai0715.autoemergencycall.R
 import com.kurodai0715.autoemergencycall.ui.navigation.AppNavGraph
 import com.kurodai0715.autoemergencycall.ui.navigation.Config
 import com.kurodai0715.autoemergencycall.ui.navigation.Contact
+import com.kurodai0715.autoemergencycall.ui.navigation.Developer
 import com.kurodai0715.autoemergencycall.ui.navigation.Home
 import com.kurodai0715.autoemergencycall.ui.navigation.NavDestination
 import com.kurodai0715.directdebitmanager.ui.theme.ICON_DEF_SIZE
@@ -163,6 +164,12 @@ fun AppDrawerContent(
             label = { Text(text = stringResource(R.string.alert_config)) },
             selected = currentDest is Config.Root,
             onClick = { debouncedClick { onClickItem(Config.Root) } }
+        )
+
+        NavigationDrawerItem(
+            label = { Text(text = stringResource(R.string.developer)) },
+            selected = currentDest is Developer,
+            onClick = { debouncedClick { onClickItem(Developer) } }
         )
 
         NavigationDrawerItem(

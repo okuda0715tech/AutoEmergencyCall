@@ -41,3 +41,6 @@ sealed interface Config : NavDestination {
     @Serializable
     data class Edit(val configId: String? = null) : Config
 }
+
+@Serializable
+data object Developer : NavDestination
