@@ -73,8 +73,14 @@ fun ContactListScreen(
                                 .clickable { onNavigateToEdit(contact.id) } // タップ時にIDを渡す
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
+                                val displayText = if (contact.relation.isNotBlank()) {
+                                    "${contact.name} (${contact.relation})"
+                                } else {
+                                    contact.name
+                                }
+
                                 Text(
-                                    text = "${contact.name} (${contact.relation})",
+                                    text = displayText,
                                     style = MaterialTheme.typography.titleMedium
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
