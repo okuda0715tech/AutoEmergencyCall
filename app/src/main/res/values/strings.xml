@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AutoEmergencyCall</string>
+    <string name="app_name">安否確認</string>
 
     <!-- ドロワーメニュー -->
     <string name="header_label">メニュー</string>
