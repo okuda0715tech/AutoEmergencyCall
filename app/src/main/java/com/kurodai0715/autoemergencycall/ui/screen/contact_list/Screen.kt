@@ -73,9 +73,15 @@ fun ContactListScreen(
                                 .clickable { onNavigateToEdit(contact.id) } // タップ時にIDを渡す
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
-                                Text(text = "${contact.name} (${contact.relation})", style = MaterialTheme.typography.titleMedium)
+                                Text(
+                                    text = "${contact.name} (${contact.relation})",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text(text = "TEL: ${contact.phoneNumber}", style = MaterialTheme.typography.bodyMedium)
+                                Text(
+                                    text = "TEL: ${contact.phoneNumber}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
                             }
                         }
                     }
