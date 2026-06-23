@@ -205,7 +205,7 @@ fun HomeScreen(
                     Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(text = "⚠️ 警告：アプリの自動停止が有効です", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
+                        Text(text = "警告：アプリの自動停止が有効です", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
                         Text(text = "数ヶ月アプリを開かないと、スマホの制限により緊急SMSが送れなくなります。タップして次の画面で【未使用のアプリを一時停止する】を必ず「オフ」にしてください。", style = MaterialTheme.typography.bodySmall)
                     }
                 }
