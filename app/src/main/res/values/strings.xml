@@ -12,6 +12,7 @@
     <!-- 画面名 -->
     <string name="no_title"> </string>
     <string name="home_screen_title">ホーム</string>
+    <string name="sms_send_test_title">SMS送信テスト</string>
     <string name="contact_list_screen_title">連絡先 一覧</string>
     <string name="contact_edit_screen_title">連絡先 登録/編集</string>
     <string name="alert_config_list_screen_title">動作設定 一覧</string>

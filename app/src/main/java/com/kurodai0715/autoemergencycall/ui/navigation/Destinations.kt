@@ -16,6 +16,9 @@ sealed interface NavDestination
 data object Home : NavDestination
 
 @Serializable
+data object Test : NavDestination
+
+@Serializable
 sealed interface Contact : NavDestination {
     @Serializable
     data object Root : Contact
