@@ -1,4 +1,4 @@
-package com.kurodai0715.autoemergencycall.ui.screen.developer
+package com.kurodai0715.autoemergencycall.ui.screen.developer_only
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

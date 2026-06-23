@@ -17,7 +17,7 @@ import com.kurodai0715.autoemergencycall.ui.screen.alert_config.ConfigViewModel
 import com.kurodai0715.autoemergencycall.ui.screen.contact_edit.ContactEditScreen
 import com.kurodai0715.autoemergencycall.ui.screen.contact_list.ContactListScreen
 import com.kurodai0715.autoemergencycall.ui.screen.contact_list.ContactViewModel
-import com.kurodai0715.autoemergencycall.ui.screen.developer.DeveloperScreen
+import com.kurodai0715.autoemergencycall.ui.screen.developer_only.DeveloperScreen
 import com.kurodai0715.autoemergencycall.ui.screen.sms_test.TestSmsScreen
 
 @Composable

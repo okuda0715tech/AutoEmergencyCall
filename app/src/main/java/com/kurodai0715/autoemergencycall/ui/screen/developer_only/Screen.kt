@@ -1,4 +1,4 @@
-package com.kurodai0715.autoemergencycall.ui.screen.developer
+package com.kurodai0715.autoemergencycall.ui.screen.developer_only
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
