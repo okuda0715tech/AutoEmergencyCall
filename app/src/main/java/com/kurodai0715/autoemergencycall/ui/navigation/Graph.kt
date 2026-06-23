@@ -103,7 +103,8 @@ fun AppNavGraph(
                     viewModel = viewModel,
                     onNavigateToEdit = { id ->
                         navController.navigate(Config.Edit(configId = id))
-                    }
+                    },
+                    onNavigateBack = { navController.popBackStack() },
                 )
 
                 onChangeTitle(R.string.alert_config_list_screen_title)

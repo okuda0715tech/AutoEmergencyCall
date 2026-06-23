@@ -14,18 +14,35 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ConfigListScreen(
     viewModel: ConfigViewModel,
-    onNavigateToEdit: (String?) -> Unit
+    onNavigateToEdit: (String?) -> Unit,
+    onNavigateBack: () -> Unit,
 ) {
     val configs by viewModel.alertConfigs.collectAsState()
     val contacts by viewModel.availableContacts.collectAsState()
 
     Scaffold(
         bottomBar = {
-            Button(
-                onClick = { onNavigateToEdit(null) },
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("新しい動作設定を追加")
+                // 左側：戻るボタン
+                OutlinedButton(
+                    onClick = onNavigateBack,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("戻る")
+                }
+
+                // 右側：新規追加ボタン
+                Button(
+                    onClick = { onNavigateToEdit(null) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("追加")
+                }
             }
         }
     ) { innerPadding ->
