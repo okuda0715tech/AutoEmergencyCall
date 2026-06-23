@@ -17,3 +17,16 @@ data object Home : NavDestination
 
 @Serializable
 data object RegisterContact : NavDestination
+
+@Serializable
+sealed interface Contact : NavDestination {
+    @Serializable
+    data object Root : Contact
+
+    @Serializable
+    data object List : Contact
+
+    @Serializable
+    data class Edit(val contactId: String? = null) : Contact
+}
+

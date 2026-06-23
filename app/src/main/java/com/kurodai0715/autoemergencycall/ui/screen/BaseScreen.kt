@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.kurodai0715.autoemergencycall.R
 import com.kurodai0715.autoemergencycall.ui.navigation.AppNavGraph
+import com.kurodai0715.autoemergencycall.ui.navigation.Contact
 import com.kurodai0715.autoemergencycall.ui.navigation.Home
 import com.kurodai0715.autoemergencycall.ui.navigation.NavDestination
 import com.kurodai0715.directdebitmanager.ui.theme.ICON_DEF_SIZE
@@ -149,6 +150,12 @@ fun AppDrawerContent(
             label = { Text(text = stringResource(R.string.home_screen_title)) },
             selected = currentDest is Home,
             onClick = { debouncedClick { onClickItem(Home) } }
+        )
+
+        NavigationDrawerItem(
+            label = { Text(text = stringResource(R.string.contact)) },
+            selected = currentDest is Contact.Root,
+            onClick = { debouncedClick { onClickItem(Contact.Root) } }
         )
 
         NavigationDrawerItem(
