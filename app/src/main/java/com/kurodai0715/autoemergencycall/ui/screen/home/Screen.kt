@@ -30,20 +30,21 @@ fun HomeScreen(
     onNavigateToContacts: () -> Unit,
     onNavigateToConfigs: () -> Unit,
     onNavigateToTest: () -> Unit,
-    viewModel: HomeViewModel = hiltViewModel() // Hiltによるインジェクション
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
     val scrollState = rememberScrollState()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    // ViewModel から状態を監視
     val isSmsPermissionGranted by viewModel.isSmsPermissionGranted.collectAsState()
     val isAutoRevokeDisabled by viewModel.isAutoRevokeDisabled.collectAsState()
+    val lastActiveTimeText by viewModel.lastActiveTimeText.collectAsState()
+    val lastCheckTimeText by viewModel.lastCheckTimeText.collectAsState()
 
+    var showProminentDisclosureDialog by remember { mutableStateOf(false) }
     var showSettingsGuideDialog by remember { mutableStateOf(false) }
 
-    // 💡 ライフサイクルイベントの購読：ON_RESUMEのタイミングでViewModelへリフレッシュを通知
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
@@ -54,13 +55,10 @@ fun HomeScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    // 権限リクエストランチャー
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        // リクエスト直後も一度状態をリフレッシュ
         viewModel.refreshStatuses(context)
-
         if (!isGranted && activity != null) {
             val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.SEND_SMS)
             if (!showRationale) {
@@ -69,12 +67,61 @@ fun HomeScreen(
         }
     }
 
+    // Google Play審査対策 「目立つ事前開示」ダイアログ
+    if (showProminentDisclosureDialog) {
+        AlertDialog(
+            onDismissRequest = { showProminentDisclosureDialog = false },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                    Text(text = "SMS送信権限の利用について", fontWeight = FontWeight.Bold)
+                }
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(text = "当アプリの核心機能である「孤独死・遭難時の自動緊急通報」を実現するためには、SMS（ショートメッセージ）の送信権限が必要です。")
+
+                    Surface(
+                        color = MaterialTheme.colorScheme.errorContainer,
+                        shape = MaterialTheme.shapes.small,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "【警告】生存確認のタイマーが超過した場合、ユーザーの追加操作を一切必要とせず、アプリが『バックグラウンドで完全自動』で登録された連絡先へ救助要請のSMSを送信します。これにより通話・通信料が発生する場合があります。",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
+                    Text(text = "※お預かりした連絡先情報およびSMS送信機能は、上記の安否確認アラートの送信以外の目的で利用されることは一切ありません。", style = MaterialTheme.typography.bodySmall)
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showProminentDisclosureDialog = false
+                        requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("同意して権限を許可する")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showProminentDisclosureDialog = false }) {
+                    Text("キャンセル")
+                }
+            }
+        )
+    }
+
     // 永久拒否時のエスコートダイアログ
     if (showSettingsGuideDialog) {
         AlertDialog(
             onDismissRequest = { showSettingsGuideDialog = false },
-            title = { Text("権限の設定が必要です") },
-            text = { Text("ボタンがブロックされてしまいました。自動SMS送信を有効にするには、次の画面で【許可】を選んでください。設定画面へ直接移動します。") },
+            title = { Text("権限の再設定が必要です") },
+            text = { Text("ボタンがブロックされてしまいました。自動SMS送信を有効にするには、次の画面で SMS 権限を許可してください。設定画面へ直接移動します。") },
             confirmButton = {
                 Button(
                     onClick = {
@@ -100,40 +147,49 @@ fun HomeScreen(
         Text(text = "自動安否確認システム", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
 
         Text(
-            text = "本アプリは、一人暮らしの高齢者や持病をお持ちの方の万が一の事態を検知するためのアプリです。端末の操作や活動が一定時間検知できない場合に、事前に登録されたご家族や関係者へ自動的に安否確認の連絡を行います。",
+            text = "一人暮らしの高齢者や持病をお持ちの方の万が一の事態を検知し、事前に登録されたご家族へ自動的に安否確認の連絡を行うシステムです。",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         HorizontalDivider()
 
-        // 事前開示カード
+        // 現在の稼働ステータス表示
+        Text(text = "現在の稼働状態", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+
         Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            colors = CardDefaults.cardColors(
+                containerColor = if (isSmsPermissionGranted && isAutoRevokeDisabled)
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                else MaterialTheme.colorScheme.surfaceVariant
+            ),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(text = "⚠️ 重要：SMS送信権限の利用について", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
-                Text(text = "当アプリの核心機能である「孤独死・遭難時の自動緊急通報」を実現するためには、SMS（ショートメッセージ）の送信権限が必要です。", style = MaterialTheme.typography.bodySmall)
-
-                Surface(
-                    color = MaterialTheme.colorScheme.errorContainer,
-                    shape = MaterialTheme.shapes.small,
-                    modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "【警告】生存確認のタイマーが超過した場合、ユーザーの追加操作を一切必要とせず、アプリが『バックグラウンドで完全自動』で設定された連絡先へ救助要請のSMSを送信します。これにより通話・通信料が発生する場合があります。",
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onErrorContainer,
-                        modifier = Modifier.padding(8.dp)
-                    )
+                    Text(text = "📱 最終生存確認（スマホ操作など）", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                    Text(text = lastActiveTimeText, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 }
-                Text(text = "※お預かりした連絡先情報およびSMS送信機能は、上記の安否確認アラートの送信以外の目的で利用されることは一切ありません。", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "🔄 最終システム生存チェック時刻", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                    Text(text = lastCheckTimeText, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                }
             }
         }
 
-        // SMS状態確認カード ＆ タップ処理
+        // SMS状態確認カード
         Card(
             colors = CardDefaults.cardColors(
                 containerColor = if (isSmsPermissionGranted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f)
@@ -149,7 +205,7 @@ fun HomeScreen(
                             showSettingsGuideDialog = true
                         } else {
                             context.getSharedPreferences("prefs", Context.MODE_PRIVATE).edit().putBoolean("has_requested_sms", true).apply()
-                            requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
+                            showProminentDisclosureDialog = true
                         }
                     }
                 }
@@ -163,7 +219,7 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(text = if (isSmsPermissionGranted) "SMS送信権限：許可済み" else "SMS送信権限：未許可（タップして有効化）", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                    Text(text = if (isSmsPermissionGranted) "自動通報システムが有効です。" else "タップして権限を許可しないと、緊急SMSは送信されません。", style = MaterialTheme.typography.bodySmall)
+                    Text(text = if (isSmsPermissionGranted) "自動通報システムが有効です。" else "タップして説明を確認し、機能を有効にしてください。", style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
@@ -176,10 +232,7 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .clickable {
                         val intent = viewModel.createUnusedAppRestrictionsIntent(context)
-                        // 安全にインテントを開く（11環境でのフォールバック等はViewModelが担保）
-                        try {
-                            context.startActivity(intent)
-                        } catch (e: Exception) {
+                        try { context.startActivity(intent) } catch (e: Exception) {
                             val fallback = viewModel.createApplicationDetailsIntent(context)
                             context.startActivity(fallback)
                         }
@@ -190,7 +243,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(text = "警告：アプリの自動停止が有効です", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
-                        Text(text = "数ヶ月アプリを開かないと、スマホの制限により緊急SMSが送れなくなります。タップして次の画面で【未使用のアプリを一時停止する】を必ず「オフ」にしてください。", style = MaterialTheme.typography.bodySmall)
+                        Text(text = "数ヶ月アプリを開かないと、スマホの制限により緊急SMSが送れなくなります。タップして次の画面で【未使用のアプリの権限を削除する】を必ず「オフ」にしてください。", style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
