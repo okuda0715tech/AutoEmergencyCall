@@ -32,7 +32,12 @@ fun AppNavGraph(
         modifier = modifier,
     ) {
         composable<Home> {
-            HomeScreen()
+//            HomeScreen()
+
+            com.kurodai0715.autoemergencycall.ui.screen.home.HomeScreen(
+                onNavigateToContacts = { navController.navigate(Contact.Root) },
+                onNavigateToConfigs = { navController.navigate(Config.Root) }
+            )
 
             onChangeTitle(R.string.home_screen_title)
         }
