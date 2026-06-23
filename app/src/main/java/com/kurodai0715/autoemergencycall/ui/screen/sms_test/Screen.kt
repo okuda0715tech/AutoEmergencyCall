@@ -65,7 +65,7 @@ fun TestSmsScreen(
                     enabled = selectedContact != null,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("テスト送信を実行")
+                    Text("送信する")
                 }
             }
         }
