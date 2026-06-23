@@ -6,8 +6,12 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import android.util.Log
 import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class SafetyCheckUseCase(private val context: Context) {
+class SafetyCheckUseCase @Inject constructor(
+    @param:ApplicationContext private val context: Context
+) {
 
     companion object {
         private const val SELF_CHECK_THRESHOLD = 24 * 60 * 60 * 1000L // 24時間のミリ秒
