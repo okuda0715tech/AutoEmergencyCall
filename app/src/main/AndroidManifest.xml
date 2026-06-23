@@ -9,7 +9,6 @@
     <uses-permission
         android:name="android.permission.SEND_SMS"
         tools:ignore="SmsAndCallLogPolicy" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".AutoEmergencyCallApplication"
