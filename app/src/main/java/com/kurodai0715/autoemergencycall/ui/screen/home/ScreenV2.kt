@@ -35,7 +35,7 @@ import androidx.lifecycle.LifecycleEventObserver
 fun HomeScreen(
     onNavigateToContacts: () -> Unit,
     onNavigateToConfigs: () -> Unit,
-    onNavigateToTest: () -> Unit // 👈 送信テスト画面への遷移
+    onNavigateToTest: () -> Unit,
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
