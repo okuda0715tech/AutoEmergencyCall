@@ -17,8 +17,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun DeveloperScreen(
+    modifier: Modifier = Modifier,
     viewModel: DeveloperViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
