@@ -1,4 +1,4 @@
-package com.kurodai0715.autoemergencycall.ui.screen.test
+package com.kurodai0715.autoemergencycall.ui.screen.sms_test
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

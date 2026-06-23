@@ -18,7 +18,7 @@ import com.kurodai0715.autoemergencycall.ui.screen.contact_edit.ContactEditScree
 import com.kurodai0715.autoemergencycall.ui.screen.contact_list.ContactListScreen
 import com.kurodai0715.autoemergencycall.ui.screen.contact_list.ContactViewModel
 import com.kurodai0715.autoemergencycall.ui.screen.developer.DeveloperScreen
-import com.kurodai0715.autoemergencycall.ui.screen.test.TestSmsScreen
+import com.kurodai0715.autoemergencycall.ui.screen.sms_test.TestSmsScreen
 
 @Composable
 fun AppNavGraph(

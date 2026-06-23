@@ -1,4 +1,4 @@
-package com.kurodai0715.autoemergencycall.ui.screen.test
+package com.kurodai0715.autoemergencycall.ui.screen.sms_test
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
