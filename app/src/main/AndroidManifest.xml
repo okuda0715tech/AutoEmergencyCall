@@ -21,6 +21,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AutoEmergencyCall">
+        <!-- Application 側で書いた Hilt に WorkManager の初期化を有効にする設定 -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
