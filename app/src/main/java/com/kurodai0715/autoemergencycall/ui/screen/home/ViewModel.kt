@@ -11,7 +11,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.PackageManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkManager
 import com.kurodai0715.autoemergencycall.data.SafetyCheckStore // 💡 追加
+import com.kurodai0715.autoemergencycall.domain.SafetyCheckScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +41,9 @@ class HomeViewModel @Inject constructor(
     private val _lastCheckTimeText = MutableStateFlow("--:--")
     val lastCheckTimeText: StateFlow<String> = _lastCheckTimeText.asStateFlow()
 
+    private val _isMonitoringEnabled = MutableStateFlow(true)
+    val isMonitoringEnabled: StateFlow<Boolean> = _isMonitoringEnabled.asStateFlow()
+
     private val timeFormatter = SimpleDateFormat("MM/dd HH:mm", Locale.getDefault())
 
     /**
@@ -65,6 +70,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val safetyData = safetyCheckStore.loadSafetyData()
+
+                _isMonitoringEnabled.value = safetyData.isMonitoringEnabled
 
                 // 生存確認できた最終時刻の反映
                 _lastActiveTimeText.value = safetyData.lastActiveTime?.let {
@@ -108,6 +115,26 @@ class HomeViewModel @Inject constructor(
         } else {
             Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                 data = Uri.fromParts("package", context.packageName, null)
+            }
+        }
+    }
+
+    /**
+     * 監視状態の切り替え.
+     */
+    fun toggleMonitoringStatus(context: Context, enabled: Boolean) {
+        viewModelScope.launch {
+            safetyCheckStore.updateMonitoringStatus(enabled)
+            _isMonitoringEnabled.value = enabled
+
+            // その場で即座にWorkManagerのスケジュールを反映
+            val workManager = WorkManager.getInstance(context)
+            if (enabled) {
+                // 監視の開始
+                SafetyCheckScheduler.setupPeriodicWork(context)
+            } else {
+                // 一時停止時は、登録されているワークを識別名でキャンセル
+                workManager.cancelUniqueWork(SafetyCheckScheduler.UNIQUE_WORK_NAME)
             }
         }
     }

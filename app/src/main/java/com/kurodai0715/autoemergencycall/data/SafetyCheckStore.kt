@@ -21,6 +21,7 @@ class SafetyCheckStore(private val context: Context) {
         val KEY_LAST_CHECK_TIME = longPreferencesKey("last_check_time")
         val KEY_LAST_IS_INCREASED = booleanPreferencesKey("last_is_increased")
         val KEY_LAST_IS_CONNECTED = booleanPreferencesKey("last_is_connected")
+        val KEY_IS_MONITORING_ENABLED = booleanPreferencesKey("is_monitoring_enabled")
     }
 
     // 保存されているデータを一括で取得するデータクラス
@@ -30,6 +31,7 @@ class SafetyCheckStore(private val context: Context) {
         val lastCheckTime: Long?,
         val lastIsIncreased: Boolean?,
         val lastIsConnected: Boolean?,
+        val isMonitoringEnabled: Boolean = true,
     )
 
     suspend fun loadSafetyData(): SafetyData {
@@ -40,6 +42,7 @@ class SafetyCheckStore(private val context: Context) {
             lastCheckTime = preferences[KEY_LAST_CHECK_TIME],
             lastIsIncreased = preferences[KEY_LAST_IS_INCREASED],
             lastIsConnected = preferences[KEY_LAST_IS_CONNECTED],
+            isMonitoringEnabled = preferences[KEY_IS_MONITORING_ENABLED] ?: true
         )
     }
 
@@ -58,6 +61,12 @@ class SafetyCheckStore(private val context: Context) {
             }
             preferences[KEY_LAST_CHECK_TIME] = checkTime
             preferences[KEY_LAST_IS_CONNECTED] = isConnected
+        }
+    }
+
+    suspend fun updateMonitoringStatus(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[KEY_IS_MONITORING_ENABLED] = enabled
         }
     }
 }

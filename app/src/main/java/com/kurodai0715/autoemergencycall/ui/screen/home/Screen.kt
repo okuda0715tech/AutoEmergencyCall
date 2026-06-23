@@ -6,6 +6,7 @@ import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,6 +18,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -49,6 +51,10 @@ fun HomeScreen(
     // 解説ダイアログ表示制御用の状態
     var showActiveTimeInfo by remember { mutableStateOf(false) }
     var showCheckTimeInfo by remember { mutableStateOf(false) }
+
+    val isMonitoringEnabled by viewModel.isMonitoringEnabled.collectAsState()
+    var showStopConfirmDialog by remember { mutableStateOf(false) }
+    var isConsentChecked by remember { mutableStateOf(false) }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -180,6 +186,43 @@ fun HomeScreen(
         )
     }
 
+    if (showStopConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showStopConfirmDialog = false },
+            title = { Text("見守り機能を一時停止しますか？", fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text("見守りを停止すると、万が一の事態が起きてもご家族へ自動連絡（SMS送信）が行われなくなります。入院や旅行など、特別な理由がある場合のみ停止してください。")
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { isConsentChecked = !isConsentChecked }
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(checked = isConsentChecked, onCheckedChange = { isConsentChecked = it })
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("緊急連絡先（家族など）の人に、一時停止する同意がとれています", style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.toggleMonitoringStatus(context, false) // 💡 停止を実行
+                        showStopConfirmDialog = false
+                    },
+                    enabled = isConsentChecked, // 💡 チェックがないと押せない
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) { Text("停止する") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showStopConfirmDialog = false }) { Text("キャンセル") }
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -212,6 +255,63 @@ fun HomeScreen(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                val statusText = if (isMonitoringEnabled) "自動見守り：稼働中" else "自動見守り：一時停止中"
+                val statusColor = if (isMonitoringEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                val guideText = if (isMonitoringEnabled) "（長押しで一時停止）" else "（長押しで再開）"
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .combinedClickable(
+                            onLongClick = {
+                                if (isMonitoringEnabled) {
+                                    isConsentChecked = false
+                                    showStopConfirmDialog = true
+                                } else {
+                                    viewModel.toggleMonitoringStatus(context, true)
+                                }
+                            },
+                            onClick = {}
+                        )
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // 💡 アイコンと文字を横並びにする
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        // 💡 一時停止中（false）のときだけ、黄色の△アイコン（Warning）を表示する
+                        if (!isMonitoringEnabled) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = "一時停止中",
+                                tint = Color(0xFFFBC02D) // 💡 鮮やかで視認性の高い黄色（ゴールド）
+                            )
+                        } else {
+                            // 稼働中は緑や青の「●」などを表示（お好みでIcons.Default.CheckCircle等に変えてもOKです）
+                            Text("●", color = statusColor)
+                        }
+
+                        Text(
+                            text = statusText,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = statusColor
+                        )
+                    }
+
+                    Text(
+                        text = guideText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
                 // 1. 最終活動検知の行
                 Row(
                     modifier = Modifier.fillMaxWidth(),

@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 object SafetyCheckScheduler {
 
     // WorkManager内でこのジョブを一意に識別するためのユニーク名
-    private const val UNIQUE_WORK_NAME = "BatterySafetyCheckWork"
+    const val UNIQUE_WORK_NAME = "BatterySafetyCheckWork"
 
     fun setupPeriodicWork(context: Context) {
         // 1. 定期実行するワークのリクエストを作成
