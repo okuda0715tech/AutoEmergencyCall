@@ -5,6 +5,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.util.Log
+import com.kurodai0715.autoemergencycall.data.ConfigStore
+import com.kurodai0715.autoemergencycall.data.Contact
+import com.kurodai0715.autoemergencycall.data.ContactStore
 import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -12,12 +15,14 @@ import javax.inject.Inject
 class SafetyCheckUseCase @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val store: SafetyCheckStore,
+    private val contactStore: ContactStore,
+    private val configStore: ConfigStore, // TODO AlertConfigStore という名前に後で変更する
     private val smsSender: SmsSender,
 ) {
 
     companion object {
         private const val SELF_CHECK_THRESHOLD = 24 * 60 * 60 * 1000L // 24時間のミリ秒
-        private const val EMERGENCY_SMS_TRIGGER_THRESHOLD = 48 * 60 * 60 * 1000L // 48時間のミリ秒
+        private const val DEFAULT_SMS_THRESHOLD = 48 * 60 * 60 * 1000L // 48時間のミリ秒
     }
 
     // 以前の doWork 内のコアロジックをここに移植
@@ -62,13 +67,45 @@ class SafetyCheckUseCase @Inject constructor(
             isConnected = isConnected,
         )
 
+        val elapsedTime = currentTime - newActiveTime
+
         // タイムリミット（24時間放置）のチェック
-        if (currentTime - newActiveTime >= SELF_CHECK_THRESHOLD) {
+        if (elapsedTime >= SELF_CHECK_THRESHOLD) {
             triggerEmergencyAlert()
         }
 
-        if (currentTime - newActiveTime >= EMERGENCY_SMS_TRIGGER_THRESHOLD) {
-            triggerEmergencySmsSend()
+        // 連絡先データと動作設定データのロード
+        val allContacts = contactStore.loadContacts()
+        val alertConfigs = configStore.loadAlertConfigs()
+
+        if (allContacts.isEmpty()) {
+            Log.w("SafetyCheck", "SMS送信しきい値を超えましたが、連絡先が0件のためSMSを送信できません。")
+            return
+        }
+
+        // SMS送信ロジック（複数設定 vs デフォルト仕様の判定）
+        if (alertConfigs.isEmpty()) {
+            // デフォルト仕様：動作設定が空なら、すべての連絡先に48時間後に送る
+            if (elapsedTime >= DEFAULT_SMS_THRESHOLD) {
+                allContacts.forEach { contact ->
+                    triggerEmergencySmsSend(contact, 48)
+                }
+            }
+        } else {
+            // ユーザー設定仕様：登録された複数の動作設定をループ処理
+            alertConfigs.forEach { config ->
+                val thresholdMillis = config.thresholdHours * 60 * 60 * 1000L
+                if (elapsedTime >= thresholdMillis) {
+                    // この設定の対象になっている連絡先を抽出
+                    val targets = allContacts.filter { contact ->
+                        config.targetContactIds.contains(contact.id)
+                    }
+
+                    targets.forEach { contact ->
+                        triggerEmergencySmsSend(contact, config.thresholdHours)
+                    }
+                }
+            }
         }
     }
 
@@ -99,11 +136,10 @@ class SafetyCheckUseCase @Inject constructor(
         // TODO: ローカルでの緊急警報処理
     }
 
-    private fun triggerEmergencySmsSend() {
-        // TODO: SMS送信処理
+    private fun triggerEmergencySmsSend(contact: Contact, hours: Int) {
         smsSender.sendSms(
-            "09099999999",
-            "テスト"
+            contact.phoneNumber,
+            "${contact.name}さんへの安否確認SMS：端末の活動が${hours}時間検知できませんでした。"
         )
     }
 }

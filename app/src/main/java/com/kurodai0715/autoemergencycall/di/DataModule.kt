@@ -1,6 +1,7 @@
 package com.kurodai0715.autoemergencycall.di
 
 import android.content.Context
+import com.kurodai0715.autoemergencycall.data.ConfigStore
 import com.kurodai0715.autoemergencycall.data.ContactStore
 import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
 import dagger.Module
@@ -28,5 +29,13 @@ object DataModule {
         @ApplicationContext context: Context
     ): ContactStore {
         return ContactStore(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAlertConfigStore(
+        @ApplicationContext context: Context
+    ): ConfigStore {
+        return ConfigStore(context)
     }
 }

@@ -2,6 +2,7 @@ package com.kurodai0715.autoemergencycall.ui.screen.contact_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kurodai0715.autoemergencycall.data.ConfigStore
 import com.kurodai0715.autoemergencycall.data.Contact
 import com.kurodai0715.autoemergencycall.data.ContactStore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ContactViewModel @Inject constructor(
-    private val contactStore: ContactStore
+    private val contactStore: ContactStore,
+    private val configStore: ConfigStore,
 ) : ViewModel() {
 
     private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
@@ -40,19 +42,31 @@ class ContactViewModel @Inject constructor(
     /**
      * 保存（新規追加 または 既存編集）
      */
-    fun saveContact(id: String?, name: String, phoneNumber: String, relation: String, onComplete: () -> Unit) {
+    fun saveContact(
+        id: String?,
+        name: String,
+        phoneNumber: String,
+        relation: String,
+        onComplete: () -> Unit
+    ) {
         viewModelScope.launch {
             val currentList = _contacts.value.toMutableList()
 
             if (id == null) {
                 // 新規追加
-                val newContact = Contact(name = name, phoneNumber = phoneNumber, relation = relation)
+                val newContact =
+                    Contact(name = name, phoneNumber = phoneNumber, relation = relation)
                 currentList.add(newContact)
             } else {
                 // 既存編集（IDが一致する要素を置き換える）
                 val index = currentList.indexOfFirst { it.id == id }
                 if (index != -1) {
-                    currentList[index] = Contact(id = id, name = name, phoneNumber = phoneNumber, relation = relation)
+                    currentList[index] = Contact(
+                        id = id,
+                        name = name,
+                        phoneNumber = phoneNumber,
+                        relation = relation
+                    )
                 }
             }
 
@@ -67,12 +81,30 @@ class ContactViewModel @Inject constructor(
      */
     fun deleteContact(id: String, onComplete: () -> Unit) {
         viewModelScope.launch {
-            // 指定されたID以外の要素でリストを再構成する
-            val updatedList = _contacts.value.filter { it.id != id }
+            deleteContact(id)
 
-            contactStore.saveContacts(updatedList)
+            // 【連動処理】アラート動作設定からもそのIDを消し去る
+            deleteAlertConfig(id)
+
             loadContacts() // リスト更新
             onComplete()   // 完了通知（ダイアログ表示用）
         }
+    }
+
+    private suspend fun deleteAlertConfig(contactId: String) {
+        val currentConfigs = configStore.loadAlertConfigs()
+        val updatedConfigs = currentConfigs.map { config ->
+            config.copy(
+                // 除外したいID以外のリストを構築
+                targetContactIds = config.targetContactIds.filter { it != contactId }
+            )
+        }
+        configStore.saveAlertConfigs(updatedConfigs)
+    }
+
+    private suspend fun deleteContact(id: String) {
+        // 除外したいID以外のリストを構築
+        val updatedList = _contacts.value.filter { it.id != id }
+        contactStore.saveContacts(updatedList)
     }
 }
