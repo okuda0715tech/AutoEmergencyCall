@@ -134,7 +134,11 @@ fun ConfigEditScreen(
                             }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "${contact.name} (${contact.relation})", style = MaterialTheme.typography.bodyLarge)
+                        val displayText = if(contact.relation.isEmpty())
+                            contact.name
+                        else
+                            "${contact.name} (${contact.relation})"
+                        Text(text = displayText, style = MaterialTheme.typography.bodyLarge)
                     }
                 }
             }
