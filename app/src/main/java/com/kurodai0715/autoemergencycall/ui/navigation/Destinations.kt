@@ -27,3 +27,14 @@ sealed interface Contact : NavDestination {
     data class Edit(val contactId: String? = null) : Contact
 }
 
+@Serializable
+sealed interface Config : NavDestination {
+    @Serializable
+    object Root : Config
+
+    @Serializable
+    object List : Config
+
+    @Serializable
+    data class Edit(val configId: String? = null) : Config
+}

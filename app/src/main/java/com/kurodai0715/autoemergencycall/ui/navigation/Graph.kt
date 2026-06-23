@@ -11,6 +11,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.kurodai0715.autoemergencycall.R
+import com.kurodai0715.autoemergencycall.ui.screen.alert_config.ConfigEditScreen
+import com.kurodai0715.autoemergencycall.ui.screen.alert_config.ConfigListScreen
+import com.kurodai0715.autoemergencycall.ui.screen.alert_config.ConfigViewModel
 import com.kurodai0715.autoemergencycall.ui.screen.contact_edit.ContactEditScreen
 import com.kurodai0715.autoemergencycall.ui.screen.contact_list.ContactListScreen
 import com.kurodai0715.autoemergencycall.ui.screen.contact_list.ContactViewModel
@@ -70,6 +73,45 @@ fun AppNavGraph(
                 )
 
                 onChangeTitle(R.string.contact_edit_screen_title)
+            }
+        }
+
+        navigation<Config.Root>(startDestination = Config.List) {
+            composable<Config.List> { backStackEntry ->
+                // 「Contact」のバックスタックエントリーを安全に検索して取得
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry<Config.Root>()
+                }
+                // 親のライフサイクルに紐づいた ViewModel を取得
+                val viewModel: ConfigViewModel = hiltViewModel(parentEntry)
+
+                ConfigListScreen(
+                    viewModel = viewModel,
+                    onNavigateToEdit = { id ->
+                        navController.navigate(Config.Edit(configId = id))
+                    }
+                )
+
+                onChangeTitle(R.string.alert_config_list_screen_title)
+            }
+
+            composable<Config.Edit> { backStackEntry ->
+                val editRoute: Config.Edit = backStackEntry.toRoute()
+
+                // 編集画面でも、全く同じ「Config」の親エントリーを指定して取得
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry<Config.Root>()
+                }
+                // これにより、一覧画面と100%同一のインスタンスが保証される
+                val viewModel: ConfigViewModel = hiltViewModel(parentEntry)
+
+                ConfigEditScreen(
+                    configId = editRoute.configId,
+                    viewModel = viewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+
+                onChangeTitle(R.string.alert_config_edit_screen_title)
             }
         }
     }
