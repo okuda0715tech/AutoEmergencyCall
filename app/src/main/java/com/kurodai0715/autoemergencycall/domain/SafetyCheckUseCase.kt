@@ -63,6 +63,7 @@ class SafetyCheckUseCase @Inject constructor(
         store.updateSafetyData(
             batteryLevel = currentLevel,
             activeTime = newActiveTime,
+            checkTime = currentTime,
             isIncreased = isIncreased,
             isConnected = isConnected,
         )

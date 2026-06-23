@@ -18,6 +18,7 @@ class SafetyCheckStore(private val context: Context) {
     companion object {
         val KEY_LAST_BATTERY = intPreferencesKey("last_battery_level")
         val KEY_LAST_ACTIVE_TIME = longPreferencesKey("last_active_time")
+        val KEY_LAST_CHECK_TIME = longPreferencesKey("last_check_time")
         val KEY_LAST_IS_INCREASED = booleanPreferencesKey("last_is_increased")
         val KEY_LAST_IS_CONNECTED = booleanPreferencesKey("last_is_connected")
     }
@@ -26,6 +27,7 @@ class SafetyCheckStore(private val context: Context) {
     data class SafetyData(
         val lastBatteryLevel: Int?,
         val lastActiveTime: Long?,
+        val lastCheckTime: Long?,
         val lastIsIncreased: Boolean?,
         val lastIsConnected: Boolean?,
     )
@@ -35,6 +37,7 @@ class SafetyCheckStore(private val context: Context) {
         return SafetyData(
             lastBatteryLevel = preferences[KEY_LAST_BATTERY],
             lastActiveTime = preferences[KEY_LAST_ACTIVE_TIME],
+            lastCheckTime = preferences[KEY_LAST_CHECK_TIME],
             lastIsIncreased = preferences[KEY_LAST_IS_INCREASED],
             lastIsConnected = preferences[KEY_LAST_IS_CONNECTED],
         )
@@ -43,6 +46,7 @@ class SafetyCheckStore(private val context: Context) {
     suspend fun updateSafetyData(
         batteryLevel: Int,
         activeTime: Long?,
+        checkTime: Long,
         isIncreased: Boolean,
         isConnected: Boolean,
     ) {
@@ -52,6 +56,7 @@ class SafetyCheckStore(private val context: Context) {
             if (activeTime != null) {
                 preferences[KEY_LAST_ACTIVE_TIME] = activeTime
             }
+            preferences[KEY_LAST_CHECK_TIME] = checkTime
             preferences[KEY_LAST_IS_CONNECTED] = isConnected
         }
     }

@@ -73,7 +73,7 @@ class HomeViewModel @Inject constructor(
 
                 // システムが最後にチェックした時刻（今回は現在の生存チェックデータ上の最新記録として反映）
                 // ※もし定期ジョブ側の実行ログ用Timeを別で保存している場合は、そちらの変数をバインドしてください
-                _lastCheckTimeText.value = safetyData.lastActiveTime?.let {
+                _lastCheckTimeText.value = safetyData.lastCheckTime?.let {
                     timeFormatter.format(Date(it))
                 } ?: "--:--"
 
