@@ -38,7 +38,6 @@ class DeveloperViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = DeveloperUiState.Running
             try {
-                // 💡 ご提示いただいたユースケースのコアロジックを直接叩く
                 safetyCheckUseCase.executeCheck()
                 _uiState.value = DeveloperUiState.Success("executeCheck() の実行に成功しました。")
             } catch (e: Exception) {
