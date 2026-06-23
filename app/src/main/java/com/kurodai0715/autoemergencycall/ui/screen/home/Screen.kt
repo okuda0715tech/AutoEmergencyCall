@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -44,6 +45,10 @@ fun HomeScreen(
 
     var showProminentDisclosureDialog by remember { mutableStateOf(false) }
     var showSettingsGuideDialog by remember { mutableStateOf(false) }
+
+    // 解説ダイアログ表示制御用の状態
+    var showActiveTimeInfo by remember { mutableStateOf(false) }
+    var showCheckTimeInfo by remember { mutableStateOf(false) }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -137,6 +142,44 @@ fun HomeScreen(
         )
     }
 
+    // 「最終生存確認」の定義解説ダイアログ
+    if (showActiveTimeInfo) {
+        AlertDialog(
+            onDismissRequest = { showActiveTimeInfo = false },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Text("最終活動検知とは？", fontWeight = FontWeight.Bold)
+                }
+            },
+            text = {
+                Text("あなたが最後に活動したことをアプリが検知した時刻です。現時点では、以下を検出しています。\n\n・充電の開始と終了\n・バッテリーの増加\n\nこの時刻から一定時間が経過すると、動けなくなっていると判断され、指定した連絡先へSMSが送られます。")
+            },
+            confirmButton = {
+                TextButton(onClick = { showActiveTimeInfo = false }) { Text("閉じる") }
+            }
+        )
+    }
+
+    // 「最終生存チェック」の定義解説ダイアログ
+    if (showCheckTimeInfo) {
+        AlertDialog(
+            onDismissRequest = { showCheckTimeInfo = false },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
+                    Text("見守りチェック実施とは？", fontWeight = FontWeight.Bold)
+                }
+            },
+            text = {
+                Text("アプリの自動見守りシステムが「裏側で正常に動いた」時刻です。通常は約1時間に1回、自動的に実行されます。この時刻が大幅に古い場合は、スマホ側の制限でアプリの監視が止まっている可能性があります。")
+            },
+            confirmButton = {
+                TextButton(onClick = { showCheckTimeInfo = false }) { Text("閉じる") }
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -169,21 +212,59 @@ fun HomeScreen(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                // 1. 最終活動検知の行
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "📱 最終生存確認時刻", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { showActiveTimeInfo = true }
+                    ) {
+                        Text(
+                            text = "📱 最終活動検知",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "説明を表示",
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                     Text(text = lastActiveTimeText, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 }
 
+                // 2. 見守りチェック実施の行
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "🔄 最終生存チェック実施時刻", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { showCheckTimeInfo = true }
+                    ) {
+                        Text(
+                            text = "🔄 見守りチェック実施",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "説明を表示",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                     Text(text = lastCheckTimeText, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
                 }
             }
