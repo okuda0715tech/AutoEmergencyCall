@@ -63,7 +63,8 @@ fun AppNavGraph(
                     viewModel = viewModel,
                     onNavigateToEdit = { id ->
                         navController.navigate(Contact.Edit(contactId = id))
-                    }
+                    },
+                    onNavigateBack = { navController.popBackStack() }
                 )
 
                 onChangeTitle(R.string.contact_list_screen_title)

@@ -16,20 +16,34 @@ fun ContactListScreen(
     viewModel: ContactViewModel,
     // 実際の遷移処理は外側（MainActivity等）で実装するため、IDを渡すラムダを用意
     // 新規追加時は null、編集時は String の ID が入る仕様
-    onNavigateToEdit: (String?) -> Unit
+    onNavigateToEdit: (String?) -> Unit,
+    onNavigateBack: () -> Unit,
 ) {
     val contactList by viewModel.contacts.collectAsState()
 
     Scaffold(
         bottomBar = {
-            // 画面最下部に新規追加ボタンを配置
-            Button(
-                onClick = { onNavigateToEdit(null) }, // 新規なのでnullを渡す
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("新規連絡先を追加")
+                // 左側：戻るボタン
+                OutlinedButton(
+                    onClick = onNavigateBack,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("戻る")
+                }
+
+                // 右側：新規追加ボタン
+                Button(
+                    onClick = { onNavigateToEdit(null) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("追加")
+                }
             }
         }
     ) { innerPadding ->
