@@ -273,24 +273,22 @@ fun HomeScreen(
                             },
                             onClick = {}
                         )
-                        .padding(vertical = 4.dp),
+                        // 💡 変更：縦のパディングを 4.dp から 6.dp に少し広げて押しやすく＆見やすく
+                        .padding(vertical = 6.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // 💡 アイコンと文字を横並びにする
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        // 💡 一時停止中（false）のときだけ、黄色の△アイコン（Warning）を表示する
                         if (!isMonitoringEnabled) {
                             Icon(
                                 imageVector = Icons.Default.Warning,
                                 contentDescription = "一時停止中",
-                                tint = Color(0xFFFBC02D) // 💡 鮮やかで視認性の高い黄色（ゴールド）
+                                tint = Color(0xFFFBC02D)
                             )
                         } else {
-                            // 稼働中は緑や青の「●」などを表示（お好みでIcons.Default.CheckCircle等に変えてもOKです）
                             Text("●", color = statusColor)
                         }
 
@@ -309,8 +307,8 @@ fun HomeScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                // 💡 修正：余計なSpacerを削除し、仕切り線の余白を調整
+                HorizontalDivider(modifier = Modifier.padding(top = 2.dp, bottom = 6.dp))
 
                 // 1. 最終活動検知の行
                 Row(
