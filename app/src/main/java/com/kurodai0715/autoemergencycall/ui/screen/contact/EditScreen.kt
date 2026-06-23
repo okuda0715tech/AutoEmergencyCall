@@ -25,6 +25,10 @@ fun ContactEditScreen(
     var phoneInput by remember { mutableStateOf(existingContact?.phoneNumber ?: "") }
     var relationInput by remember { mutableStateOf(existingContact?.relation ?: "") }
 
+    // 電話番号が半角数字のみで構成されているかチェック
+    // 空文字のときはエラーにしない（未入力は別途保存ボタン側でガード）
+    val isPhoneValid = phoneInput.isEmpty() || phoneInput.all { it.isDigit() }
+
     // ダイアログ制御用の状態
     var showSuccessDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
@@ -87,17 +91,20 @@ fun ContactEditScreen(
                     // 3. 保存ボタン
                     Button(
                         onClick = {
-                            viewModel.saveContact(
-                                id = contactId,
-                                name = nameInput,
-                                phoneNumber = phoneInput,
-                                relation = relationInput
-                            ) {
-                                dialogMessage = if (contactId == null) "連絡先を新規登録しました。" else "連絡先を更新しました。"
-                                showSuccessDialog = true
+                            if (nameInput.isNotBlank() && phoneInput.isNotBlank() && phoneInput.all { it.isDigit() }) {
+                                viewModel.saveContact(
+                                    id = contactId,
+                                    name = nameInput,
+                                    phoneNumber = phoneInput,
+                                    relation = relationInput
+                                ) {
+                                    dialogMessage =
+                                        if (contactId == null) "連絡先を新規登録しました。" else "連絡先を更新しました。"
+                                    showSuccessDialog = true
+                                }
                             }
                         },
-                        enabled = nameInput.isNotBlank() && phoneInput.isNotBlank(),
+                        enabled = nameInput.isNotBlank() && phoneInput.isNotBlank() && isPhoneValid,
                         modifier = Modifier.weight(1f)
                     ) {
                         Text("保存")
@@ -133,13 +140,19 @@ fun ContactEditScreen(
             OutlinedTextField(
                 value = phoneInput,
                 onValueChange = { phoneInput = it },
-                label = { Text("電話番号") },
+                label = { Text("電話番号（ハイフンなし）") },
                 singleLine = true,
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Phone, // 電話番号用キーボード
                     imeAction = ImeAction.Next
                 ),
+                isError = !isPhoneValid,
+                supportingText = {
+                    if (!isPhoneValid) {
+                        Text(text = "※ハイフン「-」やスペースを入れず、数字のみで入力してください。", color = MaterialTheme.colorScheme.error)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             )
 
