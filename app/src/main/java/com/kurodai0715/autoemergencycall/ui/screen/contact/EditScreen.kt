@@ -1,4 +1,4 @@
-package com.kurodai0715.autoemergencycall.ui.screen.contact_edit
+package com.kurodai0715.autoemergencycall.ui.screen.contact
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
