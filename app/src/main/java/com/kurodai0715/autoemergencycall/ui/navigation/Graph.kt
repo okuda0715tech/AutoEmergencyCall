@@ -19,7 +19,6 @@ import com.kurodai0715.autoemergencycall.ui.screen.contact_list.ContactListScree
 import com.kurodai0715.autoemergencycall.ui.screen.contact_list.ContactViewModel
 import com.kurodai0715.autoemergencycall.ui.screen.developer.DeveloperScreen
 import com.kurodai0715.autoemergencycall.ui.screen.test.TestSmsScreen
-import com.kurodai0715.autoemergencycall.ui.screen.home.Screen as HomeScreen
 
 @Composable
 fun AppNavGraph(
@@ -34,8 +33,6 @@ fun AppNavGraph(
         modifier = modifier,
     ) {
         composable<Home> {
-//            HomeScreen()
-
             com.kurodai0715.autoemergencycall.ui.screen.home.HomeScreen(
                 onNavigateToContacts = { navController.navigate(Contact.Root) },
                 onNavigateToConfigs = { navController.navigate(Config.Root) },
