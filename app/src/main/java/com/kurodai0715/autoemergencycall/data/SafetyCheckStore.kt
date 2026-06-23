@@ -24,16 +24,6 @@ class SafetyCheckStore(private val context: Context) {
         val KEY_IS_MONITORING_ENABLED = booleanPreferencesKey("is_monitoring_enabled")
     }
 
-    // 保存されているデータを一括で取得するデータクラス
-    data class SafetyData(
-        val lastBatteryLevel: Int?,
-        val lastActiveTime: Long?,
-        val lastCheckTime: Long?,
-        val lastIsIncreased: Boolean?,
-        val lastIsConnected: Boolean?,
-        val isMonitoringEnabled: Boolean = true,
-    )
-
     suspend fun loadSafetyData(): SafetyData {
         val preferences = context.dataStore.data.first()
         return SafetyData(
