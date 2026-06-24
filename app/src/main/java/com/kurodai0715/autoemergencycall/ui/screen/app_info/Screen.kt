@@ -73,22 +73,6 @@ fun AppInfoScreen() {
                     color = Color.Red,
                     style = MaterialTheme.typography.labelLarge
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = {
-                        // TODO: ここにWorkManagerを即時実行する処理（裏ルート）を呼び出す
-                        Toast.makeText(
-                            context,
-                            "定期実行処理を即時実行しました",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text("【審査用】定期実行を即時実行")
-                }
             }
         }
 
