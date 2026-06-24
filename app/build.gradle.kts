@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -9,7 +11,21 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+// 署名情報ファイルのロード
+val keystorePropertiesFile = File("R:\\Android\\keyproperties\\keystore.properties")
+val keystoreProperties = Properties()
+keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
 android {
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
+
     namespace = "com.kurodai0715.autoemergencycall"
     compileSdk {
         version = release(36)
@@ -27,11 +43,13 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // 上記で定義した署名構成を適用
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
