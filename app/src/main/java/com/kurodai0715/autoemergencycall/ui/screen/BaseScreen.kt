@@ -169,7 +169,7 @@ fun AppDrawerContent(
             selected = false,
             onClick = {
                 debouncedClick {
-                    uriHandler.openUri("https://sites.google.com/view/t-o-app-privacy-policy/version-1-0")
+                    uriHandler.openUri("https://sites.google.com/view/mamorukun/%E3%83%9B%E3%83%BC%E3%83%A0")
                 }
             },
             badge = {
