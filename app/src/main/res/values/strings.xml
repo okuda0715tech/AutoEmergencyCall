@@ -7,6 +7,7 @@
     <string name="contact">連絡先</string>
     <string name="alert_config">動作設定</string>
     <string name="developer">開発者専用</string>
+    <string name="app_info">アプリ情報</string>
     <string name="privacy_policy">プライバシーポリシー</string>
     <string name="open_in_outer_browser_icon_description">外部ブラウザで開く</string>
 
@@ -19,6 +20,7 @@
     <string name="alert_config_list_screen_title">動作設定 一覧</string>
     <string name="alert_config_edit_screen_title">動作設定 登録/編集</string>
     <string name="developer_screen_title">開発者専用</string>
+    <string name="app_info_screen_title">アプリ情報</string>
 
     <!-- 共通 -->
     <string name="menu_icon_description">メニュー</string>

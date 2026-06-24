@@ -34,6 +34,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.kurodai0715.autoemergencycall.BuildConfig
 import com.kurodai0715.autoemergencycall.R
+import com.kurodai0715.autoemergencycall.domain.DebugManager
+import com.kurodai0715.autoemergencycall.ui.navigation.AppInfo
 import com.kurodai0715.autoemergencycall.ui.navigation.AppNavGraph
 import com.kurodai0715.autoemergencycall.ui.navigation.Config
 import com.kurodai0715.autoemergencycall.ui.navigation.Contact
@@ -156,13 +158,19 @@ fun AppDrawerContent(
         )
 
         // 💡 デバッグビルドの場合のみ表示
-        if (BuildConfig.DEBUG) {
+        if (DebugManager.isDebugging) {
             NavigationDrawerItem(
                 label = { Text(text = stringResource(R.string.developer)) },
                 selected = currentDest is Developer,
                 onClick = { debouncedClick { onClickItem(Developer) } }
             )
         }
+
+        NavigationDrawerItem(
+            label = { Text(text = stringResource(R.string.app_info)) },
+            selected = currentDest is AppInfo,
+            onClick = { debouncedClick { onClickItem(AppInfo) } }
+        )
 
         NavigationDrawerItem(
             label = { Text(text = stringResource(R.string.privacy_policy)) },

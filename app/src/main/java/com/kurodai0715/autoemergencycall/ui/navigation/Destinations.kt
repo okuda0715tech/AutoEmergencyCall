@@ -44,3 +44,6 @@ sealed interface Config : NavDestination {
 
 @Serializable
 data object Developer : NavDestination
+
+@Serializable
+data object AppInfo : NavDestination
