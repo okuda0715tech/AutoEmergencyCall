@@ -69,7 +69,7 @@ fun AppInfoScreen() {
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "● 審査用デバッグモード有効化中",
+                    text = "● デバッグモード有効化中",
                     color = Color.Red,
                     style = MaterialTheme.typography.labelLarge
                 )
