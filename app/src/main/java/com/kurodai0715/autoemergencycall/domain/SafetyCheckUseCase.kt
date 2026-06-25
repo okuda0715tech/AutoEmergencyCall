@@ -158,7 +158,7 @@ class SafetyCheckUseCase @Inject constructor(
     private fun triggerEmergencySmsSend(contact: Contact, hours: Int) {
         val messagePrefix = if (DebugManager.isDebugging) "【アプリ動作テスト】\n" else ""
         val displayTime = if (DebugManager.isDebugging)
-            "{$DEBUG_SMS_THRESHOLD}秒間（テストによる時間短縮）"
+            "${DEBUG_SMS_THRESHOLD / 1000}秒間（テストによる時間短縮）"
         else
             "${hours}時間"
         smsSender.sendSms(
