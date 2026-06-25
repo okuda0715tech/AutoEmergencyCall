@@ -48,7 +48,10 @@ fun ContactListScreen(
 
         // 拒否された場合の永久拒否判定ロジックを追加
         if (!isGranted && activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.POST_NOTIFICATIONS)
+            val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(
+                activity,
+                Manifest.permission.POST_NOTIFICATIONS
+            )
 
             // 根拠（Rationale）が表示されない ＝ ユーザーが「今後表示しない」を選択、または完全にブロックしている状態
             if (!showRationale) {
@@ -82,15 +85,23 @@ fun ContactListScreen(
                         showNotificationSettingsGuideDialog = false
                         // ホーム画面と同様に、アプリ詳細設定（システムの設定画面）を開くインテントを実行
                         // （※HomeViewModel内の既存メソッド、または直接インテントを生成してもOKです）
-                        val intent = android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                            data = android.net.Uri.fromParts("package", context.packageName, null)
-                        }
+                        val intent =
+                            android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                .apply {
+                                    data = android.net.Uri.fromParts(
+                                        "package",
+                                        context.packageName,
+                                        null
+                                    )
+                                }
                         context.startActivity(intent)
                     }
                 ) { Text("設定画面を開く") }
             },
             dismissButton = {
-                TextButton(onClick = { showNotificationSettingsGuideDialog = false }) { Text("キャンセル") }
+                TextButton(onClick = {
+                    showNotificationSettingsGuideDialog = false
+                }) { Text("キャンセル") }
             }
         )
     }
@@ -179,20 +190,27 @@ fun ContactListScreen(
                         Button(
                             onClick = {
                                 if (activity != null) {
-                                    val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.POST_NOTIFICATIONS)
-                                    val hasRequestedBefore = context.getSharedPreferences("prefs", Context.MODE_PRIVATE).getBoolean("has_requested_notification", false)
+                                    val showRationale =
+                                        ActivityCompat.shouldShowRequestPermissionRationale(
+                                            activity,
+                                            Manifest.permission.POST_NOTIFICATIONS
+                                        )
+                                    val hasRequestedBefore =
+                                        context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                                            .getBoolean("has_requested_notification", false)
 
                                     // 💡 既に永久拒否されている場合は直接エスコートダイアログを出す
                                     if (!showRationale && hasRequestedBefore) {
                                         showNotificationSettingsGuideDialog = true
                                     } else {
                                         // 初回または1回目拒否の通常フロー（SharedPreferencesにリクエスト実績を記録）
-                                        context.getSharedPreferences("prefs", Context.MODE_PRIVATE).edit {
-                                            putBoolean(
-                                                "has_requested_notification",
-                                                true
-                                            )
-                                        }
+                                        context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                                            .edit {
+                                                putBoolean(
+                                                    "has_requested_notification",
+                                                    true
+                                                )
+                                            }
                                         notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                                     }
                                 }
