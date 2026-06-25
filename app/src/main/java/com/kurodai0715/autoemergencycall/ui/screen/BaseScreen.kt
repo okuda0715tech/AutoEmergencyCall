@@ -157,15 +157,6 @@ fun AppDrawerContent(
             onClick = { debouncedClick { onClickItem(Home) } }
         )
 
-        // 💡 デバッグビルドの場合のみ表示
-        if (DebugManager.isDebugging) {
-            NavigationDrawerItem(
-                label = { Text(text = stringResource(R.string.developer)) },
-                selected = currentDest is Developer,
-                onClick = { debouncedClick { onClickItem(Developer) } }
-            )
-        }
-
         NavigationDrawerItem(
             label = { Text(text = stringResource(R.string.app_info)) },
             selected = currentDest is AppInfo,
@@ -188,6 +179,15 @@ fun AppDrawerContent(
                 )
             }
         )
+
+        // 💡 デバッグビルドの場合のみ表示
+        if (DebugManager.isDebugging) {
+            NavigationDrawerItem(
+                label = { Text(text = stringResource(R.string.developer)) },
+                selected = currentDest is Developer,
+                onClick = { debouncedClick { onClickItem(Developer) } }
+            )
+        }
     }
 }
 
