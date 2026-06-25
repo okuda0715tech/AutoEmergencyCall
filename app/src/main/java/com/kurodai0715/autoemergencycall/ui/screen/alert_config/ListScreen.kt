@@ -52,13 +52,22 @@ fun ConfigListScreen(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
+            // タイトル
             Text(
                 text = "動作・アラート設定",
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 4.dp) // 下の余白を少し調整
             )
 
-            // 💡 デフォルト状態の明示
+            // 説明文
+            Text(
+                text = "活動の最終検知からSMSを自動送信するまでの時間と、その対象となる連絡先を確認・追加できます。",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 16.dp) // リストやカードとの間に余白を作る
+            )
+
+            // デフォルト状態の明示
             if (configs.isEmpty()) {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
@@ -80,6 +89,7 @@ fun ConfigListScreen(
                 }
             }
 
+            // 設定リスト
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxSize()
