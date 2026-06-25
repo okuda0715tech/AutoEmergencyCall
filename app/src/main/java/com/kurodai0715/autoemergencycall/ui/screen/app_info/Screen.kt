@@ -73,12 +73,20 @@ fun AppInfoScreen() {
                     color = Color.Red,
                     style = MaterialTheme.typography.labelLarge
                 )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "誤って有効化してしまった場合は、アプリを一度強制終了するか、下にあるコピープリントを10回タップして、無効化してください。",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
         }
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // コピープリント（5回タップするごとにデバッグモードのONとOFFを切り替え）
+        // コピープリント（10回タップするごとにデバッグモードのONとOFFを切り替え）
         Text(
             text = "© 2026 守るくん Project",
             style = MaterialTheme.typography.bodySmall,
@@ -86,12 +94,12 @@ fun AppInfoScreen() {
             modifier = Modifier
                 .clickable {
                     tapCount++
-                    if (tapCount % 5 == 0) {
+                    if (tapCount % 10 == 0) {
                         // グローバルな mutableState を更新
                         DebugManager.isDebugging = !DebugManager.isDebugging
 
                         val displayText = if (DebugManager.isDebugging)
-                            "デバッグモードが有効になりました（1分/1秒判定）"
+                            "デバッグモードが有効になりました"
                         else
                             "デバッグモードが無効になりました"
                         Toast.makeText(context, displayText, Toast.LENGTH_SHORT).show()

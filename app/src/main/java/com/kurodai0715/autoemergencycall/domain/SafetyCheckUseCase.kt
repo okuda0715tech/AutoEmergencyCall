@@ -23,6 +23,7 @@ class SafetyCheckUseCase @Inject constructor(
     companion object {
         private const val SELF_CHECK_THRESHOLD = 24 * 60 * 60 * 1000L // 24時間のミリ秒
         private const val DEFAULT_SMS_THRESHOLD = 48 * 60 * 60 * 1000L // 48時間のミリ秒
+        private const val DEBUG_SMS_THRESHOLD = 1 * 1000L // 1秒のミリ秒
     }
 
     // 以前の doWork 内のコアロジックをここに移植
@@ -70,8 +71,11 @@ class SafetyCheckUseCase @Inject constructor(
 
         val elapsedTime = currentTime - newActiveTime
 
+        val selfCheckThreshold =
+            if (DebugManager.isDebugging) DEBUG_SMS_THRESHOLD else SELF_CHECK_THRESHOLD
+
         // タイムリミット（24時間放置）のチェック
-        if (elapsedTime >= SELF_CHECK_THRESHOLD) {
+        if (elapsedTime >= selfCheckThreshold) {
             triggerEmergencyAlert()
         }
 
@@ -90,7 +94,13 @@ class SafetyCheckUseCase @Inject constructor(
         // SMS送信ロジック（複数設定 vs デフォルト仕様の判定）
         if (alertConfigs.isEmpty()) {
             // デフォルト仕様：動作設定が空なら、すべての連絡先に48時間後に送る
-            if (elapsedTime >= DEFAULT_SMS_THRESHOLD) {
+            // ただし、デバッグモードの場合は1秒後に送る
+            val defaultSmsThreshold = if (DebugManager.isDebugging) {
+                DEBUG_SMS_THRESHOLD
+            } else {
+                DEFAULT_SMS_THRESHOLD
+            }
+            if (elapsedTime >= defaultSmsThreshold) {
                 allContacts.forEach { contact ->
                     triggerEmergencySmsSend(contact, 48)
                 }
@@ -98,7 +108,12 @@ class SafetyCheckUseCase @Inject constructor(
         } else {
             // ユーザー設定仕様：登録された複数の動作設定をループ処理
             alertConfigs.forEach { config ->
-                val thresholdMillis = config.thresholdHours * 60 * 60 * 1000L
+                // デバッグモードならユーザー設定を無視して 1秒（DEBUG_SMS_THRESHOLD）にする
+                val thresholdMillis = if (DebugManager.isDebugging) {
+                    DEBUG_SMS_THRESHOLD
+                } else {
+                    config.thresholdHours * 60 * 60 * 1000L
+                }
                 if (elapsedTime >= thresholdMillis) {
                     // この設定の対象になっている連絡先を抽出
                     val targets = allContacts.filter { contact ->
@@ -141,9 +156,14 @@ class SafetyCheckUseCase @Inject constructor(
     }
 
     private fun triggerEmergencySmsSend(contact: Contact, hours: Int) {
+        val messagePrefix = if (DebugManager.isDebugging) "【アプリ動作テスト】\n" else ""
+        val displayTime = if (DebugManager.isDebugging)
+            "{$DEBUG_SMS_THRESHOLD}秒間（テストによる時間短縮）"
+        else
+            "${hours}時間"
         smsSender.sendSms(
             contact.phoneNumber,
-            message = "${contact.name}さんへの安否確認SMS：端末の活動が${hours}時間検知できませんでした。",
+            message = "$messagePrefix${contact.name}さんへの安否確認SMS：端末の活動が${displayTime}検知できませんでした。",
             showNotification = true,
             targetName = contact.name,
         )
