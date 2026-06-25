@@ -80,7 +80,10 @@ class SafetyCheckUseCase @Inject constructor(
         val alertConfigs = configStore.loadAlertConfigs()
 
         if (allContacts.isEmpty()) {
-            Log.w("SafetyCheck", "SMS送信しきい値を超えましたが、連絡先が0件のためSMSを送信できません。")
+            Log.w(
+                "SafetyCheck",
+                "SMS送信しきい値を超えましたが、連絡先が0件のためSMSを送信できません。"
+            )
             return
         }
 
@@ -140,7 +143,9 @@ class SafetyCheckUseCase @Inject constructor(
     private fun triggerEmergencySmsSend(contact: Contact, hours: Int) {
         smsSender.sendSms(
             contact.phoneNumber,
-            "${contact.name}さんへの安否確認SMS：端末の活動が${hours}時間検知できませんでした。"
+            message = "${contact.name}さんへの安否確認SMS：端末の活動が${hours}時間検知できませんでした。",
+            showNotification = true,
+            targetName = contact.name,
         )
     }
 }
