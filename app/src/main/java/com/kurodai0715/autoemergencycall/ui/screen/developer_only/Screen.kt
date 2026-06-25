@@ -63,7 +63,7 @@ fun DeveloperScreen(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "本画面の機能はデバッグ専用です。強制実行によってDataStoreのステータスが書き換わったり、条件を満たしている場合は登録された連絡先へ「実際にSMSが送信」されます。パケット代や送信先に十分注意してください。",
+                    text = "本画面の機能はデバッグ専用です。\n\n* 以下のボタンを押すと見守りチェック処理の強制実行によってDataStoreのステータスが書き換わります。\n* SMSは実際には送信されなくなり、SMS送信済みの通知のみが表示されます。\n* SMSを送信するかどうかの閾値は1秒に設定されます。\n* WorkManagerの定期実行は通常通り動き続けますが、SMS送信とその判定の閾値は上記の通りです。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onErrorContainer
                 )
