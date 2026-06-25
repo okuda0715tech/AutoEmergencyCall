@@ -1,6 +1,7 @@
 package com.kurodai0715.autoemergencycall.ui.screen.contact
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -11,14 +12,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.content.edit
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 
 @Composable
 fun ContactListScreen(
@@ -27,10 +29,15 @@ fun ContactListScreen(
     onNavigateBack: () -> Unit,
 ) {
     val context = LocalContext.current
+    val activity = context as? Activity
     val contactList by viewModel.contacts.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     // ViewModel から通知権限の状態を監視
     val isNotificationPermissionGranted by viewModel.isNotificationPermissionGranted.collectAsState()
+
+    // 通知用の設定案内ダイアログの表示管理フラグ
+    var showNotificationSettingsGuideDialog by remember { mutableStateOf(false) }
 
     // 権限リクエスト用のランチャー
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
@@ -38,11 +45,54 @@ fun ContactListScreen(
     ) { isGranted ->
         // ダイアログの結果を受けて ViewModel の状態を更新
         viewModel.checkNotificationPermission(context)
+
+        // 拒否された場合の永久拒否判定ロジックを追加
+        if (!isGranted && activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.POST_NOTIFICATIONS)
+
+            // 根拠（Rationale）が表示されない ＝ ユーザーが「今後表示しない」を選択、または完全にブロックしている状態
+            if (!showRationale) {
+                showNotificationSettingsGuideDialog = true
+            }
+        }
     }
 
-    // 画面表示時に現在の権限状態を一度チェックする
-    LaunchedEffect(Unit) {
-        viewModel.checkNotificationPermission(context)
+    // 【修正】LaunchedEffect(Unit) を削除し、ON_RESUME を監視するこちらに差し替えます
+    // これにより、設定画面からアプリのこの画面に戻ってきた瞬間（ON_RESUME）に自動で再チェックが走ります
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.checkNotificationPermission(context)
+                viewModel.loadContacts() // ついでに連絡先リストも最新にリフレッシュしておくと安全です
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    // 通知用の永久拒否エスコートダイアログ
+    if (showNotificationSettingsGuideDialog) {
+        AlertDialog(
+            onDismissRequest = { showNotificationSettingsGuideDialog = false },
+            title = { Text("通知権限の再設定が必要です") },
+            text = { Text("通知機能がブロックされているため、アプリから権限をリクエストできません。送信完了通知を受け取るには、次の設定画面で『通知の許可』をオンにしてください。") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showNotificationSettingsGuideDialog = false
+                        // ホーム画面と同様に、アプリ詳細設定（システムの設定画面）を開くインテントを実行
+                        // （※HomeViewModel内の既存メソッド、または直接インテントを生成してもOKです）
+                        val intent = android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = android.net.Uri.fromParts("package", context.packageName, null)
+                        }
+                        context.startActivity(intent)
+                    }
+                ) { Text("設定画面を開く") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showNotificationSettingsGuideDialog = false }) { Text("キャンセル") }
+            }
+        )
     }
 
     Scaffold(
@@ -128,7 +178,24 @@ fun ContactListScreen(
                         Spacer(modifier = Modifier.height(12.dp))
                         Button(
                             onClick = {
-                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                if (activity != null) {
+                                    val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.POST_NOTIFICATIONS)
+                                    val hasRequestedBefore = context.getSharedPreferences("prefs", Context.MODE_PRIVATE).getBoolean("has_requested_notification", false)
+
+                                    // 💡 既に永久拒否されている場合は直接エスコートダイアログを出す
+                                    if (!showRationale && hasRequestedBefore) {
+                                        showNotificationSettingsGuideDialog = true
+                                    } else {
+                                        // 初回または1回目拒否の通常フロー（SharedPreferencesにリクエスト実績を記録）
+                                        context.getSharedPreferences("prefs", Context.MODE_PRIVATE).edit {
+                                            putBoolean(
+                                                "has_requested_notification",
+                                                true
+                                            )
+                                        }
+                                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                    }
+                                }
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.error
@@ -174,7 +241,8 @@ fun ContactListScreen(
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "TEL: ${contact.phoneNumber}",
-                                    style = MaterialTheme.typography.bodyMedium
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                             }
                         }
