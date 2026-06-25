@@ -17,6 +17,7 @@ import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
 import com.kurodai0715.autoemergencycall.domain.SafetyCheckScheduler
 import com.kurodai0715.autoemergencycall.ui.screen.AppBaseScreen
 import com.kurodai0715.autoemergencycall.ui.theme.AutoEmergencyCallTheme
+import com.kurodai0715.autoemergencycall.util.NotificationHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -30,6 +31,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 通知を出す前に、必ず最優先でチャンネルを作成しておく
+        NotificationHelper.createNotificationChannel(this)
 
         manageSafetyCheckExecution()
 
