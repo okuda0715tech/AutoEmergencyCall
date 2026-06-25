@@ -2,6 +2,7 @@ package com.kurodai0715.autoemergencycall.domain
 
 import android.content.Context
 import android.telephony.SmsManager
+import android.util.Log
 import com.kurodai0715.autoemergencycall.util.NotificationHelper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -19,13 +20,18 @@ class SmsSenderImpl @Inject constructor(
         val smsManager =
             context.getSystemService(SmsManager::class.java)
 
-        smsManager?.sendTextMessage(
-            phoneNumber,
-            null,
-            message,
-            null,
-            null
-        )
+        // デバッグモードの場合は SMS を送信しない
+        if (DebugManager.isDebugging) {
+            Log.i("SmsSender", "SMS送信をスキップします。")
+        } else {
+            smsManager?.sendTextMessage(
+                phoneNumber,
+                null,
+                message,
+                null,
+                null
+            )
+        }
 
         if (showNotification) {
             // 送信直後に通知を表示
