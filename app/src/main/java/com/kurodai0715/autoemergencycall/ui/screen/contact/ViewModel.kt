@@ -1,5 +1,10 @@
 package com.kurodai0715.autoemergencycall.ui.screen.contact
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kurodai0715.autoemergencycall.data.ConfigStore
@@ -21,8 +26,26 @@ class ContactViewModel @Inject constructor(
     private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
     val contacts: StateFlow<List<Contact>> = _contacts.asStateFlow()
 
+    // 通知権限の状態を管理するStateFlow
+    // チェックが走る前の初期値として、一旦true（案内を出さない）にしておきます
+    private val _isNotificationPermissionGranted = MutableStateFlow(true)
+    val isNotificationPermissionGranted: StateFlow<Boolean> = _isNotificationPermissionGranted.asStateFlow()
+
     init {
         loadContacts()
+    }
+
+    // 通知権限の状態をチェックする関数
+    fun checkNotificationPermission(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            _isNotificationPermissionGranted.value = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            // Android 12(API 32)以下はインストール時点で許可されているため常にtrue
+            _isNotificationPermissionGranted.value = true
+        }
     }
 
     fun loadContacts() {
