@@ -43,7 +43,7 @@ object NotificationHelper {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_info) // 必要に応じてアプリアイコンに差し替えてください
             .setContentTitle("安否確認SMSを送信しました")
-            .setContentText("${targetName}宛てに緊急SMSを送信しました。")
+            .setContentText("${targetName}さん宛てに緊急SMSを送信しました。")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
 
