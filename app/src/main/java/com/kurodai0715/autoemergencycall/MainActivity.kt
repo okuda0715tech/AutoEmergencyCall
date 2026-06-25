@@ -43,20 +43,8 @@ class MainActivity : ComponentActivity() {
 
     private fun manageSafetyCheckExecution() {
         lifecycleScope.launch {
-            // 起動時にデータストアから今の状態を1回読み出す
-            val safetyData = safetyCheckStore.loadSafetyData()
-
-            if (safetyData.isMonitoringEnabled) {
-                // ✅ 見守り有効なら、WorkManager登録処理を実行
-                // アプリ起動時に安否確認のスケジュールを登録（または維持）します。
-                // applicationContext を渡すことで、メモリリークを防ぎ安全に初期化できます。
-                SafetyCheckScheduler.setupPeriodicWork(applicationContext)
-            } else {
-                // 🛑 一時停止中なら登録せず、既存のワークを念のためキャンセル
-                WorkManager.getInstance(applicationContext).cancelUniqueWork(
-                    SafetyCheckScheduler.UNIQUE_WORK_NAME
-                )
-            }
+            // スケジューラー側が内部で有効/無効を判定して適切に処理するため、呼び出すだけで安全です。
+            SafetyCheckScheduler.setupPeriodicWork(applicationContext, safetyCheckStore)
         }
     }
 }

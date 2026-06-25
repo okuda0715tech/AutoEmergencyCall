@@ -127,15 +127,8 @@ class HomeViewModel @Inject constructor(
             safetyCheckStore.updateMonitoringStatus(enabled)
             _isMonitoringEnabled.value = enabled
 
-            // その場で即座にWorkManagerのスケジュールを反映
-            val workManager = WorkManager.getInstance(context)
-            if (enabled) {
-                // 監視の開始
-                SafetyCheckScheduler.setupPeriodicWork(context)
-            } else {
-                // 一時停止時は、登録されているワークを識別名でキャンセル
-                workManager.cancelUniqueWork(SafetyCheckScheduler.UNIQUE_WORK_NAME)
-            }
+            // 内部で「有効なら登録、無効なら既存ワークをキャンセル」が自動実行されます
+            SafetyCheckScheduler.setupPeriodicWork(context, safetyCheckStore)
         }
     }
 }
