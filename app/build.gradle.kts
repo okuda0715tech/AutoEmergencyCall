@@ -11,18 +11,34 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
-// 署名情報ファイルのロード
+// 署名情報ファイルのパス
 val keystorePropertiesFile = File("R:\\Android\\keyproperties\\keystore.properties")
 val keystoreProperties = Properties()
-keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+// ファイルが存在する場合
+if (keystorePropertiesFile.exists()) {
+    // 署名情報を読み込む
+    keystorePropertiesFile.inputStream().use { stream ->
+        keystoreProperties.load(stream)
+    }
+}
 
 android {
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = file(keystoreProperties["storeFile"] as String)
-            storePassword = keystoreProperties["storePassword"] as String
+            // ファイルがある場合のみ値をセットし、ない場合はダミーかdebug用を割り当てる
+            if (keystorePropertiesFile.exists()) {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+            } else {
+                // 他の人がクローンした時は、とりあえずdebug用の署名などで代用してエラーを防ぐ
+                val debugConfig = signingConfigs.getByName("debug")
+                keyAlias = debugConfig.keyAlias
+                keyPassword = debugConfig.keyPassword
+                storeFile = debugConfig.storeFile
+                storePassword = debugConfig.storePassword
+            }
         }
     }
 
