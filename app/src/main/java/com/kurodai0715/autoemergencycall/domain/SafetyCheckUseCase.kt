@@ -146,9 +146,13 @@ class SafetyCheckUseCase @Inject constructor(
     }
 
     private fun getIsConnected(batteryStatus: Intent?): Boolean {
-        val status = batteryStatus?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
-        return status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                status == BatteryManager.BATTERY_STATUS_FULL
+        val plugStatus = batteryStatus?.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) ?: -1
+
+        // ACコンセント、USB、またはワイヤレス充電のいずれかに接続されているか。
+        // 充電器だけでなく、USBメモリやワイヤレス機器の物理的な接続変化をすべてキャッチする。
+        return plugStatus == BatteryManager.BATTERY_PLUGGED_AC ||
+                plugStatus == BatteryManager.BATTERY_PLUGGED_USB ||
+                plugStatus == BatteryManager.BATTERY_PLUGGED_WIRELESS
     }
 
     private fun triggerEmergencyAlert() {
