@@ -1,14 +1,10 @@
 package com.kurodai0715.autoemergencycall.domain
 
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.os.BatteryManager
 import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
