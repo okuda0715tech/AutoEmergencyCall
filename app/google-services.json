@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1015387968645",
+    "project_id": "auto-emergency-call",
+    "storage_bucket": "auto-emergency-call.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1015387968645:android:3b58f24279d16f983a85ec",
+        "android_client_info": {
+          "package_name": "com.kurodai0715.autoemergencycall"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKqPU2YXQCvAWauTWHUXz9g2stXSoRf1E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
