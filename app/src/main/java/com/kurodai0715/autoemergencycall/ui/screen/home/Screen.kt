@@ -423,16 +423,20 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    // 💡 テキストとインラインアイコンの位置を定義
+                    val infoIcon = "info_icon"
+                    // テキストとインラインアイコンの位置を定義。
+                    // Annotated とは、装飾されたという意味。
+                    // buildAnnotatedString は StringBuilder の装飾有り版。
                     val annotatedString = buildAnnotatedString {
                         append(stringResource(R.string.home_label_active_time))
                         append(" ") // テキストとアイコンの間にわずかな隙間を入れる
-                        appendInlineContent("info_icon", "[info]")
+                        appendInlineContent(infoIcon, "[info]")
                     }
 
                     // アイコンの見た目とサイズを定義
                     val inlineContent = mapOf(
-                        "info_icon" to InlineTextContent(
+                        infoIcon to InlineTextContent(
+                            // 埋め込みたい場所に確保する空間のサイズ（Placeholder）を決める
                             Placeholder(
                                 width = 20.sp, // 文字サイズに連動するようspで指定
                                 height = 20.sp,
@@ -475,16 +479,17 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    // 💡 Rowを廃止し、クリック処理などを通常のBoxやTextのModifierに移動します
+                    val infoIcon = "info_icon"
+
                     val annotatedString = buildAnnotatedString {
                         append(stringResource(R.string.home_label_check_time))
                         append(" ") // テキストとアイコンの間にわずかな隙間を入れる
-                        appendInlineContent("info_icon", "[info]") // アイコンを差し込む位置の目印
+                        appendInlineContent(infoIcon, "[info]") // アイコンを差し込む位置の目印
                     }
 
                     // アイコンの見た目とサイズを定義
                     val inlineContent = mapOf(
-                        "info_icon" to InlineTextContent(
+                        infoIcon to InlineTextContent(
                             // テキストの大きさに合わせてアイコンのサイズ（Placeholder）を決める
                             Placeholder(
                                 width = 20.sp, // 文字サイズ（sp）に連動させると最大化時も綺麗です
