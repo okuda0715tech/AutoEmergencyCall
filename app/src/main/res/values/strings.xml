@@ -45,7 +45,7 @@
     <string name="stop_confirm_dialog_confirm">停止する</string>
 
     <string name="home_title">自動安否確認システム</string>
-    <string name="home_description">一人暮らしの方の万が一の事態を検知し、事前に登録されたご家族やご近所の方へ自動的に安否確認の連絡を行うアプリです。</string>
+    <string name="home_description">一人暮らしの方の万が一の事態を検知し、事前に登録されたご家族やご近所の方へ自動的に安否確認要請の連絡を行うアプリです。</string>
     <string name="home_section_status">現在の稼働状態</string>
 
     <string name="home_status_active">自動見守り：稼働中</string>
