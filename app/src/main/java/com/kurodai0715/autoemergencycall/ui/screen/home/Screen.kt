@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -357,7 +358,7 @@ fun HomeScreen(
                         R.string.home_guide_to_resume
                     )
 
-                Row(
+                FlowRow(
                     modifier = Modifier
                         .fillMaxWidth()
                         .combinedClickable(
@@ -372,10 +373,13 @@ fun HomeScreen(
                             onClick = {}
                         )
                         .padding(vertical = 6.dp),
+                    // アイテムとアイテムの間に均等なスペースを配置する
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // 左側のステータス（アイコン＋テキスト）
                     Row(
+                        // FlowRow 内で各アイテムの高さが異なる場合に、アイテムを垂直方向で中央寄せする
+                        modifier = Modifier.align(Alignment.CenterVertically),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
@@ -398,9 +402,11 @@ fun HomeScreen(
                     }
 
                     Text(
+                        // FlowRow 内で各アイテムの高さが異なる場合に、アイテムを垂直方向で中央寄せする
+                        modifier = Modifier.align(Alignment.CenterVertically),
                         text = guideText,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
