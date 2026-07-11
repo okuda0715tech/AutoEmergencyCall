@@ -16,9 +16,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -49,8 +50,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -413,31 +418,50 @@ fun HomeScreen(
                 HorizontalDivider(modifier = Modifier.padding(top = 2.dp, bottom = 6.dp))
 
                 // 1. 最終活動検知の行
-                Row(
+                FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { showActiveTimeInfo = true }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.home_label_active_time),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Medium
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = stringResource(R.string.home_content_description_info),
-                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
-                            modifier = Modifier.size(18.dp)
-                        )
+                    // 💡 テキストとインラインアイコンの位置を定義
+                    val annotatedString = buildAnnotatedString {
+                        append(stringResource(R.string.home_label_active_time))
+                        append(" ") // テキストとアイコンの間にわずかな隙間を入れる
+                        appendInlineContent("info_icon", "[info]")
                     }
+
+                    // アイコンの見た目とサイズを定義
+                    val inlineContent = mapOf(
+                        "info_icon" to InlineTextContent(
+                            Placeholder(
+                                width = 20.sp, // 文字サイズに連動するようspで指定
+                                height = 20.sp,
+                                placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = stringResource(R.string.home_content_description_info),
+                                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f), // 💡 active側のカラーを指定
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    )
+
+                    // 左側：テキスト＋文末アイコン
                     Text(
+                        text = annotatedString,
+                        inlineContent = inlineContent,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier
+                            .clickable { showActiveTimeInfo = true }
+                            .align(Alignment.CenterVertically)
+                    )
+
+                    // 右側：時刻テキスト
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterVertically),
                         text = lastActiveTimeText,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
@@ -446,31 +470,51 @@ fun HomeScreen(
                 }
 
                 // 2. 見守りチェック実施の行
-                Row(
+                FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { showCheckTimeInfo = true }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.home_label_check_time),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Medium
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = stringResource(R.string.home_content_description_info),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                            modifier = Modifier.size(18.dp)
-                        )
+                    // 💡 Rowを廃止し、クリック処理などを通常のBoxやTextのModifierに移動します
+                    val annotatedString = buildAnnotatedString {
+                        append(stringResource(R.string.home_label_check_time))
+                        append(" ") // テキストとアイコンの間にわずかな隙間を入れる
+                        appendInlineContent("info_icon", "[info]") // アイコンを差し込む位置の目印
                     }
+
+                    // アイコンの見た目とサイズを定義
+                    val inlineContent = mapOf(
+                        "info_icon" to InlineTextContent(
+                            // テキストの大きさに合わせてアイコンのサイズ（Placeholder）を決める
+                            Placeholder(
+                                width = 20.sp, // 文字サイズ（sp）に連動させると最大化時も綺麗です
+                                height = 20.sp,
+                                placeholderVerticalAlign = PlaceholderVerticalAlign.Center // 垂直中央揃え
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = stringResource(R.string.home_content_description_info),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                modifier = Modifier.fillMaxSize() // Placeholderのサイズいっぱいに広げる
+                            )
+                        }
+                    )
+
+                    // 左側：テキスト＋文末アイコン
                     Text(
+                        text = annotatedString,
+                        inlineContent = inlineContent,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier
+                            .clickable { showCheckTimeInfo = true }
+                            .align(Alignment.CenterVertically)
+                    )
+
+                    // 右側：時刻テキスト
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterVertically),
                         text = lastCheckTimeText,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold
