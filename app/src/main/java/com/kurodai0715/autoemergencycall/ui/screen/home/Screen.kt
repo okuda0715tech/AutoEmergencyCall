@@ -100,7 +100,10 @@ fun HomeScreen(
     ) { isGranted ->
         viewModel.refreshStatuses(context)
         if (!isGranted && activity != null) {
-            val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.SEND_SMS)
+            val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(
+                activity,
+                Manifest.permission.SEND_SMS
+            )
             if (!showRationale) {
                 showSettingsGuideDialog = true
             }
@@ -112,9 +115,19 @@ fun HomeScreen(
         AlertDialog(
             onDismissRequest = { showProminentDisclosureDialog = false },
             title = {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
-                    Text(text = stringResource(R.string.sms_permission_dialog_title), fontWeight = FontWeight.Bold)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                    Text(
+                        text = stringResource(R.string.sms_permission_dialog_title),
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             },
             text = {
@@ -134,7 +147,10 @@ fun HomeScreen(
                             modifier = Modifier.padding(12.dp)
                         )
                     }
-                    Text(text = stringResource(R.string.sms_permission_dialog_privacy_note), style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        text = stringResource(R.string.sms_permission_dialog_privacy_note),
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             },
             confirmButton = {
@@ -172,7 +188,9 @@ fun HomeScreen(
                 ) { Text(stringResource(R.string.settings_guide_dialog_confirm)) }
             },
             dismissButton = {
-                TextButton(onClick = { showSettingsGuideDialog = false }) { Text(stringResource(R.string.common_cancel)) }
+                TextButton(onClick = {
+                    showSettingsGuideDialog = false
+                }) { Text(stringResource(R.string.common_cancel)) }
             }
         )
     }
@@ -182,16 +200,28 @@ fun HomeScreen(
         AlertDialog(
             onDismissRequest = { showActiveTimeInfo = false },
             title = {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Text(stringResource(R.string.active_time_info_title), fontWeight = FontWeight.Bold)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Info,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        stringResource(R.string.active_time_info_title),
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             },
             text = {
                 Text(stringResource(R.string.active_time_info_text))
             },
             confirmButton = {
-                TextButton(onClick = { showActiveTimeInfo = false }) { Text(stringResource(R.string.common_close)) }
+                TextButton(onClick = {
+                    showActiveTimeInfo = false
+                }) { Text(stringResource(R.string.common_close)) }
             }
         )
     }
@@ -201,16 +231,28 @@ fun HomeScreen(
         AlertDialog(
             onDismissRequest = { showCheckTimeInfo = false },
             title = {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
-                    Text(stringResource(R.string.check_time_info_title), fontWeight = FontWeight.Bold)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Info,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                    Text(
+                        stringResource(R.string.check_time_info_title),
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             },
             text = {
                 Text(stringResource(R.string.check_time_info_text))
             },
             confirmButton = {
-                TextButton(onClick = { showCheckTimeInfo = false }) { Text(stringResource(R.string.common_close)) }
+                TextButton(onClick = {
+                    showCheckTimeInfo = false
+                }) { Text(stringResource(R.string.common_close)) }
             }
         )
     }
@@ -218,7 +260,12 @@ fun HomeScreen(
     if (showStopConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showStopConfirmDialog = false },
-            title = { Text(stringResource(R.string.stop_confirm_dialog_title), fontWeight = FontWeight.Bold) },
+            title = {
+                Text(
+                    stringResource(R.string.stop_confirm_dialog_title),
+                    fontWeight = FontWeight.Bold
+                )
+            },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(stringResource(R.string.stop_confirm_dialog_text))
@@ -230,9 +277,14 @@ fun HomeScreen(
                             .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Checkbox(checked = isConsentChecked, onCheckedChange = { isConsentChecked = it })
+                        Checkbox(
+                            checked = isConsentChecked,
+                            onCheckedChange = { isConsentChecked = it })
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(R.string.stop_confirm_dialog_consent), style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            stringResource(R.string.stop_confirm_dialog_consent),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
             },
@@ -247,7 +299,9 @@ fun HomeScreen(
                 ) { Text(stringResource(R.string.stop_confirm_dialog_confirm)) }
             },
             dismissButton = {
-                TextButton(onClick = { showStopConfirmDialog = false }) { Text(stringResource(R.string.common_cancel)) }
+                TextButton(onClick = {
+                    showStopConfirmDialog = false
+                }) { Text(stringResource(R.string.common_cancel)) }
             }
         )
     }
@@ -259,7 +313,11 @@ fun HomeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = stringResource(R.string.home_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text(
+            text = stringResource(R.string.home_title),
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
 
         Text(
             text = stringResource(R.string.home_description),
@@ -270,7 +328,11 @@ fun HomeScreen(
         HorizontalDivider()
 
         // 現在の稼働ステータス表示
-        Text(text = stringResource(R.string.home_section_status), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(
+            text = stringResource(R.string.home_section_status),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
 
         Card(
             colors = CardDefaults.cardColors(
@@ -284,9 +346,16 @@ fun HomeScreen(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                val statusText = if (isMonitoringEnabled) stringResource(R.string.home_status_active) else stringResource(R.string.home_status_paused)
-                val statusColor = if (isMonitoringEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                val guideText = if (isMonitoringEnabled) stringResource(R.string.home_guide_to_pause) else stringResource(R.string.home_guide_to_resume)
+                val statusText =
+                    if (isMonitoringEnabled) stringResource(R.string.home_status_active) else stringResource(
+                        R.string.home_status_paused
+                    )
+                val statusColor =
+                    if (isMonitoringEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                val guideText =
+                    if (isMonitoringEnabled) stringResource(R.string.home_guide_to_pause) else stringResource(
+                        R.string.home_guide_to_resume
+                    )
 
                 Row(
                     modifier = Modifier
@@ -364,7 +433,12 @@ fun HomeScreen(
                             modifier = Modifier.size(18.dp)
                         )
                     }
-                    Text(text = lastActiveTimeText, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                    Text(
+                        text = lastActiveTimeText,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
 
                 // 2. 見守りチェック実施の行
@@ -392,7 +466,11 @@ fun HomeScreen(
                             modifier = Modifier.size(18.dp)
                         )
                     }
-                    Text(text = lastCheckTimeText, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = lastCheckTimeText,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
@@ -400,25 +478,36 @@ fun HomeScreen(
         // SMS状態確認カード
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = if (isSmsPermissionGranted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f)
+                containerColor = if (isSmsPermissionGranted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer.copy(
+                    alpha = 0.4f
+                )
             ),
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
                     if (!isSmsPermissionGranted && activity != null) {
-                        val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.SEND_SMS)
-                        val hasRequestedBefore = context.getSharedPreferences("prefs", Context.MODE_PRIVATE).getBoolean("has_requested_sms", false)
+                        val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(
+                            activity,
+                            Manifest.permission.SEND_SMS
+                        )
+                        val hasRequestedBefore =
+                            context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                                .getBoolean("has_requested_sms", false)
 
                         if (!showRationale && hasRequestedBefore) {
                             showSettingsGuideDialog = true
                         } else {
-                            context.getSharedPreferences("prefs", Context.MODE_PRIVATE).edit().putBoolean("has_requested_sms", true).apply()
+                            context.getSharedPreferences("prefs", Context.MODE_PRIVATE).edit()
+                                .putBoolean("has_requested_sms", true).apply()
                             showProminentDisclosureDialog = true
                         }
                     }
                 }
         ) {
-            Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
                     imageVector = if (isSmsPermissionGranted) Icons.Default.CheckCircle else Icons.Default.Warning,
                     contentDescription = null,
@@ -426,8 +515,16 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = if (isSmsPermissionGranted) stringResource(R.string.home_sms_permission_granted) else stringResource(R.string.home_sms_permission_denied), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                    Text(text = if (isSmsPermissionGranted) stringResource(R.string.home_sms_permission_granted_desc) else stringResource(R.string.home_sms_permission_denied_desc), style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        text = if (isSmsPermissionGranted) stringResource(R.string.home_sms_permission_granted) else stringResource(
+                            R.string.home_sms_permission_denied
+                        ), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = if (isSmsPermissionGranted) stringResource(R.string.home_sms_permission_granted_desc) else stringResource(
+                            R.string.home_sms_permission_denied_desc
+                        ), style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
         }
@@ -435,23 +532,44 @@ fun HomeScreen(
         // アプリ自動停止の警告カード
         if (!isAutoRevokeDisabled) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f)),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer.copy(
+                        alpha = 0.6f
+                    )
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
                         val intent = viewModel.createUnusedAppRestrictionsIntent(context)
-                        try { context.startActivity(intent) } catch (e: Exception) {
+                        try {
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
                             val fallback = viewModel.createApplicationDetailsIntent(context)
                             context.startActivity(fallback)
                         }
                     }
             ) {
-                Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error
+                    )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(text = stringResource(R.string.home_auto_revoke_warning_title), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
-                        Text(text = stringResource(R.string.home_auto_revoke_warning_desc), style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            text = stringResource(R.string.home_auto_revoke_warning_title),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        Text(
+                            text = stringResource(R.string.home_auto_revoke_warning_desc),
+                            style = MaterialTheme.typography.bodySmall
+                        )
                     }
                 }
             }
@@ -459,11 +577,26 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(text = stringResource(R.string.home_section_management), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(
+            text = stringResource(R.string.home_section_management),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
 
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Button(onClick = onNavigateToContacts, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.home_btn_contacts)) }
-            Button(onClick = onNavigateToConfigs, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.home_btn_configs)) }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Button(onClick = onNavigateToContacts, modifier = Modifier.weight(1f)) {
+                Text(
+                    stringResource(R.string.home_btn_contacts)
+                )
+            }
+            Button(onClick = onNavigateToConfigs, modifier = Modifier.weight(1f)) {
+                Text(
+                    stringResource(R.string.home_btn_configs)
+                )
+            }
         }
 
         OutlinedButton(
