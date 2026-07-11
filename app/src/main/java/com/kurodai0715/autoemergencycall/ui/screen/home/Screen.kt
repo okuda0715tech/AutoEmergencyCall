@@ -264,6 +264,7 @@ fun HomeScreen(
     }
 
     if (showStopConfirmDialog) {
+        val dialogScrollState = rememberScrollState()
         AlertDialog(
             onDismissRequest = { showStopConfirmDialog = false },
             title = {
@@ -273,7 +274,11 @@ fun HomeScreen(
                 )
             },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    // スクロール可能にする
+                    modifier = Modifier.verticalScroll(dialogScrollState),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     Text(stringResource(R.string.stop_confirm_dialog_text))
 
                     Row(
