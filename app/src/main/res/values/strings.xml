@@ -40,8 +40,8 @@
     <string name="check_time_info_text">アプリの自動見守りシステムが「裏側で正常に動いた」時刻です。通常は約1時間に1回、自動的に実行されます。この時刻が大幅に古い場合は、スマホ側の制限でアプリの監視が止まっている可能性があります。</string>
 
     <string name="stop_confirm_dialog_title">見守り機能を一時停止しますか？</string>
-    <string name="stop_confirm_dialog_text">見守りを停止すると、万が一の事態が起きてもご家族へ自動連絡（SMS送信）が行われなくなります。入院や旅行など、特別な理由がある場合のみ停止してください。</string>
-    <string name="stop_confirm_dialog_consent">緊急連絡先（家族など）の人に、一時停止する同意がとれています</string>
+    <string name="stop_confirm_dialog_text">見守りを停止すると、万が一の事態が起きても自動SMS送信が行われなくなります。緊急連絡先の人に同意がとれていますか？</string>
+    <string name="stop_confirm_dialog_consent">同意がとれています。</string>
     <string name="stop_confirm_dialog_confirm">停止する</string>
 
     <string name="home_title">自動安否確認システム</string>
