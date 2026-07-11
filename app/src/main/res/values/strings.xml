@@ -69,7 +69,7 @@
     <string name="home_section_management">各種設定・管理</string>
     <string name="home_btn_contacts">連絡先一覧</string>
     <string name="home_btn_configs">動作設定一覧</string>
-    <string name="home_btn_test">送信テストを実行する</string>
+    <string name="home_btn_test">送信テストはこちら</string>
 
     <!-- 共通 -->
     <string name="menu_icon_description">メニュー</string>
