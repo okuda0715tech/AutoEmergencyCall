@@ -134,7 +134,7 @@ fun HomeScreen(
                             modifier = Modifier.padding(12.dp)
                         )
                     }
-                    Text(text = "※お預かりした連絡先情報およびSMS送信機能は、上記の安否確認アラートの送信以外の目的で利用されることは一切ありません。", style = MaterialTheme.typography.bodySmall)
+                    Text(text = stringResource(R.string.sms_permission_dialog_privacy_note), style = MaterialTheme.typography.bodySmall)
                 }
             },
             confirmButton = {
@@ -145,12 +145,12 @@ fun HomeScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text("同意して権限を許可する")
+                    Text(stringResource(R.string.sms_permission_dialog_confirm))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showProminentDisclosureDialog = false }) {
-                    Text("キャンセル")
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         )
@@ -160,8 +160,8 @@ fun HomeScreen(
     if (showSettingsGuideDialog) {
         AlertDialog(
             onDismissRequest = { showSettingsGuideDialog = false },
-            title = { Text("権限の再設定が必要です") },
-            text = { Text("ボタンがブロックされてしまいました。自動SMS送信を有効にするには、次の画面で SMS 権限を許可してください。設定画面へ直接移動します。") },
+            title = { Text(stringResource(R.string.settings_guide_dialog_title)) },
+            text = { Text(stringResource(R.string.settings_guide_dialog_text)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -169,10 +169,10 @@ fun HomeScreen(
                         val intent = viewModel.createApplicationDetailsIntent(context)
                         context.startActivity(intent)
                     }
-                ) { Text("設定画面を開く") }
+                ) { Text(stringResource(R.string.settings_guide_dialog_confirm)) }
             },
             dismissButton = {
-                TextButton(onClick = { showSettingsGuideDialog = false }) { Text("キャンセル") }
+                TextButton(onClick = { showSettingsGuideDialog = false }) { Text(stringResource(R.string.common_cancel)) }
             }
         )
     }
@@ -184,14 +184,14 @@ fun HomeScreen(
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Text("最終活動検知とは？", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.active_time_info_title), fontWeight = FontWeight.Bold)
                 }
             },
             text = {
-                Text("あなたが最後に活動したことをアプリが検知した時刻です。現時点では、以下を検出しています。\n\n・充電の開始と終了\n・バッテリーの増加\n\nこの時刻から一定時間が経過すると、動けなくなっていると判断され、指定した連絡先へSMSが送られます。")
+                Text(stringResource(R.string.active_time_info_text))
             },
             confirmButton = {
-                TextButton(onClick = { showActiveTimeInfo = false }) { Text("閉じる") }
+                TextButton(onClick = { showActiveTimeInfo = false }) { Text(stringResource(R.string.common_close)) }
             }
         )
     }
@@ -203,14 +203,14 @@ fun HomeScreen(
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
-                    Text("見守りチェック実施とは？", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.check_time_info_title), fontWeight = FontWeight.Bold)
                 }
             },
             text = {
-                Text("アプリの自動見守りシステムが「裏側で正常に動いた」時刻です。通常は約1時間に1回、自動的に実行されます。この時刻が大幅に古い場合は、スマホ側の制限でアプリの監視が止まっている可能性があります。")
+                Text(stringResource(R.string.check_time_info_text))
             },
             confirmButton = {
-                TextButton(onClick = { showCheckTimeInfo = false }) { Text("閉じる") }
+                TextButton(onClick = { showCheckTimeInfo = false }) { Text(stringResource(R.string.common_close)) }
             }
         )
     }
@@ -218,10 +218,10 @@ fun HomeScreen(
     if (showStopConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showStopConfirmDialog = false },
-            title = { Text("見守り機能を一時停止しますか？", fontWeight = FontWeight.Bold) },
+            title = { Text(stringResource(R.string.stop_confirm_dialog_title), fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("見守りを停止すると、万が一の事態が起きてもご家族へ自動連絡（SMS送信）が行われなくなります。入院や旅行など、特別な理由がある場合のみ停止してください。")
+                    Text(stringResource(R.string.stop_confirm_dialog_text))
 
                     Row(
                         modifier = Modifier
@@ -232,7 +232,7 @@ fun HomeScreen(
                     ) {
                         Checkbox(checked = isConsentChecked, onCheckedChange = { isConsentChecked = it })
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("緊急連絡先（家族など）の人に、一時停止する同意がとれています", style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(R.string.stop_confirm_dialog_consent), style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             },
@@ -244,10 +244,10 @@ fun HomeScreen(
                     },
                     enabled = isConsentChecked, // 💡 チェックがないと押せない
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) { Text("停止する") }
+                ) { Text(stringResource(R.string.stop_confirm_dialog_confirm)) }
             },
             dismissButton = {
-                TextButton(onClick = { showStopConfirmDialog = false }) { Text("キャンセル") }
+                TextButton(onClick = { showStopConfirmDialog = false }) { Text(stringResource(R.string.common_cancel)) }
             }
         )
     }
@@ -259,10 +259,10 @@ fun HomeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = "自動安否確認システム", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text(text = stringResource(R.string.home_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
 
         Text(
-            text = "一人暮らしの高齢者や持病をお持ちの方の万が一の事態を検知し、事前に登録されたご家族へ自動的に安否確認の連絡を行うシステムです。",
+            text = stringResource(R.string.home_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -270,7 +270,7 @@ fun HomeScreen(
         HorizontalDivider()
 
         // 現在の稼働ステータス表示
-        Text(text = "現在の稼働状態", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(text = stringResource(R.string.home_section_status), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
 
         Card(
             colors = CardDefaults.cardColors(
@@ -284,9 +284,9 @@ fun HomeScreen(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                val statusText = if (isMonitoringEnabled) "自動見守り：稼働中" else "自動見守り：一時停止中"
+                val statusText = if (isMonitoringEnabled) stringResource(R.string.home_status_active) else stringResource(R.string.home_status_paused)
                 val statusColor = if (isMonitoringEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                val guideText = if (isMonitoringEnabled) "（長押しで一時停止）" else "（長押しで再開）"
+                val guideText = if (isMonitoringEnabled) stringResource(R.string.home_guide_to_pause) else stringResource(R.string.home_guide_to_resume)
 
                 Row(
                     modifier = Modifier
@@ -314,7 +314,7 @@ fun HomeScreen(
                         if (!isMonitoringEnabled) {
                             Icon(
                                 imageVector = Icons.Default.Warning,
-                                contentDescription = "一時停止中",
+                                contentDescription = stringResource(R.string.home_status_paused_desc),
                                 tint = Color(0xFFFBC02D)
                             )
                         } else {
@@ -353,13 +353,13 @@ fun HomeScreen(
                             .clickable { showActiveTimeInfo = true }
                     ) {
                         Text(
-                            text = "📱 最終活動検知",
+                            text = stringResource(R.string.home_label_active_time),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium
                         )
                         Icon(
                             imageVector = Icons.Default.Info,
-                            contentDescription = "説明を表示",
+                            contentDescription = stringResource(R.string.home_content_description_info),
                             tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
                             modifier = Modifier.size(18.dp)
                         )
@@ -381,13 +381,13 @@ fun HomeScreen(
                             .clickable { showCheckTimeInfo = true }
                     ) {
                         Text(
-                            text = "🔄 見守りチェック実施",
+                            text = stringResource(R.string.home_label_check_time),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium
                         )
                         Icon(
                             imageVector = Icons.Default.Info,
-                            contentDescription = "説明を表示",
+                            contentDescription = stringResource(R.string.home_content_description_info),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                             modifier = Modifier.size(18.dp)
                         )
@@ -426,8 +426,8 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = if (isSmsPermissionGranted) "SMS送信権限：許可済み" else "SMS送信権限：未許可（タップして有効化）", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                    Text(text = if (isSmsPermissionGranted) "自動通報システムが有効です。" else "タップして説明を確認し、機能を有効にしてください。", style = MaterialTheme.typography.bodySmall)
+                    Text(text = if (isSmsPermissionGranted) stringResource(R.string.home_sms_permission_granted) else stringResource(R.string.home_sms_permission_denied), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                    Text(text = if (isSmsPermissionGranted) stringResource(R.string.home_sms_permission_granted_desc) else stringResource(R.string.home_sms_permission_denied_desc), style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
@@ -450,8 +450,8 @@ fun HomeScreen(
                     Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(text = "警告：アプリの自動停止が有効です", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
-                        Text(text = "数ヶ月アプリを開かないと、スマホの制限により緊急SMSが送れなくなります。タップして次の画面で【未使用のアプリの権限を削除する】を必ず「オフ」にしてください。", style = MaterialTheme.typography.bodySmall)
+                        Text(text = stringResource(R.string.home_auto_revoke_warning_title), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
+                        Text(text = stringResource(R.string.home_auto_revoke_warning_desc), style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
@@ -459,11 +459,11 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(text = "各種設定・管理", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(text = stringResource(R.string.home_section_management), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Button(onClick = onNavigateToContacts, modifier = Modifier.weight(1f)) { Text("連絡先一覧") }
-            Button(onClick = onNavigateToConfigs, modifier = Modifier.weight(1f)) { Text("動作設定一覧") }
+            Button(onClick = onNavigateToContacts, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.home_btn_contacts)) }
+            Button(onClick = onNavigateToConfigs, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.home_btn_configs)) }
         }
 
         OutlinedButton(
@@ -471,7 +471,7 @@ fun HomeScreen(
             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("送信テストを実行する")
+            Text(stringResource(R.string.home_btn_test))
         }
     }
 }

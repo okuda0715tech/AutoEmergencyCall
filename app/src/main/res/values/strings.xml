@@ -26,6 +26,50 @@
     <string name="sms_permission_dialog_title">SMS送信権限の利用について</string>
     <string name="sms_permission_dialog_overview">当アプリの核心機能である「自動通報」機能を実現するためには、アプリにSMS（ショートメッセージ）の送信権限を付与する必要があります。</string>
     <string name="sms_permission_dialog_warning">【警告】生存確認のタイマーが超過した場合、ユーザーの追加操作を一切必要とせず、アプリが『バックグラウンドで完全自動』で登録された連絡先へ救助要請のSMSを送信します。これにより通話・通信料が発生する場合があります。</string>
+    <string name="sms_permission_dialog_privacy_note">※お預かりした連絡先情報およびSMS送信機能は、上記の安否確認アラートの送信以外の目的で利用されることは一切ありません。</string>
+    <string name="sms_permission_dialog_confirm">同意して権限を許可する</string>
+
+    <string name="settings_guide_dialog_title">権限の再設定が必要です</string>
+    <string name="settings_guide_dialog_text">ボタンがブロックされてしまいました。自動SMS送信を有効にするには、次の画面で SMS 権限を許可してください。設定画面へ直接移動します。</string>
+    <string name="settings_guide_dialog_confirm">設定画面を開く</string>
+
+    <string name="active_time_info_title">最終活動検知とは？</string>
+    <string name="active_time_info_text">あなたが最後に活動したことをアプリが検知した時刻です。現時点では、以下を検出しています。\n\n・充電の開始と終了\n・バッテリーの増加\n\nこの時刻から一定時間が経過すると、動けなくなっていると判断され、指定した連絡先へSMSが送られます。</string>
+
+    <string name="check_time_info_title">見守りチェック実施とは？</string>
+    <string name="check_time_info_text">アプリの自動見守りシステムが「裏側で正常に動いた」時刻です。通常は約1時間に1回、自動的に実行されます。この時刻が大幅に古い場合は、スマホ側の制限でアプリの監視が止まっている可能性があります。</string>
+
+    <string name="stop_confirm_dialog_title">見守り機能を一時停止しますか？</string>
+    <string name="stop_confirm_dialog_text">見守りを停止すると、万が一の事態が起きてもご家族へ自動連絡（SMS送信）が行われなくなります。入院や旅行など、特別な理由がある場合のみ停止してください。</string>
+    <string name="stop_confirm_dialog_consent">緊急連絡先（家族など）の人に、一時停止する同意がとれています</string>
+    <string name="stop_confirm_dialog_confirm">停止する</string>
+
+    <string name="home_title">自動安否確認システム</string>
+    <string name="home_description">一人暮らしの高齢者や持病をお持ちの方の万が一の事態を検知し、事前に登録されたご家族へ自動的に安否確認の連絡を行うシステムです。</string>
+    <string name="home_section_status">現在の稼働状態</string>
+
+    <string name="home_status_active">自動見守り：稼働中</string>
+    <string name="home_status_paused">自動見守り：一時停止中</string>
+    <string name="home_guide_to_pause">（長押しで一時停止）</string>
+    <string name="home_guide_to_resume">（長押しで再開）</string>
+    <string name="home_status_paused_desc">一時停止中</string>
+
+    <string name="home_label_active_time">📱 最終活動検知</string>
+    <string name="home_content_description_info">説明を表示</string>
+    <string name="home_label_check_time">🔄 見守りチェック実施</string>
+
+    <string name="home_sms_permission_granted">SMS送信権限：許可済み</string>
+    <string name="home_sms_permission_denied">SMS送信権限：未許可（タップして有効化）</string>
+    <string name="home_sms_permission_granted_desc">自動通報システムが有効です。</string>
+    <string name="home_sms_permission_denied_desc">タップして説明を確認し、機能を有効にしてください。</string>
+
+    <string name="home_auto_revoke_warning_title">警告：アプリの自動停止が有効です</string>
+    <string name="home_auto_revoke_warning_desc">数ヶ月アプリを開かないと、スマホの制限により緊急SMSが送れなくなります。タップして次の画面で【未使用のアプリの権限を削除する】を必ず「オフ」にしてください。</string>
+
+    <string name="home_section_management">各種設定・管理</string>
+    <string name="home_btn_contacts">連絡先一覧</string>
+    <string name="home_btn_configs">動作設定一覧</string>
+    <string name="home_btn_test">送信テストを実行する</string>
 
     <!-- 共通 -->
     <string name="menu_icon_description">メニュー</string>
@@ -50,6 +94,7 @@
     <string name="common_yes">はい</string>
     <string name="common_no">いいえ</string>
     <string name="common_close">閉じる</string>
+    <string name="common_cancel">キャンセル</string>
     <string name="common_required_field">必須項目です。</string>
     <string name="common_length_needs_to_be_within_100">100文字以内で入力してください。</string>
     <string name="common_unexpected_error">予期せぬエラーが発生しました。</string>"
