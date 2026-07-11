@@ -27,7 +27,7 @@
     <string name="sms_permission_dialog_overview">当アプリの核心機能である「自動通報」機能を実現するためには、アプリにSMS（ショートメッセージ）の送信権限を付与する必要があります。</string>
     <string name="sms_permission_dialog_warning">【警告】生存確認のタイマーが超過した場合、ユーザーの追加操作を一切必要とせず、アプリが『バックグラウンドで完全自動』で登録された連絡先へ救助要請のSMSを送信します。これにより通話・通信料が発生する場合があります。</string>
     <string name="sms_permission_dialog_privacy_note">※お預かりした連絡先情報およびSMS送信機能は、上記の安否確認アラートの送信以外の目的で利用されることは一切ありません。</string>
-    <string name="sms_permission_dialog_confirm">同意して権限を許可する</string>
+    <string name="sms_permission_dialog_confirm">理解しました</string>
 
     <string name="settings_guide_dialog_title">権限の再設定が必要です</string>
     <string name="settings_guide_dialog_text">ボタンがブロックされてしまいました。自動SMS送信を有効にするには、次の画面で SMS 権限を許可してください。設定画面へ直接移動します。</string>

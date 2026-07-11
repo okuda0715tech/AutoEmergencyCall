@@ -118,6 +118,7 @@ fun HomeScreen(
 
     // Google Play審査対策 「目立つ事前開示」ダイアログ
     if (showProminentDisclosureDialog) {
+        val dialogScrollState = rememberScrollState()
         AlertDialog(
             onDismissRequest = { showProminentDisclosureDialog = false },
             title = {
@@ -137,7 +138,11 @@ fun HomeScreen(
                 }
             },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    // スクロール可能にする
+                    modifier = Modifier.verticalScroll(dialogScrollState),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     Text(text = stringResource(R.string.sms_permission_dialog_overview))
 
                     Surface(
