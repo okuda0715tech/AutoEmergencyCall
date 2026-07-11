@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
@@ -113,12 +114,12 @@ fun HomeScreen(
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Icon(Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
-                    Text(text = "SMS送信権限の利用について", fontWeight = FontWeight.Bold)
+                    Text(text = stringResource(R.string.sms_permission_dialog_title), fontWeight = FontWeight.Bold)
                 }
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(text = "当アプリの核心機能である「孤独死・遭難時の自動緊急通報」を実現するためには、SMS（ショートメッセージ）の送信権限が必要です。")
+                    Text(text = stringResource(R.string.sms_permission_dialog_overview))
 
                     Surface(
                         color = MaterialTheme.colorScheme.errorContainer,
@@ -126,7 +127,7 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "【警告】生存確認のタイマーが超過した場合、ユーザーの追加操作を一切必要とせず、アプリが『バックグラウンドで完全自動』で登録された連絡先へ救助要請のSMSを送信します。これにより通話・通信料が発生する場合があります。",
+                            text = stringResource(R.string.sms_permission_dialog_warning),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onErrorContainer,

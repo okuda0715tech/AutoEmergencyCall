@@ -22,6 +22,11 @@
     <string name="developer_screen_title">開発者専用</string>
     <string name="app_info_screen_title">アプリ情報</string>
 
+    <!-- ホーム 画面 -->
+    <string name="sms_permission_dialog_title">SMS送信権限の利用について</string>
+    <string name="sms_permission_dialog_overview">当アプリの核心機能である「自動通報」機能を実現するためには、アプリにSMS（ショートメッセージ）の送信権限を付与する必要があります。</string>
+    <string name="sms_permission_dialog_warning">【警告】生存確認のタイマーが超過した場合、ユーザーの追加操作を一切必要とせず、アプリが『バックグラウンドで完全自動』で登録された連絡先へ救助要請のSMSを送信します。これにより通話・通信料が発生する場合があります。</string>
+
     <!-- 共通 -->
     <string name="menu_icon_description">メニュー</string>
     <string name="common_delete">削除</string>
