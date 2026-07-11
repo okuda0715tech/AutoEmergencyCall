@@ -660,28 +660,27 @@ fun HomeScreen(
             fontWeight = FontWeight.Bold
         )
 
-        Row(
+        FlowRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Button(onClick = onNavigateToContacts, modifier = Modifier.weight(1f)) {
+            Button(onClick = onNavigateToContacts) {
                 Text(
                     stringResource(R.string.home_btn_contacts)
                 )
             }
-            Button(onClick = onNavigateToConfigs, modifier = Modifier.weight(1f)) {
+            Button(onClick = onNavigateToConfigs) {
                 Text(
                     stringResource(R.string.home_btn_configs)
                 )
             }
-        }
-
-        OutlinedButton(
-            onClick = onNavigateToTest,
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.home_btn_test))
+            OutlinedButton(
+                onClick = onNavigateToTest,
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+            ) {
+                Text(stringResource(R.string.home_btn_test))
+            }
         }
     }
 }
