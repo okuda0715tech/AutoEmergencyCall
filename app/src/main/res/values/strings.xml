@@ -34,10 +34,10 @@
     <string name="settings_guide_dialog_confirm">設定画面を開く</string>
 
     <string name="active_time_info_title">最終活動検知とは？</string>
-    <string name="active_time_info_text">あなたが最後に活動したことをアプリが検知した時刻です。現時点では、以下を検出しています。\n\n・充電の開始と終了\n・バッテリーの増加\n\nこの時刻から一定時間が経過すると、動けなくなっていると判断され、指定した連絡先へSMSが送られます。</string>
+    <string name="active_time_info_text">あなたが最後に活動したことをアプリが検知した時刻です。当アプリでは、以下の変化を活動有りとみなします。\n\n・充電中か否かの状態が変化した\n・バッテリーが減少傾向から増加傾向に転換した\n\n最終活動検知時刻から一定時間が経過すると、動けなくなっていると判断され、設定された連絡先へ自動的にSMSが送られます。</string>
 
-    <string name="check_time_info_title">見守りチェック実施とは？</string>
-    <string name="check_time_info_text">アプリの自動見守りシステムが「裏側で正常に動いた」時刻です。通常は約1時間に1回、自動的に実行されます。この時刻が大幅に古い場合は、スマホ側の制限でアプリの監視が止まっている可能性があります。</string>
+    <string name="check_time_info_title">最終見守りとは？</string>
+    <string name="check_time_info_text">あなたに活動が有ったかどうかを当アプリが最後に調べた時刻です。\n\nアプリが正しく動作していれば、約1時間に1回の間隔で、定期的に実行されます。\n\nこの時刻が大幅に古い場合は、スマホ側の制限でアプリの監視が止まっている可能性があります。</string>
 
     <string name="stop_confirm_dialog_title">見守り機能を一時停止しますか？</string>
     <string name="stop_confirm_dialog_text">見守りを停止すると、万が一の事態が起きても自動SMS送信が行われなくなります。緊急連絡先の人に同意がとれていますか？</string>
@@ -56,7 +56,7 @@
 
     <string name="home_label_active_time">📱 最終活動検知</string>
     <string name="home_content_description_info">説明を表示</string>
-    <string name="home_label_check_time">🔄 見守りチェック実施</string>
+    <string name="home_label_check_time">🔄 最終見守り</string>
 
     <string name="home_sms_permission_granted">SMS送信権限：許可済み</string>
     <string name="home_sms_permission_denied">SMS送信権限：未許可（タップして有効化）</string>

@@ -203,6 +203,7 @@ fun HomeScreen(
 
     // 「最終生存確認」の定義解説ダイアログ
     if (showActiveTimeInfo) {
+        val dialogScrollState = rememberScrollState()
         AlertDialog(
             onDismissRequest = { showActiveTimeInfo = false },
             title = {
@@ -222,7 +223,13 @@ fun HomeScreen(
                 }
             },
             text = {
-                Text(stringResource(R.string.active_time_info_text))
+                Column(
+                    // スクロール可能にする
+                    modifier = Modifier.verticalScroll(dialogScrollState),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(stringResource(R.string.active_time_info_text))
+                }
             },
             confirmButton = {
                 TextButton(onClick = {
@@ -232,8 +239,9 @@ fun HomeScreen(
         )
     }
 
-    // 「最終生存チェック」の定義解説ダイアログ
+    // 「見守りチェック」の定義解説ダイアログ
     if (showCheckTimeInfo) {
+        val dialogScrollState = rememberScrollState()
         AlertDialog(
             onDismissRequest = { showCheckTimeInfo = false },
             title = {
@@ -253,7 +261,13 @@ fun HomeScreen(
                 }
             },
             text = {
-                Text(stringResource(R.string.check_time_info_text))
+                Column(
+                    // スクロール可能にする
+                    modifier = Modifier.verticalScroll(dialogScrollState),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(stringResource(R.string.check_time_info_text))
+                }
             },
             confirmButton = {
                 TextButton(onClick = {
