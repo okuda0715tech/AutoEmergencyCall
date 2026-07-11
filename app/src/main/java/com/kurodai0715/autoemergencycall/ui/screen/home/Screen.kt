@@ -371,7 +371,6 @@ fun HomeScreen(
                             },
                             onClick = {}
                         )
-                        // 💡 変更：縦のパディングを 4.dp から 6.dp に少し広げて押しやすく＆見やすく
                         .padding(vertical = 6.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -405,7 +404,6 @@ fun HomeScreen(
                     )
                 }
 
-                // 💡 修正：余計なSpacerを削除し、仕切り線の余白を調整
                 HorizontalDivider(modifier = Modifier.padding(top = 2.dp, bottom = 6.dp))
 
                 // 1. 最終活動検知の行
