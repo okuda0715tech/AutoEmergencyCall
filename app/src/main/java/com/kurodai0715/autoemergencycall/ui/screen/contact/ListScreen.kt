@@ -16,8 +16,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -57,6 +57,9 @@ fun ContactListScreen(
     val activity = context as? Activity
     val contactList by viewModel.contacts.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    // 画面全体のスクロール状態を記憶
+    val scrollState = rememberScrollState()
 
     // ViewModel から通知権限の状態を監視
     val isNotificationPermissionGranted by viewModel.isNotificationPermissionGranted.collectAsState()
@@ -118,6 +121,8 @@ fun ContactListScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                // スクロール可能にする
+                .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
             // タイトル
@@ -141,20 +146,17 @@ fun ContactListScreen(
             }
 
             // 連絡先リスト
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                if (contactList.isEmpty()) {
-                    item {
-                        Text(
-                            text = stringResource(R.string.contacts_empty_list),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                    }
-                } else {
-                    items(contactList) { contact ->
+            if (contactList.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.contacts_empty_list),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.outline
+                )
+            } else {
+                // 画面全体をスクロールしたいため、連絡先一覧の表示に LazyColumn は使わず Column を使う。
+                // LazyColumn はスクロールがネストするため使えない？ため。
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    contactList.forEach { contact ->
                         ContactItemCard(
                             contact = contact,
                             onClick = { onNavigateToEdit(contact.id) }
@@ -326,7 +328,7 @@ private fun NotificationPermissionCard(
 // 連絡先リストの個別アイテムカード
 @Composable
 private fun ContactItemCard(
-    contact: Contact, // 💡 プロジェクトで定義している Contact のデータクラスに合わせてください
+    contact: Contact,
     onClick: () -> Unit
 ) {
     Card(
