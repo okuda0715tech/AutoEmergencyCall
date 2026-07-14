@@ -3,24 +3,47 @@ package com.kurodai0715.autoemergencycall.ui.screen.contact
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.edit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.kurodai0715.autoemergencycall.R
 
 @Composable
 fun ContactListScreen(
@@ -77,8 +100,8 @@ fun ContactListScreen(
     if (showNotificationSettingsGuideDialog) {
         AlertDialog(
             onDismissRequest = { showNotificationSettingsGuideDialog = false },
-            title = { Text("通知権限の再設定が必要です") },
-            text = { Text("通知機能がブロックされているため、アプリから権限をリクエストできません。送信完了通知を受け取るには、次の設定画面で『通知の許可』をオンにしてください。") },
+            title = { Text(stringResource(R.string.contacts_permission_dialog_title)) },
+            text = { Text(stringResource(R.string.contacts_permission_dialog_desc)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -96,12 +119,12 @@ fun ContactListScreen(
                                 }
                         context.startActivity(intent)
                     }
-                ) { Text("設定画面を開く") }
+                ) { Text(stringResource(R.string.contacts_permission_dialog_btn_open_settings)) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     showNotificationSettingsGuideDialog = false
-                }) { Text("キャンセル") }
+                }) { Text(stringResource(R.string.contacts_permission_dialog_btn_cancel)) }
             }
         )
     }
@@ -118,14 +141,14 @@ fun ContactListScreen(
                     onClick = onNavigateBack,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("戻る")
+                    Text(stringResource(R.string.contacts_btn_back))
                 }
 
                 Button(
                     onClick = { onNavigateToEdit(null) },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("追加")
+                    Text(stringResource(R.string.contacts_btn_add))
                 }
             }
         }
@@ -138,7 +161,7 @@ fun ContactListScreen(
         ) {
             // タイトル
             Text(
-                text = "連絡先の登録・管理",
+                text = stringResource(R.string.contacts_title),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -149,16 +172,16 @@ fun ContactListScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = "万が一の際に通知を行う連絡先です。",
+                    text = stringResource(R.string.contacts_desc_main),
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
-                    text = "・初期設定では登録されている全員にSMSが送信されます。",
+                    text = stringResource(R.string.contacts_desc_sub_sms),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "・『動作・アラート設定』から送信先を個別に指定することも可能です。",
+                    text = stringResource(R.string.contacts_desc_sub_config),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -176,13 +199,13 @@ fun ContactListScreen(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = "【重要】通知の許可をお願いします",
+                            text = stringResource(R.string.contacts_permission_card_title),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onErrorContainer
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = "万が一の際、SMSが正常に送信されたことをリアルタイムに確認するために通知権限が必要です。拒否されたままだと、送信完了メッセージが届きません。",
+                            text = stringResource(R.string.contacts_permission_card_desc),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onErrorContainer
                         )
@@ -199,7 +222,7 @@ fun ContactListScreen(
                                         context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
                                             .getBoolean("has_requested_notification", false)
 
-                                    // 💡 既に永久拒否されている場合は直接エスコートダイアログを出す
+                                    // 既に永久拒否されている場合は直接エスコートダイアログを出す
                                     if (!showRationale && hasRequestedBefore) {
                                         showNotificationSettingsGuideDialog = true
                                     } else {
@@ -219,7 +242,7 @@ fun ContactListScreen(
                                 containerColor = MaterialTheme.colorScheme.error
                             )
                         ) {
-                            Text("通知を許可する")
+                            Text(stringResource(R.string.contacts_permission_card_btn_allow))
                         }
                     }
                 }
@@ -233,7 +256,7 @@ fun ContactListScreen(
                 if (contactList.isEmpty()) {
                     item {
                         Text(
-                            text = "登録されている連絡先はありません。",
+                            text = stringResource(R.string.contacts_empty_list),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.outline
                         )
@@ -247,7 +270,11 @@ fun ContactListScreen(
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 val displayText = if (contact.relation.isNotBlank()) {
-                                    "${contact.name} (${contact.relation})"
+                                    stringResource(
+                                        R.string.contacts_name_with_relation,
+                                        contact.name,
+                                        contact.relation
+                                    )
                                 } else {
                                     contact.name
                                 }
@@ -258,7 +285,10 @@ fun ContactListScreen(
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "TEL: ${contact.phoneNumber}",
+                                    text = stringResource(
+                                        R.string.contacts_phone_label,
+                                        contact.phoneNumber
+                                    ),
                                     style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier.fillMaxWidth()
                                 )

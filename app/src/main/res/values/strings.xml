@@ -71,6 +71,26 @@
     <string name="home_btn_configs">動作設定一覧</string>
     <string name="home_btn_test">送信テストはこちら</string>
 
+    <!-- 連絡先一覧 画面 -->
+    <string name="contacts_title">連絡先の登録・管理</string>
+    <string name="contacts_desc_main">万が一の際に通知を行う連絡先です。</string>
+    <string name="contacts_desc_sub_sms">・初期設定では登録されている全員にSMSが送信されます。</string>
+    <string name="contacts_desc_sub_config">・『動作・アラート設定』から送信先を個別に指定することも可能です。</string>
+    <string name="contacts_empty_list">登録されている連絡先はありません。</string>
+    <string name="contacts_phone_label">TEL: %1$s</string>
+    <string name="contacts_name_with_relation">%1$s (%2$s)</string>
+    <string name="contacts_btn_back">戻る</string>
+    <string name="contacts_btn_add">追加</string>
+
+    <string name="contacts_permission_card_title">【重要】通知の許可をお願いします</string>
+    <string name="contacts_permission_card_desc">万が一の際、SMSが正常に送信されたことをリアルタイムに確認するために通知権限が必要です。拒否されたままだと、送信完了メッセージが届きません。</string>
+    <string name="contacts_permission_card_btn_allow">通知を許可する</string>
+
+    <string name="contacts_permission_dialog_title">通知権限の再設定が必要です</string>
+    <string name="contacts_permission_dialog_desc">通知機能がブロックされているため、アプリから権限をリクエストできません。送信完了通知を受け取るには、次の設定画面で『通知の許可』をオンにしてください。</string>
+    <string name="contacts_permission_dialog_btn_open_settings">設定画面を開く</string>
+    <string name="contacts_permission_dialog_btn_cancel">キャンセル</string>
+
     <!-- 共通 -->
     <string name="menu_icon_description">メニュー</string>
     <string name="common_delete">削除</string>
