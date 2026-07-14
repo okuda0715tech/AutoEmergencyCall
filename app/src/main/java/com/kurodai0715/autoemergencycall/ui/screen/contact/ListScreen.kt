@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.kurodai0715.autoemergencycall.R
+import com.kurodai0715.autoemergencycall.data.Contact
 
 @Composable
 fun ContactListScreen(
@@ -98,59 +100,18 @@ fun ContactListScreen(
 
     // 通知用の永久拒否エスコートダイアログ
     if (showNotificationSettingsGuideDialog) {
-        AlertDialog(
-            onDismissRequest = { showNotificationSettingsGuideDialog = false },
-            title = { Text(stringResource(R.string.contacts_permission_dialog_title)) },
-            text = { Text(stringResource(R.string.contacts_permission_dialog_desc)) },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showNotificationSettingsGuideDialog = false
-                        // ホーム画面と同様に、アプリ詳細設定（システムの設定画面）を開くインテントを実行
-                        // （※HomeViewModel内の既存メソッド、または直接インテントを生成してもOKです）
-                        val intent =
-                            android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                .apply {
-                                    data = android.net.Uri.fromParts(
-                                        "package",
-                                        context.packageName,
-                                        null
-                                    )
-                                }
-                        context.startActivity(intent)
-                    }
-                ) { Text(stringResource(R.string.contacts_permission_dialog_btn_open_settings)) }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showNotificationSettingsGuideDialog = false
-                }) { Text(stringResource(R.string.contacts_permission_dialog_btn_cancel)) }
-            }
+        NotificationSettingsGuideDialog(
+            context = context,
+            onDismiss = { showNotificationSettingsGuideDialog = false }
         )
     }
 
     Scaffold(
         bottomBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OutlinedButton(
-                    onClick = onNavigateBack,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(stringResource(R.string.contacts_btn_back))
-                }
-
-                Button(
-                    onClick = { onNavigateToEdit(null) },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(stringResource(R.string.contacts_btn_add))
-                }
-            }
+            ContactBottomBar(
+                onBackClick = onNavigateBack,
+                onAddClick = { onNavigateToEdit(null) }
+            )
         }
     ) { innerPadding ->
         Column(
@@ -167,85 +128,16 @@ fun ContactListScreen(
             )
 
             // スタイルと改行を適用した説明文エリア
-            Column(
-                modifier = Modifier.padding(bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.contacts_desc_main),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = stringResource(R.string.contacts_desc_sub_sms),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = stringResource(R.string.contacts_desc_sub_config),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            ContactHeaderDescription()
 
             // 通知権限の案内カード (Android 13以上、かつ未許可の場合のみ表示)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !isNotificationPermissionGranted) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = stringResource(R.string.contacts_permission_card_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = stringResource(R.string.contacts_permission_card_desc),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Button(
-                            onClick = {
-                                if (activity != null) {
-                                    val showRationale =
-                                        ActivityCompat.shouldShowRequestPermissionRationale(
-                                            activity,
-                                            Manifest.permission.POST_NOTIFICATIONS
-                                        )
-                                    val hasRequestedBefore =
-                                        context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
-                                            .getBoolean("has_requested_notification", false)
-
-                                    // 既に永久拒否されている場合は直接エスコートダイアログを出す
-                                    if (!showRationale && hasRequestedBefore) {
-                                        showNotificationSettingsGuideDialog = true
-                                    } else {
-                                        // 初回または1回目拒否の通常フロー（SharedPreferencesにリクエスト実績を記録）
-                                        context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
-                                            .edit {
-                                                putBoolean(
-                                                    "has_requested_notification",
-                                                    true
-                                                )
-                                            }
-                                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                    }
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.error
-                            )
-                        ) {
-                            Text(stringResource(R.string.contacts_permission_card_btn_allow))
-                        }
-                    }
-                }
+                NotificationPermissionCard(
+                    activity = activity,
+                    context = context,
+                    onRequestPermission = { notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) },
+                    onShowGuideDialog = { showNotificationSettingsGuideDialog = true }
+                )
             }
 
             // 連絡先リスト
@@ -263,40 +155,209 @@ fun ContactListScreen(
                     }
                 } else {
                     items(contactList) { contact ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { onNavigateToEdit(contact.id) }
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                val displayText = if (contact.relation.isNotBlank()) {
-                                    stringResource(
-                                        R.string.contacts_name_with_relation,
-                                        contact.name,
-                                        contact.relation
-                                    )
-                                } else {
-                                    contact.name
-                                }
-
-                                Text(
-                                    text = displayText,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = stringResource(
-                                        R.string.contacts_phone_label,
-                                        contact.phoneNumber
-                                    ),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                        }
+                        ContactItemCard(
+                            contact = contact,
+                            onClick = { onNavigateToEdit(contact.id) }
+                        )
                     }
                 }
             }
+        }
+    }
+}
+
+// 通知用の永久拒否エスコートダイアログ
+@Composable
+private fun NotificationSettingsGuideDialog(
+    context: Context,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.contacts_permission_dialog_title)) },
+        text = { Text(stringResource(R.string.contacts_permission_dialog_desc)) },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onDismiss()
+                    // ホーム画面と同様に、アプリ詳細設定（システムの設定画面）を開くインテントを実行
+                    // （※HomeViewModel内の既存メソッド、または直接インテントを生成してもOKです）
+                    val intent =
+                        android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            .apply {
+                                data = android.net.Uri.fromParts(
+                                    "package",
+                                    context.packageName,
+                                    null
+                                )
+                            }
+                    context.startActivity(intent)
+                }
+            ) { Text(stringResource(R.string.contacts_permission_dialog_btn_open_settings)) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.contacts_permission_dialog_btn_cancel))
+            }
+        }
+    )
+}
+
+// ボトムバーエリア
+@Composable
+private fun ContactBottomBar(
+    onBackClick: () -> Unit,
+    onAddClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        OutlinedButton(
+            onClick = onBackClick,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(stringResource(R.string.contacts_btn_back))
+        }
+
+        Button(
+            onClick = onAddClick,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(stringResource(R.string.contacts_btn_add))
+        }
+    }
+}
+
+// スタイルと改行を適用した説明文エリア
+@Composable
+private fun ContactHeaderDescription() {
+    Column(
+        modifier = Modifier.padding(bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.contacts_desc_main),
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Text(
+            text = stringResource(R.string.contacts_desc_sub_sms),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = stringResource(R.string.contacts_desc_sub_config),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+// 通知権限の案内カード (Android 13以上、かつ未許可の場合のみ表示)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@Composable
+private fun NotificationPermissionCard(
+    activity: Activity?,
+    context: Context,
+    onRequestPermission: () -> Unit,
+    onShowGuideDialog: () -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.contacts_permission_card_title),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = stringResource(R.string.contacts_permission_card_desc),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = {
+                    if (activity != null) {
+                        val showRationale =
+                            ActivityCompat.shouldShowRequestPermissionRationale(
+                                activity,
+                                Manifest.permission.POST_NOTIFICATIONS
+                            )
+                        val hasRequestedBefore =
+                            context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                                .getBoolean("has_requested_notification", false)
+
+                        // 既に永久拒否されている場合は直接エスコートダイアログを出す
+                        if (!showRationale && hasRequestedBefore) {
+                            onShowGuideDialog()
+                        } else {
+                            // 初回または1回目拒否の通常フロー（SharedPreferencesにリクエスト実績を記録）
+                            context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                                .edit {
+                                    putBoolean(
+                                        "has_requested_notification",
+                                        true
+                                    )
+                                }
+                            onRequestPermission()
+                        }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text(stringResource(R.string.contacts_permission_card_btn_allow))
+            }
+        }
+    }
+}
+
+// 連絡先リストの個別アイテムカード
+@Composable
+private fun ContactItemCard(
+    contact: Contact, // 💡 プロジェクトで定義している Contact のデータクラスに合わせてください
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            val displayText = if (contact.relation.isNotBlank()) {
+                stringResource(
+                    R.string.contacts_name_with_relation,
+                    contact.name,
+                    contact.relation
+                )
+            } else {
+                contact.name
+            }
+
+            Text(
+                text = displayText,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = stringResource(
+                    R.string.contacts_phone_label,
+                    contact.phoneNumber
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
