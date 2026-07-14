@@ -1,15 +1,34 @@
 package com.kurodai0715.autoemergencycall.ui.screen.contact
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.kurodai0715.autoemergencycall.R
 
 @Composable
 fun ContactEditScreen(
@@ -33,6 +52,11 @@ fun ContactEditScreen(
     var showSuccessDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
 
+    // 各完了時のメッセージ文字列をコンポーザブル内で解決できるように定義
+    val messageAdd = stringResource(R.string.contact_edit_dialog_msg_add)
+    val messageUpdate = stringResource(R.string.contact_edit_dialog_msg_update)
+    val messageDelete = stringResource(R.string.contact_edit_dialog_msg_delete)
+
     // キーボードのフォーカス（次へ移動、閉じるなど）を制御するためのマネージャー
     val focusManager = LocalFocusManager.current
 
@@ -40,7 +64,7 @@ fun ContactEditScreen(
     if (showSuccessDialog) {
         AlertDialog(
             onDismissRequest = { /* 画面外タップは無視 */ },
-            title = { Text("完了") },
+            title = { Text(stringResource(R.string.contact_edit_dialog_title)) },
             text = { Text(dialogMessage) },
             confirmButton = {
                 TextButton(
@@ -49,7 +73,7 @@ fun ContactEditScreen(
                         onNavigateBack() // ダイアログを閉じたら一覧に戻る
                     }
                 ) {
-                    Text("OK")
+                    Text(stringResource(R.string.contact_edit_dialog_btn_ok))
                 }
             }
         )
@@ -68,7 +92,7 @@ fun ContactEditScreen(
                         onClick = onNavigateBack,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("戻る")
+                        Text(stringResource(R.string.contact_edit_btn_back))
                     }
 
                     // 2. 削除ボタン（既存編集時のみ有効化）
@@ -76,7 +100,7 @@ fun ContactEditScreen(
                         onClick = {
                             if (contactId != null) {
                                 viewModel.deleteContact(contactId) {
-                                    dialogMessage = "連絡先を削除しました。"
+                                    dialogMessage = messageDelete
                                     showSuccessDialog = true
                                 }
                             }
@@ -85,7 +109,7 @@ fun ContactEditScreen(
                         enabled = contactId != null, // 新規のときは押せない
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("削除")
+                        Text(stringResource(R.string.contact_edit_btn_delete))
                     }
 
                     // 3. 保存ボタン
@@ -99,7 +123,7 @@ fun ContactEditScreen(
                                     relation = relationInput
                                 ) {
                                     dialogMessage =
-                                        if (contactId == null) "連絡先を新規登録しました。" else "連絡先を更新しました。"
+                                        if (contactId == null) messageAdd else messageUpdate
                                     showSuccessDialog = true
                                 }
                             }
@@ -107,7 +131,7 @@ fun ContactEditScreen(
                         enabled = nameInput.isNotBlank() && phoneInput.isNotBlank() && isPhoneValid,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("保存")
+                        Text(stringResource(R.string.contact_edit_btn_save))
                     }
                 }
             }
@@ -121,14 +145,18 @@ fun ContactEditScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = if (contactId == null) "緊急連絡先の新規追加" else "緊急連絡先の編集",
+                text = if (contactId == null) {
+                    stringResource(R.string.contact_edit_title_add)
+                } else {
+                    stringResource(R.string.contact_edit_title_edit)
+                },
                 style = MaterialTheme.typography.headlineMedium
             )
 
             OutlinedTextField(
                 value = nameInput,
                 onValueChange = { nameInput = it },
-                label = { Text("名前") },
+                label = { Text(stringResource(R.string.contact_edit_label_name)) },
                 singleLine = true,
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(
@@ -140,7 +168,7 @@ fun ContactEditScreen(
             OutlinedTextField(
                 value = phoneInput,
                 onValueChange = { phoneInput = it },
-                label = { Text("電話番号（ハイフンなし）") },
+                label = { Text(stringResource(R.string.contact_edit_label_phone)) },
                 singleLine = true,
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(
@@ -150,7 +178,10 @@ fun ContactEditScreen(
                 isError = !isPhoneValid,
                 supportingText = {
                     if (!isPhoneValid) {
-                        Text(text = "※ハイフン「-」やスペースを入れず、数字のみで入力してください。", color = MaterialTheme.colorScheme.error)
+                        Text(
+                            text = stringResource(R.string.contact_edit_error_phone_format),
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -159,7 +190,7 @@ fun ContactEditScreen(
             OutlinedTextField(
                 value = relationInput,
                 onValueChange = { relationInput = it },
-                label = { Text("関係性 (例: 長男、妻)") },
+                label = { Text(stringResource(R.string.contact_edit_label_relation)) },
                 singleLine = true,
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(

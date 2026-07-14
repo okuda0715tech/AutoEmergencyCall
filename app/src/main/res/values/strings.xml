@@ -91,6 +91,24 @@
     <string name="contacts_permission_dialog_btn_open_settings">設定画面を開く</string>
     <string name="contacts_permission_dialog_btn_cancel">キャンセル</string>
 
+    <!-- 連絡先登録・編集 画面 -->
+    <string name="contact_edit_title_add">緊急連絡先の新規追加</string>
+    <string name="contact_edit_title_edit">緊急連絡先の編集</string>
+    <string name="contact_edit_label_name">名前</string>
+    <string name="contact_edit_label_phone">電話番号（ハイフンなし）</string>
+    <string name="contact_edit_label_relation">関係性 (例: 長男、妻)</string>
+    <string name="contact_edit_error_phone_format">※ハイフン「-」やスペースを入れず、数字のみで入力してください。</string>
+
+    <string name="contact_edit_btn_back">戻る</string>
+    <string name="contact_edit_btn_delete">削除</string>
+    <string name="contact_edit_btn_save">保存</string>
+
+    <string name="contact_edit_dialog_title">完了</string>
+    <string name="contact_edit_dialog_msg_add">連絡先を新規登録しました。</string>
+    <string name="contact_edit_dialog_msg_update">連絡先を更新しました。</string>
+    <string name="contact_edit_dialog_msg_delete">連絡先を削除しました。</string>
+    <string name="contact_edit_dialog_btn_ok">OK</string>
+
     <!-- 共通 -->
     <string name="menu_icon_description">メニュー</string>
     <string name="common_delete">削除</string>
