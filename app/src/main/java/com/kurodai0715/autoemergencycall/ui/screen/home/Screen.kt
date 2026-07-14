@@ -185,10 +185,19 @@ fun HomeScreen(
 
     // 永久拒否時のエスコートダイアログ
     if (showSettingsGuideDialog) {
+        val dialogScrollState = rememberScrollState()
         AlertDialog(
             onDismissRequest = { showSettingsGuideDialog = false },
             title = { Text(stringResource(R.string.settings_guide_dialog_title)) },
-            text = { Text(stringResource(R.string.settings_guide_dialog_text)) },
+            text = {
+                Column(
+                    // スクロール可能にする
+                    modifier = Modifier.verticalScroll(dialogScrollState),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(stringResource(R.string.settings_guide_dialog_text))
+                }
+            },
             confirmButton = {
                 Button(
                     onClick = {
