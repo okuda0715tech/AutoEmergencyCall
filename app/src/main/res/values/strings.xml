@@ -108,7 +108,7 @@
     <string name="contact_edit_dialog_btn_ok">OK</string>
 
     <!-- アラート設定一覧 画面 -->
-    <string name="config_list_title">動作・アラート設定</string>
+    <string name="config_list_title">アラート設定</string>
     <string name="config_list_description">活動の最終検知からSMSを自動送信するまでの時間と、その対象となる連絡先を確認・追加できます。</string>
 
     <string name="config_list_default_status">現在のステータス: デフォルト動作</string>
