@@ -2,10 +2,12 @@ package com.kurodai0715.autoemergencycall.ui.screen.contact
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.kurodai0715.autoemergencycall.R
 
+@OptIn(ExperimentalLayoutApi::class) // FlowRow を使用するために追加
 @Composable
 fun ContactEditScreen(
     contactId: String?, // 上記の一覧画面から渡されてくるID（nullなら新規）
@@ -83,16 +86,21 @@ fun ContactEditScreen(
         bottomBar = {
             // 編集画面の下部に3つのボタンを配置
             Column(modifier = Modifier.padding(16.dp)) {
-                Row(
+                FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp), // 縦に並んだときの隙間
+                    maxItemsInEachRow = 3 // 1行に最大3つまで（通常時は横並び）
                 ) {
+                    // 各ボタンの widthIn(min = ...) は小さくなりすぎて押しにくくなるのを防ぐ
+                    // ボタン内の Text に maxLines = 1 を指定し、文字が縦に並ぶのを防ぐ
+
                     // 1. 戻るボタン
                     OutlinedButton(
                         onClick = onNavigateBack,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
                     ) {
-                        Text(stringResource(R.string.contact_edit_btn_back))
+                        Text(text = stringResource(R.string.contact_edit_btn_back), maxLines = 1)
                     }
 
                     // 2. 削除ボタン（既存編集時のみ有効化）
@@ -107,9 +115,9 @@ fun ContactEditScreen(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                         enabled = contactId != null, // 新規のときは押せない
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
                     ) {
-                        Text(stringResource(R.string.contact_edit_btn_delete))
+                        Text(text = stringResource(R.string.contact_edit_btn_delete), maxLines = 1)
                     }
 
                     // 3. 保存ボタン
@@ -129,9 +137,9 @@ fun ContactEditScreen(
                             }
                         },
                         enabled = nameInput.isNotBlank() && phoneInput.isNotBlank() && isPhoneValid,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
                     ) {
-                        Text(stringResource(R.string.contact_edit_btn_save))
+                        Text(text = stringResource(R.string.contact_edit_btn_save), maxLines = 1)
                     }
                 }
             }
