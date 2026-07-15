@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -46,6 +48,9 @@ fun ContactEditScreen(
     var nameInput by remember { mutableStateOf(existingContact?.name ?: "") }
     var phoneInput by remember { mutableStateOf(existingContact?.phoneNumber ?: "") }
     var relationInput by remember { mutableStateOf(existingContact?.relation ?: "") }
+
+    // コンテンツエリアのスクロール状態を管理するステートを記憶
+    val scrollState = rememberScrollState()
 
     // 電話番号が半角数字のみで構成されているかチェック
     // 空文字のときはエラーにしない（未入力は別途保存ボタン側でガード）
@@ -149,6 +154,8 @@ fun ContactEditScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                // スクロール可能にする
+                .verticalScroll(scrollState)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
