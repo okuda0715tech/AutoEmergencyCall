@@ -148,7 +148,7 @@
     <string name="test_sms_error_no_contacts">連絡先が登録されていません。先に連絡先一覧から追加してください。</string>
 
     <string name="test_sms_card_title">💡 テスト機能について</string>
-    <string name="test_sms_card_desc">登録された連絡先へ実際にSMSが届くシステムテストを行えます。ボタンを押すと即座に送信され、ご契約のプランに応じたSMS送信料（通信料）が発生しますのでご注意ください。</string>
+    <string name="test_sms_card_desc">登録された連絡先に実際にSMSが届くかどうかのテストが行えます。\n『送信する』ボタンを押すと即座に送信され、ご契約のプランに応じたSMS送信料（通信料）が発生しますのでご注意ください。</string>
 
     <string name="test_sms_btn_back">戻る</string>
     <string name="test_sms_btn_send">送信する</string>
