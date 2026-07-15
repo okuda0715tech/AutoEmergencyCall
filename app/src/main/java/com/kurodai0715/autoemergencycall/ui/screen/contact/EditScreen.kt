@@ -176,14 +176,18 @@ fun ContactEditScreen(
                     imeAction = ImeAction.Next
                 ),
                 isError = !isPhoneValid,
-                supportingText = {
+                supportingText =
                     if (!isPhoneValid) {
-                        Text(
-                            text = stringResource(R.string.contact_edit_error_phone_format),
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                },
+                        { // この中カッコは supportingText にコンポーザブル関数を渡すために必要
+                            Text(
+                                text = stringResource(R.string.contact_edit_error_phone_format),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    } else {
+                        // 正常時は supportingText 表示用のスペースを確保しないよう null を渡す
+                        null
+                    },
                 modifier = Modifier.fillMaxWidth()
             )
 
