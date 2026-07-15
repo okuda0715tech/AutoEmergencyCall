@@ -159,6 +159,7 @@ fun ContactEditScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // タイトル
             Text(
                 text = if (contactId == null) {
                     stringResource(R.string.contact_edit_title_add)
@@ -168,6 +169,7 @@ fun ContactEditScreen(
                 style = MaterialTheme.typography.headlineMedium
             )
 
+            // 名前
             OutlinedTextField(
                 value = nameInput,
                 onValueChange = { nameInput = it },
@@ -180,6 +182,7 @@ fun ContactEditScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // 電話番号
             OutlinedTextField(
                 value = phoneInput,
                 onValueChange = { phoneInput = it },
@@ -206,6 +209,7 @@ fun ContactEditScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // 関係性
             OutlinedTextField(
                 value = relationInput,
                 onValueChange = { relationInput = it },
