@@ -142,6 +142,24 @@
     <string name="config_edit_dialog_msg_delete">動作設定を削除しました。</string>
     <string name="config_edit_dialog_btn_ok">OK</string>
 
+    <!-- SMS送信テスト 画面 -->
+    <string name="test_sms_title">SMS送信テスト</string>
+    <string name="test_sms_label_select_recipient">送信先を1つ選択してください</string>
+    <string name="test_sms_error_no_contacts">連絡先が登録されていません。先に連絡先一覧から追加してください。</string>
+
+    <string name="test_sms_card_title">💡 テスト機能について</string>
+    <string name="test_sms_card_desc">登録された連絡先へ実際にSMSが届くシステムテストを行えます。ボタンを押すと即座に送信され、ご契約のプランに応じたSMS送信料（通信料）が発生しますのでご注意ください。</string>
+
+    <string name="test_sms_btn_back">戻る</string>
+    <string name="test_sms_btn_send">送信する</string>
+
+    <string name="test_sms_contact_detail_format">%1$s : %2$s</string>
+
+    <string name="test_sms_dialog_title">結果</string>
+    <string name="test_sms_dialog_msg_success">%1$s さんへテストSMSを送信しました。実際に届いているかご確認ください。</string>
+    <string name="test_sms_dialog_msg_failure">送信に失敗しました。SMS送信権限が許可されているか、または電波状況をご確認ください。</string>
+    <string name="test_sms_dialog_btn_ok">OK</string>
+
     <!-- 共通 -->
     <string name="menu_icon_description">メニュー</string>
     <string name="common_delete">削除</string>

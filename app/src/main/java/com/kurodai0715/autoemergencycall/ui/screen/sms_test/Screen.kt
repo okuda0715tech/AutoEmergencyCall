@@ -1,15 +1,39 @@
 package com.kurodai0715.autoemergencycall.ui.screen.sms_test
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.kurodai0715.autoemergencycall.R
 import com.kurodai0715.autoemergencycall.data.Contact
 
 @Composable
@@ -23,13 +47,19 @@ fun TestSmsScreen(
     var showDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
 
+    // 各結果時のメッセージテンプレートをコンポーザブル内で簡単に呼び出せるよう取得
+    val messageSuccess = stringResource(R.string.test_sms_dialog_msg_success, selectedContact?.name ?: "")
+    val messageFailure = stringResource(R.string.test_sms_dialog_msg_failure)
+
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text("結果") },
+            title = { Text(stringResource(R.string.test_sms_dialog_title)) },
             text = { Text(dialogMessage) },
             confirmButton = {
-                TextButton(onClick = { showDialog = false }) { Text("OK") }
+                TextButton(onClick = { showDialog = false }) {
+                    Text(stringResource(R.string.test_sms_dialog_btn_ok))
+                }
             }
         )
     }
@@ -46,18 +76,15 @@ fun TestSmsScreen(
                     onClick = onNavigateBack,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("戻る")
+                    Text(stringResource(R.string.test_sms_btn_back))
                 }
 
                 Button(
                     onClick = {
                         selectedContact?.let { contact ->
                             viewModel.sendTestSms(contact) { success ->
-                                dialogMessage = if (success) {
-                                    "${contact.name} さんへテストSMSを送信しました。実際に届いているかご確認ください。"
-                                } else {
-                                    "送信に失敗しました。SMS送信権限が許可されているか、または電波状況をご確認ください。"
-                                }
+                                // 成功時は、事前に定義した「[名前]さんへ〜」の文字列をセット
+                                dialogMessage = if (success) messageSuccess else messageFailure
                                 showDialog = true
                             }
                         }
@@ -65,7 +92,7 @@ fun TestSmsScreen(
                     enabled = selectedContact != null,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("送信する")
+                    Text(stringResource(R.string.test_sms_btn_send))
                 }
             }
         }
@@ -78,7 +105,7 @@ fun TestSmsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "SMS送信テスト",
+                text = stringResource(R.string.test_sms_title),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -90,23 +117,26 @@ fun TestSmsScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "💡 テスト機能について",
+                        text = stringResource(R.string.test_sms_card_title),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "登録された連絡先へ実際にSMSが届くシステムテストを行えます。ボタンを押すと即座に送信され、ご契約のプランに応じたSMS送信料（通信料）が発生しますのでご注意ください。",
+                        text = stringResource(R.string.test_sms_card_desc),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
 
-            Text(text = "送信先を1つ選択してください", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(R.string.test_sms_label_select_recipient),
+                style = MaterialTheme.typography.titleMedium
+            )
 
             if (contacts.isEmpty()) {
                 Text(
-                    text = "連絡先が登録されていません。先に連絡先一覧から追加してください。",
+                    text = stringResource(R.string.test_sms_error_no_contacts),
                     color = MaterialTheme.colorScheme.error
                 )
             }
@@ -134,8 +164,13 @@ fun TestSmsScreen(
                                 style = MaterialTheme.typography.bodyLarge,
                                 fontWeight = FontWeight.Bold
                             )
+                            // "関係性 : 電話番号" のフォーマット文字列リソースを適用
                             Text(
-                                text = "${contact.relation} : ${contact.phoneNumber}",
+                                text = stringResource(
+                                    R.string.test_sms_contact_detail_format,
+                                    contact.relation,
+                                    contact.phoneNumber
+                                ),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
