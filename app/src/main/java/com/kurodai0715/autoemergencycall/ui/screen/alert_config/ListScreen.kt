@@ -109,8 +109,8 @@ fun ConfigListScreen(
                 }
             }
 
-            // コンテンツエリアをスクロール可能にしているため LazyColumn は使用できない。
-            // そのため、代わりに Column を使用する。
+            // 一覧の表示に LazyColumn は使わず Column を使う。
+            // LazyColumn のスクロールが画面全体のスクロールと衝突して使えないため。
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()

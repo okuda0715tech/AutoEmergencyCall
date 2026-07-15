@@ -198,7 +198,7 @@ fun ConfigEditScreen(
                 )
             }
 
-            // 画面全体をスクロールしたいため、連絡先一覧の表示に LazyColumn は使わず Column を使う。
+            // 一覧の表示に LazyColumn は使わず Column を使う。
             // LazyColumn のスクロールが画面全体のスクロールと衝突して使えないため。
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
