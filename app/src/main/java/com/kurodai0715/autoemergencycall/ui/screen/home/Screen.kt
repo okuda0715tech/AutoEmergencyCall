@@ -352,12 +352,14 @@ fun HomeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // タイトル
         Text(
             text = stringResource(R.string.home_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
 
+        // 説明文
         Text(
             text = stringResource(R.string.home_description),
             style = MaterialTheme.typography.bodyMedium,
