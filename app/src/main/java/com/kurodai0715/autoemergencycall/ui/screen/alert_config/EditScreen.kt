@@ -1,5 +1,6 @@
 package com.kurodai0715.autoemergencycall.ui.screen.alert_config
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -204,21 +205,25 @@ fun ConfigEditScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 availableContacts.forEach { contact ->
+                    val isChecked = selectedContactIds.contains(contact.id)
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clickable {
+                                selectedContactIds = if (isChecked) {
+                                    selectedContactIds - contact.id
+                                } else {
+                                    selectedContactIds + contact.id
+                                }
+                            }
                             .padding(vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Checkbox(
-                            checked = selectedContactIds.contains(contact.id),
-                            onCheckedChange = { isChecked ->
-                                selectedContactIds = if (isChecked) {
-                                    selectedContactIds + contact.id
-                                } else {
-                                    selectedContactIds - contact.id
-                                }
-                            }
+                            checked = isChecked,
+                            // Row側のclickableと干渉しないよう、チェックボックス単体のコールバックは null に設定
+                            onCheckedChange = null
                         )
                         Spacer(modifier = Modifier.width(8.dp))
 
