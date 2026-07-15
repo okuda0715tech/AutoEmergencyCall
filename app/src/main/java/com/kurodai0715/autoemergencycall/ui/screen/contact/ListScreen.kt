@@ -174,10 +174,18 @@ private fun NotificationSettingsGuideDialog(
     context: Context,
     onDismiss: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.contacts_permission_dialog_title)) },
-        text = { Text(stringResource(R.string.contacts_permission_dialog_desc)) },
+        text = {
+            Column(
+                modifier = Modifier.verticalScroll(scrollState)
+            ) {
+                Text(stringResource(R.string.contacts_permission_dialog_desc))
+            }
+        },
         confirmButton = {
             Button(
                 onClick = {
