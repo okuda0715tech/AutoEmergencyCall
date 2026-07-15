@@ -121,6 +121,27 @@
     <string name="config_list_item_target_contacts">対象連絡先: %1$s</string>
     <string name="config_list_item_no_contacts">なし</string>
 
+    <!-- アラート登録・編集 画面 -->
+    <string name="config_edit_title_add">動作設定の新規追加</string>
+    <string name="config_edit_title_edit">動作設定の編集</string>
+    <string name="config_edit_label_hours">何時間後にアラートを出すか（数値）</string>
+    <string name="config_edit_error_hours_format">※誤通報防止のため、24時間以上の値を入力してください。</string>
+
+    <string name="config_edit_label_select_contacts">送信対象の連絡先を選択（複数選択可）</string>
+    <string name="config_edit_error_no_contacts">先に「連絡先一覧」画面から緊急連絡先を登録してください。</string>
+
+    <string name="config_edit_contact_display_with_relation">%1$s (%2$s)</string>
+
+    <string name="config_edit_btn_back">戻る</string>
+    <string name="config_edit_btn_delete">削除</string>
+    <string name="config_edit_btn_save">保存</string>
+
+    <string name="config_edit_dialog_title">完了</string>
+    <string name="config_edit_dialog_msg_add">動作設定を新規登録しました。</string>
+    <string name="config_edit_dialog_msg_update">動作設定を更新しました。</string>
+    <string name="config_edit_dialog_msg_delete">動作設定を削除しました。</string>
+    <string name="config_edit_dialog_btn_ok">OK</string>
+
     <!-- 共通 -->
     <string name="menu_icon_description">メニュー</string>
     <string name="common_delete">削除</string>

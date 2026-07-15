@@ -1,15 +1,38 @@
 package com.kurodai0715.autoemergencycall.ui.screen.alert_config
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.kurodai0715.autoemergencycall.R
 
 @Composable
 fun ConfigEditScreen(
@@ -36,13 +59,20 @@ fun ConfigEditScreen(
     var showSuccessDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
 
+    // 各完了時のメッセージ文字列をコンポーザブル内で解決できるように定義
+    val messageAdd = stringResource(R.string.config_edit_dialog_msg_add)
+    val messageUpdate = stringResource(R.string.config_edit_dialog_msg_update)
+    val messageDelete = stringResource(R.string.config_edit_dialog_msg_delete)
+
     if (showSuccessDialog) {
         AlertDialog(
             onDismissRequest = {},
-            title = { Text("完了") },
+            title = { Text(stringResource(R.string.config_edit_dialog_title)) },
             text = { Text(dialogMessage) },
             confirmButton = {
-                TextButton(onClick = { showSuccessDialog = false; onNavigateBack() }) { Text("OK") }
+                TextButton(onClick = { showSuccessDialog = false; onNavigateBack() }) {
+                    Text(stringResource(R.string.config_edit_dialog_btn_ok))
+                }
             }
         )
     }
@@ -56,9 +86,7 @@ fun ConfigEditScreen(
                 ) {
                     // 1. 戻る
                     OutlinedButton(onClick = onNavigateBack, modifier = Modifier.weight(1f)) {
-                        Text(
-                            "戻る"
-                        )
+                        Text(stringResource(R.string.config_edit_btn_back))
                     }
 
                     // 2. 削除
@@ -66,7 +94,7 @@ fun ConfigEditScreen(
                         onClick = {
                             if (configId != null) {
                                 viewModel.deleteConfig(configId) {
-                                    dialogMessage = "動作設定を削除しました。"
+                                    dialogMessage = messageDelete
                                     showSuccessDialog = true
                                 }
                             }
@@ -74,7 +102,7 @@ fun ConfigEditScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                         enabled = configId != null,
                         modifier = Modifier.weight(1f)
-                    ) { Text("削除") }
+                    ) { Text(stringResource(R.string.config_edit_btn_delete)) }
 
                     // 3. 保存
                     Button(
@@ -87,7 +115,7 @@ fun ConfigEditScreen(
                                     targetContactIds = selectedContactIds.toList()
                                 ) {
                                     dialogMessage =
-                                        if (configId == null) "動作設定を新規登録しました。" else "動作設定を更新しました。"
+                                        if (configId == null) messageAdd else messageUpdate
                                     showSuccessDialog = true
                                 }
                             }
@@ -95,7 +123,7 @@ fun ConfigEditScreen(
                         // 24時間以上 ＆ 1件以上選択必須
                         enabled = isHoursValid && selectedContactIds.isNotEmpty(),
                         modifier = Modifier.weight(1f)
-                    ) { Text("保存") }
+                    ) { Text(stringResource(R.string.config_edit_btn_save)) }
                 }
             }
         }
@@ -108,37 +136,45 @@ fun ConfigEditScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = if (configId == null) "動作設定の新規追加" else "動作設定の編集",
+                text = if (configId == null) {
+                    stringResource(R.string.config_edit_title_add)
+                } else {
+                    stringResource(R.string.config_edit_title_edit)
+                },
                 style = MaterialTheme.typography.headlineMedium
             )
 
             OutlinedTextField(
                 value = hoursInput,
                 onValueChange = { hoursInput = it },
-                label = { Text("何時間後にアラートを出すか（数値）") },
+                label = { Text(stringResource(R.string.config_edit_label_hours)) },
                 singleLine = true,
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 isError = hoursInput.isNotEmpty() && !isHoursValid,
-                supportingText = {
+                supportingText =
                     if (hoursInput.isNotEmpty() && !isHoursValid) {
-                        Text(
-                            text = "※誤通報防止のため、24時間以上の値を入力してください。",
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                },
+                        { // この中カッコは supportingText にコンポーザブル関数を渡すために必要
+                            Text(
+                                text = stringResource(R.string.config_edit_error_hours_format),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    } else {
+                        // 正常時は supportingText 表示用のスペースを確保しないよう null を渡す
+                        null
+                    },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
-                text = "送信対象の連絡先を選択（複数選択可）",
+                text = stringResource(R.string.config_edit_label_select_contacts),
                 style = MaterialTheme.typography.titleMedium
             )
 
             if (availableContacts.isEmpty()) {
                 Text(
-                    text = "先に「連絡先一覧」画面から緊急連絡先を登録してください。",
+                    text = stringResource(R.string.config_edit_error_no_contacts),
                     color = MaterialTheme.colorScheme.error
                 )
             }
@@ -166,10 +202,16 @@ fun ConfigEditScreen(
                             }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        val displayText = if (contact.relation.isEmpty())
+
+                        val displayText = if (contact.relation.isEmpty()) {
                             contact.name
-                        else
-                            "${contact.name} (${contact.relation})"
+                        } else {
+                            stringResource(
+                                R.string.config_edit_contact_display_with_relation,
+                                contact.name,
+                                contact.relation
+                            )
+                        }
                         Text(text = displayText, style = MaterialTheme.typography.bodyLarge)
                     }
                 }
