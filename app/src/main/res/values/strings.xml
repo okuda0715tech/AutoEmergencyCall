@@ -70,7 +70,7 @@
     <string name="home_btn_test">送信テストはこちら</string>
 
     <!-- 連絡先一覧 画面 -->
-    <string name="contacts_title">連絡先の登録・管理</string>
+    <string name="contacts_title">連絡先の設定</string>
     <string name="contacts_desc_main">万が一の際に通知を行う連絡先です。</string>
     <string name="contacts_desc_sub_sms">・初期設定では登録されている全員にSMSが送信されます。</string>
     <string name="contacts_desc_sub_config">・『アラート設定』から送信先を個別に指定することも可能です。</string>
@@ -90,7 +90,7 @@
     <string name="contacts_permission_dialog_btn_cancel">キャンセル</string>
 
     <!-- 連絡先登録・編集 画面 -->
-    <string name="contact_edit_title_add">緊急連絡先の新規追加</string>
+    <string name="contact_edit_title_add">緊急連絡先の追加</string>
     <string name="contact_edit_title_edit">緊急連絡先の編集</string>
     <string name="contact_edit_label_name">名前</string>
     <string name="contact_edit_label_phone">電話番号（ハイフンなし）</string>
@@ -108,7 +108,7 @@
     <string name="contact_edit_dialog_btn_ok">OK</string>
 
     <!-- アラート設定一覧 画面 -->
-    <string name="config_list_title">アラート設定</string>
+    <string name="config_list_title">アラートの設定</string>
     <string name="config_list_description">活動の最終検知からSMSを自動送信するまでの時間と、その対象となる連絡先を確認・追加できます。</string>
 
     <string name="config_list_default_status">現在のステータス: デフォルト動作</string>
@@ -122,8 +122,8 @@
     <string name="config_list_item_no_contacts">なし</string>
 
     <!-- アラート登録・編集 画面 -->
-    <string name="config_edit_title_add">動作設定の新規追加</string>
-    <string name="config_edit_title_edit">動作設定の編集</string>
+    <string name="config_edit_title_add">アラート設定の追加</string>
+    <string name="config_edit_title_edit">アラート設定の編集</string>
     <string name="config_edit_label_hours">何時間後にアラートを出すか（数値）</string>
     <string name="config_edit_error_hours_format">※誤通報防止のため、24時間以上の値を入力してください。</string>
 
