@@ -43,7 +43,7 @@
     <string name="stop_confirm_dialog_confirm">停止する</string>
 
     <string name="home_title">自動安否確認システム</string>
-    <string name="home_description">一人暮らしの方の万が一の事態を検知し、事前に登録されたご家族やご近所の方へ自動的に安否確認要請の連絡を行うアプリです。</string>
+    <string name="home_description">このアプリは、一人暮らしの方が行動不能な状態になっていないかを見守ります。万が一の場合には、事前に登録された緊急連絡先へ自動的に安否確認要請を行います。</string>
     <string name="home_section_status">現在の稼働状態</string>
 
     <string name="home_status_active">自動見守り：稼働中</string>
@@ -109,7 +109,7 @@
 
     <!-- アラート設定一覧 画面 -->
     <string name="config_list_title">アラートの設定</string>
-    <string name="config_list_description">活動の最終検知からSMSを自動送信するまでの時間と、その対象となる連絡先を確認・追加できます。</string>
+    <string name="config_list_description">あなたの活動が検知できなくなってから、何時間後に緊急通報を行うかを設定します。\nまた、その際に誰にSMSを送信するかを設定できます。</string>
 
     <string name="config_list_default_status">現在のステータス: デフォルト動作</string>
     <string name="config_list_default_desc">動作設定が未登録のため、万が一の際は「すべての連絡先」に対して一律「48時間後」にSMSが送信されます。</string>
