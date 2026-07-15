@@ -71,7 +71,7 @@
 
     <!-- 連絡先一覧 画面 -->
     <string name="contacts_title">連絡先の設定</string>
-    <string name="contacts_desc_main">万が一の際に通知を行う連絡先です。</string>
+    <string name="contacts_desc_main">万が一の際に通知を行う連絡先を管理します。</string>
     <string name="contacts_desc_sub_sms">・初期設定では登録されている全員にSMSが送信されます。</string>
     <string name="contacts_desc_sub_config">・『アラート設定』から送信先を個別に指定することも可能です。</string>
     <string name="contacts_empty_list">登録されている連絡先はありません。</string>
