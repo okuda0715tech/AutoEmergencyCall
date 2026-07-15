@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,6 +34,9 @@ fun ConfigListScreen(
 ) {
     val configs by viewModel.alertConfigs.collectAsState()
     val contacts by viewModel.availableContacts.collectAsState()
+
+    // コンテンツエリアのスクロール状態
+    val scrollState = rememberScrollState()
 
     Scaffold(
         bottomBar = {
@@ -65,6 +68,8 @@ fun ConfigListScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                // スクロール可能する
+                .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
             // タイトル
@@ -104,12 +109,13 @@ fun ConfigListScreen(
                 }
             }
 
-            // 設定リスト
-            LazyColumn(
+            // コンテンツエリアをスクロール可能にしているため LazyColumn は使用できない。
+            // そのため、代わりに Column を使用する。
+            Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth()
             ) {
-                items(configs) { config ->
+                configs.forEach { config ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
