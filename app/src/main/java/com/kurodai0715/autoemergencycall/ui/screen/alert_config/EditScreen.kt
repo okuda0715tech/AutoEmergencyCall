@@ -2,12 +2,15 @@ package com.kurodai0715.autoemergencycall.ui.screen.alert_config
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -34,6 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.kurodai0715.autoemergencycall.R
 
+@OptIn(ExperimentalLayoutApi::class) // FlowRow を使用するために追加
 @Composable
 fun ConfigEditScreen(
     configId: String?,
@@ -80,13 +84,18 @@ fun ConfigEditScreen(
     Scaffold(
         bottomBar = {
             Column(modifier = Modifier.padding(16.dp)) {
-                Row(
+                FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    maxItemsInEachRow = 3
                 ) {
                     // 1. 戻る
-                    OutlinedButton(onClick = onNavigateBack, modifier = Modifier.weight(1f)) {
-                        Text(stringResource(R.string.config_edit_btn_back))
+                    OutlinedButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
+                    ) {
+                        Text(text = stringResource(R.string.config_edit_btn_back), maxLines = 1)
                     }
 
                     // 2. 削除
@@ -101,8 +110,10 @@ fun ConfigEditScreen(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                         enabled = configId != null,
-                        modifier = Modifier.weight(1f)
-                    ) { Text(stringResource(R.string.config_edit_btn_delete)) }
+                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
+                    ) {
+                        Text(text = stringResource(R.string.config_edit_btn_delete), maxLines = 1)
+                    }
 
                     // 3. 保存
                     Button(
@@ -122,8 +133,10 @@ fun ConfigEditScreen(
                         },
                         // 24時間以上 ＆ 1件以上選択必須
                         enabled = isHoursValid && selectedContactIds.isNotEmpty(),
-                        modifier = Modifier.weight(1f)
-                    ) { Text(stringResource(R.string.config_edit_btn_save)) }
+                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
+                    ) {
+                        Text(text = stringResource(R.string.config_edit_btn_save), maxLines = 1)
+                    }
                 }
             }
         }
