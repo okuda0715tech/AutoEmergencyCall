@@ -671,26 +671,46 @@ fun HomeScreen(
             fontWeight = FontWeight.Bold
         )
 
-        FlowRow(
+        // 文字数が多いボタンの集合のため、 FlowRow は使わず、最初から Column で実装する。
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp) // ボタン同士の縦の隙間
         ) {
-            Button(onClick = onNavigateToContacts) {
+            // 1. 緊急連絡先の登録ボタン（「連絡先設定」）
+            Button(
+                onClick = onNavigateToContacts,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
-                    stringResource(R.string.home_btn_contacts)
+                    text = stringResource(R.string.home_btn_contacts),
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
             }
-            Button(onClick = onNavigateToConfigs) {
+
+            // 2. 見守り動作設定ボタン（「アラート設定」）
+            Button(
+                onClick = onNavigateToConfigs,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
-                    stringResource(R.string.home_btn_configs)
+                    text = stringResource(R.string.home_btn_configs),
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
             }
+
+            // 3. SMS送信テストボタン（「送信テストはこちら」）
             OutlinedButton(
                 onClick = onNavigateToTest,
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.home_btn_test))
+                Text(
+                    text = stringResource(R.string.home_btn_test),
+                    maxLines = 2, // これだけは文字が長いため、極大フォント時にも備えて2行まで折り返し可能に
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
         }
     }
