@@ -154,7 +154,7 @@ fun ContactListScreen(
                 )
             } else {
                 // 画面全体をスクロールしたいため、連絡先一覧の表示に LazyColumn は使わず Column を使う。
-                // LazyColumn はスクロールがネストするため使えない？ため。
+                // LazyColumn のスクロールが画面全体のスクロールと衝突して使えないため。
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     contactList.forEach { contact ->
                         ContactItemCard(

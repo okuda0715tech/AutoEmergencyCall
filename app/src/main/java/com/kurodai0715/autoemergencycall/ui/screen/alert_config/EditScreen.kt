@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -62,6 +62,9 @@ fun ConfigEditScreen(
 
     var showSuccessDialog by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
+
+    // コンテンツエリアのスクロール状態
+    val scrollState = rememberScrollState()
 
     // 各完了時のメッセージ文字列をコンポーザブル内で解決できるように定義
     val messageAdd = stringResource(R.string.config_edit_dialog_msg_add)
@@ -145,6 +148,8 @@ fun ConfigEditScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                // スクロール可能にする
+                .verticalScroll(scrollState)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -192,12 +197,13 @@ fun ConfigEditScreen(
                 )
             }
 
-            // 連絡先選択用のチェックボックス一覧
-            LazyColumn(
+            // 画面全体をスクロールしたいため、連絡先一覧の表示に LazyColumn は使わず Column を使う。
+            // LazyColumn のスクロールが画面全体のスクロールと衝突して使えないため。
+            Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.fillMaxWidth()
             ) {
-                items(availableContacts) { contact ->
+                availableContacts.forEach { contact ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
