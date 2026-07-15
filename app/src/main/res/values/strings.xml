@@ -4,8 +4,6 @@
     <!-- ドロワーメニュー -->
     <string name="header_label">メニュー</string>
     <string name="home">ホーム</string>
-    <string name="contact">連絡先</string>
-    <string name="alert_config">動作設定</string>
     <string name="developer">開発者専用</string>
     <string name="app_info">アプリ情報</string>
     <string name="privacy_policy">プライバシーポリシー</string>
@@ -17,8 +15,8 @@
     <string name="sms_send_test_title">SMS送信テスト</string>
     <string name="contact_list_screen_title">連絡先 一覧</string>
     <string name="contact_edit_screen_title">連絡先 登録/編集</string>
-    <string name="alert_config_list_screen_title">動作設定 一覧</string>
-    <string name="alert_config_edit_screen_title">動作設定 登録/編集</string>
+    <string name="alert_config_list_screen_title">アラート設定 一覧</string>
+    <string name="alert_config_edit_screen_title">アラート設定 登録/編集</string>
     <string name="developer_screen_title">開発者専用</string>
     <string name="app_info_screen_title">アプリ情報</string>
 
@@ -68,14 +66,14 @@
 
     <string name="home_section_management">各種設定・管理</string>
     <string name="home_btn_contacts">連絡先設定</string>
-    <string name="home_btn_configs">動作設定</string>
+    <string name="home_btn_configs">アラート設定</string>
     <string name="home_btn_test">送信テストはこちら</string>
 
     <!-- 連絡先一覧 画面 -->
     <string name="contacts_title">連絡先の登録・管理</string>
     <string name="contacts_desc_main">万が一の際に通知を行う連絡先です。</string>
     <string name="contacts_desc_sub_sms">・初期設定では登録されている全員にSMSが送信されます。</string>
-    <string name="contacts_desc_sub_config">・『動作設定』から送信先を個別に指定することも可能です。</string>
+    <string name="contacts_desc_sub_config">・『アラート設定』から送信先を個別に指定することも可能です。</string>
     <string name="contacts_empty_list">登録されている連絡先はありません。</string>
     <string name="contacts_phone_label">TEL: %1$s</string>
     <string name="contacts_name_with_relation">%1$s (%2$s)</string>
