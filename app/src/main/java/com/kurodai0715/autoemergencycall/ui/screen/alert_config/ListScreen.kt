@@ -1,15 +1,30 @@
 package com.kurodai0715.autoemergencycall.ui.screen.alert_config
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kurodai0715.autoemergencycall.R
 
 @Composable
 fun ConfigListScreen(
@@ -33,7 +48,7 @@ fun ConfigListScreen(
                     onClick = onNavigateBack,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("戻る")
+                    Text(stringResource(R.string.config_list_btn_back))
                 }
 
                 // 右側：新規追加ボタン
@@ -41,7 +56,7 @@ fun ConfigListScreen(
                     onClick = { onNavigateToEdit(null) },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("追加")
+                    Text(stringResource(R.string.config_list_btn_add))
                 }
             }
         }
@@ -54,17 +69,17 @@ fun ConfigListScreen(
         ) {
             // タイトル
             Text(
-                text = "動作・アラート設定",
+                text = stringResource(R.string.config_list_title),
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 4.dp) // 下の余白を少し調整
+                modifier = Modifier.padding(bottom = 4.dp)
             )
 
             // 説明文
             Text(
-                text = "活動の最終検知からSMSを自動送信するまでの時間と、その対象となる連絡先を確認・追加できます。",
+                text = stringResource(R.string.config_list_description),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 16.dp) // リストやカードとの間に余白を作る
+                modifier = Modifier.padding(bottom = 16.dp)
             )
 
             // デフォルト状態の明示
@@ -77,12 +92,12 @@ fun ConfigListScreen(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = "現在のステータス: デフォルト動作",
+                            text = stringResource(R.string.config_list_default_status),
                             style = MaterialTheme.typography.titleMedium
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "動作設定が未登録のため、万が一の際は「すべての連絡先」に対して一律「48時間後」にSMSが送信されます。",
+                            text = stringResource(R.string.config_list_default_desc),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -102,7 +117,10 @@ fun ConfigListScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "${config.thresholdHours} 時間後 に通知",
+                                text = stringResource(
+                                    R.string.config_list_item_notification_time,
+                                    config.thresholdHours
+                                ),
                                 style = MaterialTheme.typography.titleMedium
                             )
                             Spacer(modifier = Modifier.height(4.dp))
@@ -111,12 +129,18 @@ fun ConfigListScreen(
                             val targetNames =
                                 contacts.filter { config.targetContactIds.contains(it.id) }
                                     .map { it.name }
+
+                            val joinedNames = if (targetNames.isEmpty()) {
+                                stringResource(R.string.config_list_item_no_contacts)
+                            } else {
+                                targetNames.joinToString(", ")
+                            }
+
                             Text(
-                                text = "対象連絡先: ${
-                                    if (targetNames.isEmpty()) "なし" else targetNames.joinToString(
-                                        ", "
-                                    )
-                                }",
+                                text = stringResource(
+                                    R.string.config_list_item_target_contacts,
+                                    joinedNames
+                                ),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

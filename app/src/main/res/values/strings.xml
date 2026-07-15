@@ -107,6 +107,20 @@
     <string name="contact_edit_dialog_msg_delete">連絡先を削除しました。</string>
     <string name="contact_edit_dialog_btn_ok">OK</string>
 
+    <!-- アラート設定一覧 画面 -->
+    <string name="config_list_title">動作・アラート設定</string>
+    <string name="config_list_description">活動の最終検知からSMSを自動送信するまでの時間と、その対象となる連絡先を確認・追加できます。</string>
+
+    <string name="config_list_default_status">現在のステータス: デフォルト動作</string>
+    <string name="config_list_default_desc">動作設定が未登録のため、万が一の際は「すべての連絡先」に対して一律「48時間後」にSMSが送信されます。</string>
+
+    <string name="config_list_btn_back">戻る</string>
+    <string name="config_list_btn_add">追加</string>
+
+    <string name="config_list_item_notification_time">%1$d 時間後 に通知</string>
+    <string name="config_list_item_target_contacts">対象連絡先: %1$s</string>
+    <string name="config_list_item_no_contacts">なし</string>
+
     <!-- 共通 -->
     <string name="menu_icon_description">メニュー</string>
     <string name="common_delete">削除</string>
