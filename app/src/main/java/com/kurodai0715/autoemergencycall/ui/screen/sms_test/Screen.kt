@@ -130,7 +130,6 @@ fun TestSmsScreen(
             Text(
                 text = stringResource(R.string.test_sms_title),
                 style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
             )
 
             // ストア審査対策 ＆ 誤操作防止の注意書き
@@ -142,7 +141,6 @@ fun TestSmsScreen(
                     Text(
                         text = stringResource(R.string.test_sms_card_title),
                         style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
