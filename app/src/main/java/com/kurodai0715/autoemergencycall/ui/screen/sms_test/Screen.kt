@@ -3,6 +3,8 @@ package com.kurodai0715.autoemergencycall.ui.screen.sms_test
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -36,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.kurodai0715.autoemergencycall.R
 import com.kurodai0715.autoemergencycall.data.Contact
 
+@OptIn(ExperimentalLayoutApi::class) // FlowRowを使用するために追加
 @Composable
 fun TestSmsScreen(
     viewModel: TestSmsViewModel = androidx.hilt.navigation.compose.hiltViewModel(),
@@ -66,33 +70,47 @@ fun TestSmsScreen(
 
     Scaffold(
         bottomBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OutlinedButton(
-                    onClick = onNavigateBack,
-                    modifier = Modifier.weight(1f)
+            // 縦に並んだ際の間隔も担保するため Column のパディングを16.dpに
+            Column(modifier = Modifier.padding(16.dp)) {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    maxItemsInEachRow = 2
                 ) {
-                    Text(stringResource(R.string.test_sms_btn_back))
-                }
+                    // 戻るボタン
+                    OutlinedButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier
+                            .widthIn(min = 140.dp)
+                            .weight(1f)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.test_sms_btn_back),
+                            maxLines = 1
+                        )
+                    }
 
-                Button(
-                    onClick = {
-                        selectedContact?.let { contact ->
-                            viewModel.sendTestSms(contact) { success ->
-                                // 成功時は、事前に定義した「[名前]さんへ〜」の文字列をセット
-                                dialogMessage = if (success) messageSuccess else messageFailure
-                                showDialog = true
+                    // 送信するボタン
+                    Button(
+                        onClick = {
+                            selectedContact?.let { contact ->
+                                viewModel.sendTestSms(contact) { success ->
+                                    dialogMessage = if (success) messageSuccess else messageFailure
+                                    showDialog = true
+                                }
                             }
-                        }
-                    },
-                    enabled = selectedContact != null,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(stringResource(R.string.test_sms_btn_send))
+                        },
+                        enabled = selectedContact != null,
+                        modifier = Modifier
+                            .widthIn(min = 140.dp)
+                            .weight(1f)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.test_sms_btn_send),
+                            maxLines = 1
+                        )
+                    }
                 }
             }
         }
@@ -110,7 +128,7 @@ fun TestSmsScreen(
                 fontWeight = FontWeight.Bold
             )
 
-            // 💡 ストア審査対策 ＆ 誤操作防止の注意書き
+            // ストア審査対策 ＆ 誤操作防止の注意書き
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                 modifier = Modifier.fillMaxWidth()
