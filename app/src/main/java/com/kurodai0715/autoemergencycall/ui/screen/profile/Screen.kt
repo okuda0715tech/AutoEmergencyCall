@@ -40,12 +40,14 @@ fun ProfileScreen(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // タイトル
         Text(
             text = stringResource(R.string.profile_title),
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onBackground
         )
 
+        // 説明文
         Text(
             text = stringResource(R.string.profile_description),
             style = MaterialTheme.typography.bodyMedium,
