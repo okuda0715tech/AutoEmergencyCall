@@ -12,6 +12,7 @@
     <!-- 画面名 -->
     <string name="no_title"> </string>
     <string name="home_screen_title">ホーム</string>
+    <string name="profile_screen_title">利用者名 登録</string>
     <string name="sms_send_test_title">SMS送信テスト</string>
     <string name="contact_list_screen_title">連絡先 一覧</string>
     <string name="contact_edit_screen_title">連絡先 登録/編集</string>
@@ -65,6 +66,7 @@
     <string name="home_auto_revoke_warning_desc">数ヶ月アプリを開かないと、スマホの制限により緊急SMSが送れなくなります。タップして次の画面で【未使用のアプリの権限を削除する】を必ず「オフ」にしてください。</string>
 
     <string name="home_section_management">各種設定・管理</string>
+    <string name="home_btn_profile">お名前設定</string>
     <string name="home_btn_contacts">連絡先設定</string>
     <string name="home_btn_configs">アラート設定</string>
     <string name="home_btn_test">送信テストはこちら</string>

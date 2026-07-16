@@ -65,6 +65,7 @@ import com.kurodai0715.autoemergencycall.R
 
 @Composable
 fun HomeScreen(
+    onNavigateToProfile: () -> Unit,
     onNavigateToContacts: () -> Unit,
     onNavigateToConfigs: () -> Unit,
     onNavigateToTest: () -> Unit,
@@ -676,7 +677,19 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp) // ボタン同士の縦の隙間
         ) {
-            // 1. 緊急連絡先の登録ボタン（「連絡先設定」）
+            // 利用者名の登録ボタン
+            Button(
+                onClick = onNavigateToProfile,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(R.string.home_btn_profile),
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
+            }
+
+            // 緊急連絡先の登録ボタン（「連絡先設定」）
             Button(
                 onClick = onNavigateToContacts,
                 modifier = Modifier.fillMaxWidth()
@@ -688,7 +701,7 @@ fun HomeScreen(
                 )
             }
 
-            // 2. 見守り動作設定ボタン（「アラート設定」）
+            // 見守り動作設定ボタン（「アラート設定」）
             Button(
                 onClick = onNavigateToConfigs,
                 modifier = Modifier.fillMaxWidth()
@@ -700,7 +713,7 @@ fun HomeScreen(
                 )
             }
 
-            // 3. SMS送信テストボタン（「送信テストはこちら」）
+            // SMS送信テストボタン（「送信テストはこちら」）
             OutlinedButton(
                 onClick = onNavigateToTest,
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
