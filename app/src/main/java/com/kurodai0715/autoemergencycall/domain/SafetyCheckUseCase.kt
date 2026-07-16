@@ -30,11 +30,8 @@ class SafetyCheckUseCase @Inject constructor(
         // バッテリー変化を元に最新の「アクティブ時刻」を計算・更新する
         val latestActiveTime = checkAndSaveBatteryStatus(currentTime)
 
-        // 最終アクティブからの経過時間を算出
-        val elapsedTime = currentTime - latestActiveTime
-
         // 経過時間と送信状況に基づき、必要であれば安否確認のSMSを送信する
-        evaluateAndTriggerSms(elapsedTime, currentTime, latestActiveTime)
+        evaluateAndTriggerSms(currentTime, latestActiveTime)
     }
 
     /**
@@ -86,10 +83,11 @@ class SafetyCheckUseCase @Inject constructor(
      * 経過時間が設定値を超えているか、また、送信済みかどうかを評価し、適切な連絡先にSMS送信を要求する。
      */
     private suspend fun evaluateAndTriggerSms(
-        elapsedTime: Long,
         currentTime: Long,
         latestActiveTime: Long
     ) {
+        val elapsedTime = currentTime - latestActiveTime
+
         val allContacts = contactStore.loadContacts()
         if (allContacts.isEmpty()) {
             Log.w("SafetyCheck", "連絡先が0件のためSMSを送信できる状態ではありません。")
