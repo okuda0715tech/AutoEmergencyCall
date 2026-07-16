@@ -139,7 +139,7 @@ class SafetyCheckUseCase @Inject constructor(
             contact.phoneNumber,
             message = "${contact.name}さんへの安否確認SMS：端末の活動が${hours}時間検知できませんでした。",
             showNotification = true,
-            targetName = contact.name,
+            receiverName = contact.name,
         )
     }
 

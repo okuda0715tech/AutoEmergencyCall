@@ -41,7 +41,7 @@ class TestSmsViewModel @Inject constructor(
                     phoneNumber = contact.phoneNumber,
                     message = "【自動安否確認アプリ】【テスト】${contact.name}さんへの安否確認SMS：端末の活動が○時間検知できませんでした。",
                     showNotification = false,
-                    targetName = contact.name,
+                    receiverName = contact.name,
                 )
                 onComplete(true)
             } catch (e: Exception) {

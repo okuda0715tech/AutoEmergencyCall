@@ -15,7 +15,7 @@ class SmsSenderImpl @Inject constructor(
         phoneNumber: String,
         message: String,
         showNotification: Boolean,
-        targetName: String,
+        receiverName: String,
     ) {
         val smsManager =
             context.getSystemService(SmsManager::class.java)
@@ -40,7 +40,7 @@ class SmsSenderImpl @Inject constructor(
             // 送信直後に通知を表示
             // 複数人に連続で送られた場合でも、NotificationHelper側でユニークIDを
             // 生成しているため、通知が上書きされずに人数分並んで表示されます。
-            NotificationHelper.showSmsSentNotification(context, targetName)
+            NotificationHelper.showSmsSentNotification(context, receiverName)
         }
     }
 }
