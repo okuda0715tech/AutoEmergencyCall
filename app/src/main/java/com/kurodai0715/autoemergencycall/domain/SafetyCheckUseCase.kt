@@ -86,6 +86,7 @@ class SafetyCheckUseCase @Inject constructor(
      * 経過時間と設定値を評価し、適切な連絡先にSMS送信を要求する。
      */
     private suspend fun evaluateAndTriggerSms(elapsedTime: Long) {
+        
         val allContacts = contactStore.loadContacts()
         if (allContacts.isEmpty()) {
             Log.w("SafetyCheck", "連絡先が0件のためSMSを送信できる状態ではありません。")
