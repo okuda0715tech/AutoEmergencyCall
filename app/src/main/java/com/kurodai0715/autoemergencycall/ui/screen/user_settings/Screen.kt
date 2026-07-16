@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.kurodai0715.autoemergencycall.data.UserSettings
 
 @Composable
-fun UserNameRegistrationScreen(
+fun ProfileScreen(
     onSaveSuccess: () -> Unit, // 保存成功時の画面遷移などのコールバック
     modifier: Modifier = Modifier
 ) {

@@ -20,7 +20,7 @@ import com.kurodai0715.autoemergencycall.ui.screen.contact.ContactListScreen
 import com.kurodai0715.autoemergencycall.ui.screen.contact.ContactViewModel
 import com.kurodai0715.autoemergencycall.ui.screen.developer_only.DeveloperScreen
 import com.kurodai0715.autoemergencycall.ui.screen.sms_test.TestSmsScreen
-import com.kurodai0715.autoemergencycall.ui.screen.user_settings.UserNameRegistrationScreen
+import com.kurodai0715.autoemergencycall.ui.screen.user_settings.ProfileScreen
 
 @Composable
 fun AppNavGraph(
@@ -48,7 +48,7 @@ fun AppNavGraph(
         // 💡 【追加】Profile（利用者の名前登録）画面のデスティネーション
         composable<Profile> {
             // 先ほど作成した Compose 画面を呼び出します（パッケージ名はプロジェクト構造に合わせて適宜補完してください）
-            UserNameRegistrationScreen(
+            ProfileScreen(
                 onSaveSuccess = {
                     navController.popBackStack() // 保存できたらホーム画面に戻る
                 }
