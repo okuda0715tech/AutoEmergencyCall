@@ -72,7 +72,7 @@
     <string name="home_btn_test">送信テストはこちら</string>
 
     <!-- プロフィール登録 画面 -->
-    <string name="profile_title">利用者の名前登録</string>
+    <string name="profile_title">利用者のお名前の登録</string>
     <string name="profile_description">緊急連絡SMSの本文に、ここで登録したお名前（例:「〇〇 太郎」さんの安否確認をお願い致します。）が記載されます。</string>
     <string name="profile_label_name">お名前</string>
     <string name="profile_placeholder_name">例: 山田 太郎</string>
