@@ -78,7 +78,7 @@ class SafetyCheckUseCase @Inject constructor(
         if (allContacts.isEmpty()) {
             Log.w(
                 "SafetyCheck",
-                "SMS送信しきい値を超えましたが、連絡先が0件のためSMSを送信できません。"
+                "連絡先が0件のためSMSを送信できる状態ではありません。"
             )
             return
         }
