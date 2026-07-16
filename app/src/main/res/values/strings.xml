@@ -73,8 +73,8 @@
 
     <!-- プロフィール登録 画面 -->
     <string name="profile_title">利用者のお名前の登録</string>
-    <string name="profile_description">緊急連絡SMSの本文に、ここで登録したお名前が表示されます。\n（例:〇〇さんの安否確認をお願い致します。）</string>
-    <string name="profile_label_name">お名前</string>
+    <string name="profile_description">緊急連絡SMSの本文に、ここで登録したお名前が表示されます。\n（例:〇〇さんの安否確認をお願い致します。）\nSMSの文字数制限があるため、お名前は必ず10文字以内で入力してください。</string>
+    <string name="profile_label_name">お名前（10文字以内）</string>
     <string name="profile_placeholder_name">例: 山田 太郎</string>
     <string name="profile_error_empty">名前を入力してください</string>
     <string name="profile_btn_cancel">戻る</string>
