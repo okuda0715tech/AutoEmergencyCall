@@ -22,6 +22,7 @@ class SafetyCheckStore(private val context: Context) {
         val KEY_LAST_IS_INCREASED = booleanPreferencesKey("last_is_increased")
         val KEY_LAST_IS_CONNECTED = booleanPreferencesKey("last_is_connected")
         val KEY_IS_MONITORING_ENABLED = booleanPreferencesKey("is_monitoring_enabled")
+        val KEY_LAST_DEFAULT_SENT_TIME = longPreferencesKey("last_default_sent_time")
     }
 
     suspend fun loadSafetyData(): SafetyData {
@@ -32,7 +33,8 @@ class SafetyCheckStore(private val context: Context) {
             lastCheckTime = preferences[KEY_LAST_CHECK_TIME],
             lastIsIncreased = preferences[KEY_LAST_IS_INCREASED],
             lastIsConnected = preferences[KEY_LAST_IS_CONNECTED],
-            isMonitoringEnabled = preferences[KEY_IS_MONITORING_ENABLED] ?: true
+            isMonitoringEnabled = preferences[KEY_IS_MONITORING_ENABLED] ?: true,
+            lastDefaultSentTime = preferences[KEY_LAST_DEFAULT_SENT_TIME],
         )
     }
 
@@ -51,6 +53,13 @@ class SafetyCheckStore(private val context: Context) {
             }
             preferences[KEY_LAST_CHECK_TIME] = checkTime
             preferences[KEY_LAST_IS_CONNECTED] = isConnected
+        }
+    }
+
+    // デフォルトSMSを送信した「その瞬間のシステム時刻」を保存する
+    suspend fun updateLastDefaultSentTime(sentTime: Long) {
+        context.dataStore.edit { preferences ->
+            preferences[KEY_LAST_DEFAULT_SENT_TIME] = sentTime
         }
     }
 

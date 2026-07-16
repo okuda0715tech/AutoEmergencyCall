@@ -33,8 +33,8 @@ class SafetyCheckUseCase @Inject constructor(
         // 最終アクティブからの経過時間を算出
         val elapsedTime = currentTime - latestActiveTime
 
-        // 経過時間に基づき、必要であれば安否確認のSMSを送信する
-        evaluateAndTriggerSms(elapsedTime)
+        // 経過時間と送信状況に基づき、必要であれば安否確認のSMSを送信する
+        evaluateAndTriggerSms(elapsedTime, currentTime, latestActiveTime)
     }
 
     /**
@@ -83,10 +83,13 @@ class SafetyCheckUseCase @Inject constructor(
     }
 
     /**
-     * 経過時間と設定値を評価し、適切な連絡先にSMS送信を要求する。
+     * 経過時間が設定値を超えているか、また、送信済みかどうかを評価し、適切な連絡先にSMS送信を要求する。
      */
-    private suspend fun evaluateAndTriggerSms(elapsedTime: Long) {
-
+    private suspend fun evaluateAndTriggerSms(
+        elapsedTime: Long,
+        currentTime: Long,
+        latestActiveTime: Long
+    ) {
         val allContacts = contactStore.loadContacts()
         if (allContacts.isEmpty()) {
             Log.w("SafetyCheck", "連絡先が0件のためSMSを送信できる状態ではありません。")
@@ -96,17 +99,32 @@ class SafetyCheckUseCase @Inject constructor(
         val alertConfigs = alertConfigStore.loadAlertConfigs()
 
         if (alertConfigs.isEmpty()) {
-            // A. デフォルト仕様：動作設定が空なら、すべての連絡先に48時間経過後に送る
-            if (elapsedTime >= DEFAULT_SMS_THRESHOLD) {
+            // A. デフォルト仕様
+            val safetyData = safetyCheckStore.loadSafetyData()
+            val lastSentTime = safetyData.lastDefaultSentTime ?: 0L
+
+            // 最終送信時刻が最終活動時刻より新しければ、この最終活動時間では送信済みと判定
+            val hasSentForLastActive = lastSentTime >= latestActiveTime
+
+            if (elapsedTime >= DEFAULT_SMS_THRESHOLD && !hasSentForLastActive) {
                 allContacts.forEach { contact ->
                     triggerSendSms(contact, 48)
                 }
+                // 送信した「現在時刻」を最終送信時刻として保存
+                safetyCheckStore.updateLastDefaultSentTime(currentTime)
+                Log.i("SafetyCheck", "Default SMS sent at $currentTime. Locked until next active event.")
             }
         } else {
-            // B. ユーザー設定仕様：登録された設定ごとに判定して送る
-            alertConfigs.forEach { config ->
+            // B. ユーザー設定仕様
+            var isAnyConfigUpdated = false
+            val updatedConfigs = alertConfigs.map { config ->
                 val thresholdMillis = config.thresholdHours * 60 * 60 * 1000L
-                if (elapsedTime >= thresholdMillis) {
+                val lastSentTime = config.lastSentTime ?: 0L
+
+                // 最終送信時刻が最終活動時刻より新しければ、この最終活動時刻では送信済みと判定
+                val hasSentForCurrentActive = lastSentTime >= latestActiveTime
+
+                if (elapsedTime >= thresholdMillis && !hasSentForCurrentActive) {
                     // この設定の対象になっている連絡先を抽出
                     val targets = allContacts.filter { contact ->
                         config.targetContactIds.contains(contact.id)
@@ -115,7 +133,18 @@ class SafetyCheckUseCase @Inject constructor(
                     targets.forEach { contact ->
                         triggerSendSms(contact, config.thresholdHours)
                     }
+
+                    isAnyConfigUpdated = true
+                    // 送信した「現在時刻（currentTime）」を最終送信時刻として更新
+                    config.copy(lastSentTime = currentTime)
+                } else {
+                    config
                 }
+            }
+
+            if (isAnyConfigUpdated) {
+                alertConfigStore.saveAlertConfigs(updatedConfigs)
+                Log.i("SafetyCheck", "Config SMS sent. Updated configs saved with lastSentTime: $currentTime")
             }
         }
     }
