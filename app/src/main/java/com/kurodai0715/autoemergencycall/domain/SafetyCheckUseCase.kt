@@ -45,7 +45,7 @@ class SafetyCheckUseCase @Inject constructor(
         val lastActiveTime = safetyData.lastActiveTime ?: currentTime
         val lastIsConnected = safetyData.lastIsConnected ?: isConnected
 
-        val newActiveTime = when {
+        val latestActiveTime = when {
             // 充電状態が減少から増加に転じている場合
             isIncreased && !lastIsIncreased -> {
                 Log.i("SafetyCheck", "The battery level changed from decreasing to increasing.")
@@ -63,13 +63,13 @@ class SafetyCheckUseCase @Inject constructor(
         // 最新の状態を DataStore に非同期で安全に保存
         store.updateSafetyData(
             batteryLevel = currentLevel,
-            activeTime = newActiveTime,
+            activeTime = latestActiveTime,
             checkTime = currentTime,
             isIncreased = isIncreased,
             isConnected = isConnected,
         )
 
-        val elapsedTime = currentTime - newActiveTime
+        val elapsedTime = currentTime - latestActiveTime
 
         // 連絡先データと動作設定データのロード
         val allContacts = contactStore.loadContacts()
