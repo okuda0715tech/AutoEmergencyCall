@@ -32,13 +32,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import com.kurodai0715.autoemergencycall.BuildConfig
 import com.kurodai0715.autoemergencycall.R
 import com.kurodai0715.autoemergencycall.domain.DebugManager
 import com.kurodai0715.autoemergencycall.ui.navigation.AppInfo
 import com.kurodai0715.autoemergencycall.ui.navigation.AppNavGraph
-import com.kurodai0715.autoemergencycall.ui.navigation.Config
-import com.kurodai0715.autoemergencycall.ui.navigation.Contact
 import com.kurodai0715.autoemergencycall.ui.navigation.Developer
 import com.kurodai0715.autoemergencycall.ui.navigation.Home
 import com.kurodai0715.autoemergencycall.ui.navigation.NavDestination

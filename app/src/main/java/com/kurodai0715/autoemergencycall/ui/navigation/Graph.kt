@@ -38,7 +38,7 @@ fun AppNavGraph(
             com.kurodai0715.autoemergencycall.ui.screen.home.HomeScreen(
                 onNavigateToProfile = { navController.navigate(Profile) },
                 onNavigateToContacts = { navController.navigate(Contact.Root) },
-                onNavigateToConfigs = { navController.navigate(Config.Root) },
+                onNavigateToConfigs = { navController.navigate(Alart.Root) },
                 onNavigateToTest = { navController.navigate(Test) },
             )
 
@@ -106,11 +106,11 @@ fun AppNavGraph(
             }
         }
 
-        navigation<Config.Root>(startDestination = Config.List) {
-            composable<Config.List> { backStackEntry ->
+        navigation<Alart.Root>(startDestination = Alart.List) {
+            composable<Alart.List> { backStackEntry ->
                 // 「Contact」のバックスタックエントリーを安全に検索して取得
                 val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry<Config.Root>()
+                    navController.getBackStackEntry<Alart.Root>()
                 }
                 // 親のライフサイクルに紐づいた ViewModel を取得
                 val viewModel: ConfigViewModel = hiltViewModel(parentEntry)
@@ -118,7 +118,7 @@ fun AppNavGraph(
                 ConfigListScreen(
                     viewModel = viewModel,
                     onNavigateToEdit = { id ->
-                        navController.navigate(Config.Edit(configId = id))
+                        navController.navigate(Alart.Edit(configId = id))
                     },
                     onNavigateBack = { navController.popBackStack() },
                 )
@@ -126,12 +126,12 @@ fun AppNavGraph(
                 onChangeTitle(R.string.alert_config_list_screen_title)
             }
 
-            composable<Config.Edit> { backStackEntry ->
-                val editRoute: Config.Edit = backStackEntry.toRoute()
+            composable<Alart.Edit> { backStackEntry ->
+                val editRoute: Alart.Edit = backStackEntry.toRoute()
 
                 // 編集画面でも、全く同じ「Config」の親エントリーを指定して取得
                 val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry<Config.Root>()
+                    navController.getBackStackEntry<Alart.Root>()
                 }
                 // これにより、一覧画面と100%同一のインスタンスが保証される
                 val viewModel: ConfigViewModel = hiltViewModel(parentEntry)

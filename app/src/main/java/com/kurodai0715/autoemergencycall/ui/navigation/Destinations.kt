@@ -34,15 +34,15 @@ sealed interface Contact : NavDestination {
 }
 
 @Serializable
-sealed interface Config : NavDestination {
+sealed interface Alart : NavDestination {
     @Serializable
-    object Root : Config
+    object Root : Alart
 
     @Serializable
-    object List : Config
+    object List : Alart
 
     @Serializable
-    data class Edit(val configId: String? = null) : Config
+    data class Edit(val configId: String? = null) : Alart
 }
 
 @Serializable
