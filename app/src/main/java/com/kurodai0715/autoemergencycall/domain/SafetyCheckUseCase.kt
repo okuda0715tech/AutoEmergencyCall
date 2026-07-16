@@ -22,7 +22,6 @@ class SafetyCheckUseCase @Inject constructor(
 ) {
 
     companion object {
-        private const val SELF_CHECK_THRESHOLD = 24 * 60 * 60 * 1000L // 24時間のミリ秒
         private const val DEFAULT_SMS_THRESHOLD = 48 * 60 * 60 * 1000L // 48時間のミリ秒
         private const val DEBUG_SMS_THRESHOLD = 1 * 1000L // 1秒のミリ秒
     }
@@ -71,14 +70,6 @@ class SafetyCheckUseCase @Inject constructor(
         )
 
         val elapsedTime = currentTime - newActiveTime
-
-        val selfCheckThreshold =
-            if (DebugManager.isDebugging) DEBUG_SMS_THRESHOLD else SELF_CHECK_THRESHOLD
-
-        // タイムリミット（24時間放置）のチェック
-        if (elapsedTime >= selfCheckThreshold) {
-            triggerEmergencyAlert()
-        }
 
         // 連絡先データと動作設定データのロード
         val allContacts = contactStore.loadContacts()
@@ -154,10 +145,6 @@ class SafetyCheckUseCase @Inject constructor(
         return plugStatus == BatteryManager.BATTERY_PLUGGED_AC ||
                 plugStatus == BatteryManager.BATTERY_PLUGGED_USB ||
                 plugStatus == BatteryManager.BATTERY_PLUGGED_WIRELESS
-    }
-
-    private fun triggerEmergencyAlert() {
-        // TODO: ローカルでの緊急警報処理
     }
 
     private fun triggerSendSms(contact: Contact, hours: Int) {
