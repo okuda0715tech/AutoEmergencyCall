@@ -24,25 +24,38 @@ class SafetyCheckUseCase @Inject constructor(
         private const val DEFAULT_SMS_THRESHOLD = 48 * 60 * 60 * 1000L // 48時間のミリ秒
     }
 
-    // 以前の doWork 内のコアロジックをここに移植
     suspend fun executeCheck() {
         val currentTime = System.currentTimeMillis()
 
-        // 判定を行う「その瞬間」の最新バッテリー情報を取得
+        // バッテリー変化を元に最新の「アクティブ時刻」を計算・更新する
+        val latestActiveTime = checkAndSaveBatteryStatus(currentTime)
+
+        // 最終アクティブからの経過時間を算出
+        val elapsedTime = currentTime - latestActiveTime
+
+        // 経過時間に基づき、必要であれば安否確認のSMSを送信する
+        evaluateAndTriggerSms(elapsedTime)
+    }
+
+    /**
+     * 現在のバッテリー状態を検知し、前回のデータと照合して
+     * 変化があった場合は最新アクティブ時刻を更新し、永続化ストアに保存する。
+     */
+    private suspend fun checkAndSaveBatteryStatus(currentTime: Long): Long {
         val batteryStatus = getBatteryStatusIntent()
         val currentLevel = getBatteryLevel(batteryStatus)
         val isConnected = getIsConnected(batteryStatus)
 
-        // DataStoreから前回保存したデータを安全に読み込む
         val safetyData = store.loadSafetyData()
 
-        // 初回起動時は null のため現在の値で初期化
+        // 初期値（初回起動時等）のフォールバック
         val lastLevel = safetyData.lastBatteryLevel ?: currentLevel
         val isIncreased = currentLevel > lastLevel
         val lastIsIncreased = safetyData.lastIsIncreased ?: isIncreased
         val lastActiveTime = safetyData.lastActiveTime ?: currentTime
         val lastIsConnected = safetyData.lastIsConnected ?: isConnected
 
+        // アクティブ時刻を更新するトリガー条件を判定
         val latestActiveTime = when {
             // 充電状態が減少から増加に転じている場合
             isIncreased && !lastIsIncreased -> {
@@ -58,7 +71,6 @@ class SafetyCheckUseCase @Inject constructor(
             else -> lastActiveTime
         }
 
-        // 最新の状態を DataStore に非同期で安全に保存
         store.updateSafetyData(
             batteryLevel = currentLevel,
             activeTime = latestActiveTime,
@@ -67,32 +79,33 @@ class SafetyCheckUseCase @Inject constructor(
             isConnected = isConnected,
         )
 
-        val elapsedTime = currentTime - latestActiveTime
+        return latestActiveTime
+    }
 
-        // 連絡先データと動作設定データのロード
+    /**
+     * 経過時間と設定値を評価し、適切な連絡先にSMS送信を要求する。
+     */
+    private suspend fun evaluateAndTriggerSms(elapsedTime: Long) {
         val allContacts = contactStore.loadContacts()
-        val alertConfigs = alertConfigStore.loadAlertConfigs()
-
         if (allContacts.isEmpty()) {
-            Log.w(
-                "SafetyCheck",
-                "連絡先が0件のためSMSを送信できる状態ではありません。"
-            )
+            Log.w("SafetyCheck", "連絡先が0件のためSMSを送信できる状態ではありません。")
             return
         }
 
-        // SMS送信ロジック（複数設定 vs デフォルト仕様の判定）
+        val alertConfigs = alertConfigStore.loadAlertConfigs()
+
         if (alertConfigs.isEmpty()) {
-            // デフォルト仕様：動作設定が空なら、すべての連絡先に48時間後に送る
+            // A. デフォルト仕様：動作設定が空なら、すべての連絡先に48時間経過後に送る
             if (elapsedTime >= DEFAULT_SMS_THRESHOLD) {
                 allContacts.forEach { contact ->
                     triggerSendSms(contact, 48)
                 }
             }
         } else {
-            // ユーザー設定仕様：登録された複数の動作設定をループ処理
+            // B. ユーザー設定仕様：登録された設定ごとに判定して送る
             alertConfigs.forEach { config ->
-                if (elapsedTime >= config.thresholdHours * 60 * 60 * 1000L) {
+                val thresholdMillis = config.thresholdHours * 60 * 60 * 1000L
+                if (elapsedTime >= thresholdMillis) {
                     // この設定の対象になっている連絡先を抽出
                     val targets = allContacts.filter { contact ->
                         config.targetContactIds.contains(contact.id)
