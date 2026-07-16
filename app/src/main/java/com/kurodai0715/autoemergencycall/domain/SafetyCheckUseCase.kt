@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 class SafetyCheckUseCase @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val safetyCeckStore: SafetyCheckStore,
+    private val safetyCheckStore: SafetyCheckStore,
     private val contactStore: ContactStore,
     private val alertConfigStore: AlertConfigStore,
     private val smsSender: SmsSender,
@@ -46,7 +46,7 @@ class SafetyCheckUseCase @Inject constructor(
         val currentLevel = getBatteryLevel(batteryStatus)
         val isConnected = getIsConnected(batteryStatus)
 
-        val safetyData = safetyCeckStore.loadSafetyData()
+        val safetyData = safetyCheckStore.loadSafetyData()
 
         // 初期値（初回起動時等）のフォールバック
         val lastLevel = safetyData.lastBatteryLevel ?: currentLevel
@@ -71,7 +71,7 @@ class SafetyCheckUseCase @Inject constructor(
             else -> lastActiveTime
         }
 
-        safetyCeckStore.updateSafetyData(
+        safetyCheckStore.updateSafetyData(
             batteryLevel = currentLevel,
             activeTime = latestActiveTime,
             checkTime = currentTime,
