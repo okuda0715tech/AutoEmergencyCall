@@ -6,7 +6,7 @@ import androidx.core.content.edit
 
 class ProfileStore(context: Context) {
     private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences("user_settings", Context.MODE_PRIVATE)
+        context.getSharedPreferences("profile_prefs", Context.MODE_PRIVATE)
 
     companion object {
         private const val KEY_USER_NAME = "user_name"
