@@ -1,19 +1,40 @@
 package com.kurodai0715.autoemergencycall.ui.screen.developer_only
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kurodai0715.autoemergencycall.R
 
 @Composable
 fun DeveloperScreen(
@@ -32,14 +53,17 @@ fun DeveloperScreen(
                 viewModel.resetUiState()
             }
             is DeveloperUiState.Error -> {
-                Toast.makeText(context, "エラーが発生しました: ${(uiState as DeveloperUiState.Error).exception.localizedMessage}", Toast.LENGTH_LONG).show()
+                val errorMsg = context.getString(
+                    R.string.dev_error_toast_format,
+                    (uiState as DeveloperUiState.Error).exception.localizedMessage ?: ""
+                )
+                Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
                 viewModel.resetUiState()
             }
             else -> {}
         }
     }
 
-    // 💡 Scaffoldを撤廃し、スクロール可能な通常のColumnとして構築
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -56,14 +80,14 @@ fun DeveloperScreen(
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "⚠️ 開発者警告",
+                    text = stringResource(R.string.dev_warning_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onErrorContainer
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "本画面の機能はデバッグ専用です。\n\n* 以下のボタンを押すと見守りチェック処理の強制実行によってDataStoreのステータスが書き換わります。\n* SMSは実際には送信されなくなり、SMS送信済みの通知のみが表示されます。\n* SMSを送信するかどうかの閾値は1秒に設定されます。\n* WorkManagerの定期実行は通常通り動き続けますが、SMS送信とその判定の閾値は上記の通りです。",
+                    text = stringResource(R.string.dev_warning_description),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onErrorContainer
                 )
@@ -71,7 +95,7 @@ fun DeveloperScreen(
         }
 
         Text(
-            text = "定期ジョブのシミュレート",
+            text = stringResource(R.string.dev_section_simulate),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -87,12 +111,12 @@ fun DeveloperScreen(
             ) {
                 Column {
                     Text(
-                        text = "安否確認ロジックの強制実行",
+                        text = stringResource(R.string.dev_card_title_execute),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "1時間に1回 WorkManager から呼び出される executeCheck() を、バックグラウンドのタイマーを待たずに今すぐ実行します。",
+                        text = stringResource(R.string.dev_card_desc_execute),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -106,7 +130,10 @@ fun DeveloperScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
-                        Text(text = "executeCheck() を実行中...", style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            text = stringResource(R.string.dev_status_running),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
 
@@ -118,7 +145,7 @@ fun DeveloperScreen(
                 ) {
                     Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("executeCheck() を即時実行")
+                    Text(text = stringResource(R.string.dev_btn_execute))
                 }
             }
         }
