@@ -166,7 +166,7 @@ class SafetyCheckUseCase @Inject constructor(
             "${DEBUG_SMS_THRESHOLD / 1000}秒間（テストによる時間短縮）"
         else
             "${hours}時間"
-        smsSender.sendSms(
+        smsSender.requestSendSms(
             contact.phoneNumber,
             message = "$debugStatus${contact.name}さんへの安否確認SMS：端末の活動が${displayTime}検知できませんでした。",
             showNotification = true,

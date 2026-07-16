@@ -37,7 +37,7 @@ class TestSmsViewModel @Inject constructor(
     fun sendTestSms(contact: Contact, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
-                smsSender.sendSms(
+                smsSender.requestSendSms(
                     contact.phoneNumber,
                     "【自動安否確認アプリ】【テスト】${contact.name}さんへの安否確認SMS：端末の活動が○時間検知できませんでした。",
                     showNotification = false,

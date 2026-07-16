@@ -11,7 +11,7 @@ class SmsSenderImpl @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) : SmsSender {
 
-    override fun sendSms(
+    override fun requestSendSms(
         phoneNumber: String,
         message: String,
         showNotification: Boolean,

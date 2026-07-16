@@ -1,7 +1,7 @@
 package com.kurodai0715.autoemergencycall.domain
 
 interface SmsSender {
-    fun sendSms(
+    fun requestSendSms(
         phoneNumber: String,
         message: String,
         showNotification: Boolean,
