@@ -73,11 +73,12 @@
 
     <!-- プロフィール登録 画面 -->
     <string name="profile_title">利用者のお名前の登録</string>
-    <string name="profile_description">緊急連絡SMSの本文に、ここで登録したお名前（例:「〇〇 太郎」さんの安否確認をお願い致します。）が記載されます。</string>
+    <string name="profile_description">緊急連絡SMSの本文に、ここで登録したお名前が表示されます。\n（例:〇〇さんの安否確認をお願い致します。）</string>
     <string name="profile_label_name">お名前</string>
     <string name="profile_placeholder_name">例: 山田 太郎</string>
     <string name="profile_error_empty">名前を入力してください</string>
-    <string name="profile_btn_save">設定を保存する</string>
+    <string name="profile_btn_cancel">戻る</string>
+    <string name="profile_btn_save">保存</string>
 
     <!-- 連絡先一覧 画面 -->
     <string name="contacts_title">連絡先の設定</string>

@@ -51,7 +51,8 @@ fun AppNavGraph(
             ProfileScreen(
                 onSaveSuccess = {
                     navController.popBackStack() // 保存できたらホーム画面に戻る
-                }
+                },
+                onNavigateBack = { navController.popBackStack() }
             )
 
             // アプリバーのタイトルを「利用者の名前設定」に変更
