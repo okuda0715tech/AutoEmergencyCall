@@ -1,5 +1,6 @@
 package com.kurodai0715.autoemergencycall.ui.screen.sms_test
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kurodai0715.autoemergencycall.data.Contact
@@ -46,6 +47,7 @@ class TestSmsViewModel @Inject constructor(
                 )
                 onComplete(true)
             } catch (e: Exception) {
+                Log.e("ViewModel", e.toString())
                 onComplete(false)
             }
         }

@@ -42,11 +42,14 @@ class SmsSenderImpl @Inject constructor(
                     context.getString(R.string.test_label)
                 else
                     ""
+
             val message = context.getString(
                 R.string.sms_message,
-                testLabel, receiverName, senderName, elapsedTime
+                testLabel, senderName, elapsedTime
             )
 
+            // 【注意】本文が70文字以内でないと送信に失敗するため注意。
+            //  この制約は日本語の場合であり、英語などでは160文字だったりするらしいので多言語対応時にも注意すること。
             smsManager?.sendTextMessage(
                 phoneNumber,
                 null,
