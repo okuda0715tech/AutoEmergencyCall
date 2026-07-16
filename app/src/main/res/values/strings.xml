@@ -169,7 +169,7 @@
     <string name="dev_section_simulate">定期ジョブのシミュレート</string>
     <string name="dev_card_title_execute">安否確認ロジックの強制実行</string>
     <string name="dev_card_desc_execute">1時間に1回 WorkManager から呼び出される executeCheck() を、バックグラウンドのタイマーを待たずに今すぐ実行します。</string>
-    <string name="dev_status_running">executeCheck() を実行中...</string>
+    <string name="dev_status_running">executeCheck() を実行中…</string>
     <string name="dev_btn_execute">executeCheck() を即時実行</string>
 
     <!-- 共通 -->
