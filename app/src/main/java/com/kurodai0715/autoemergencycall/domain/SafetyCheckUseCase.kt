@@ -135,7 +135,7 @@ class SafetyCheckUseCase @Inject constructor(
 
     private fun triggerSendSms(contact: Contact, hours: Int) {
         smsSender.requestSendSms(
-            contact.phoneNumber,
+            phoneNumber = contact.phoneNumber,
             showNotification = true,
             receiverName = contact.name,
             elapsedTime = hours.toString(),
