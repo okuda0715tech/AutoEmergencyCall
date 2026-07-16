@@ -3,30 +3,50 @@ package com.kurodai0715.autoemergencycall.domain
 import android.content.Context
 import android.telephony.SmsManager
 import android.util.Log
+import com.kurodai0715.autoemergencycall.R
+import com.kurodai0715.autoemergencycall.data.UserSettings
 import com.kurodai0715.autoemergencycall.util.NotificationHelper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class SmsSenderImpl @Inject constructor(
-    @param:ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context,
+    private val userSettings: UserSettings,
 ) : SmsSender {
 
     override fun requestSendSms(
         phoneNumber: String,
-        message: String,
         showNotification: Boolean,
+        isTest: Boolean,
         receiverName: String,
+        elapsedTime: String,
     ) {
         val smsManager =
             context.getSystemService(SmsManager::class.java)
+
+        val senderName = getSenderName()
 
         // デバッグモードの場合は SMS を送信しない
         if (DebugManager.isDebugging) {
             Log.i(
                 "SmsSender",
-                "Skipping SMS transmission due to debug mode. phoneNumber = $phoneNumber, message = $message"
+                "Skipping SMS transmission due to debug mode. " +
+                        "phoneNumber = $phoneNumber, " +
+                        "receiverName = $receiverName, " +
+                        "senderName = $senderName, " +
+                        "elapsedTime = $elapsedTime"
             )
         } else {
+            val testLabel =
+                if (isTest)
+                    context.getString(R.string.test_label)
+                else
+                    ""
+            val message = context.getString(
+                R.string.sms_message,
+                testLabel, receiverName, senderName, elapsedTime
+            )
+
             smsManager?.sendTextMessage(
                 phoneNumber,
                 null,
@@ -41,6 +61,12 @@ class SmsSenderImpl @Inject constructor(
             // 複数人に連続で送られた場合でも、NotificationHelper側でユニークIDを
             // 生成しているため、通知が上書きされずに人数分並んで表示されます。
             NotificationHelper.showSmsSentNotification(context, receiverName)
+        }
+    }
+
+    private fun getSenderName(): String {
+        return userSettings.getUserName().ifBlank {
+            context.getString(R.string.no_name_user)
         }
     }
 }

@@ -172,6 +172,11 @@
     <string name="dev_status_running">executeCheck() を実行中…</string>
     <string name="dev_btn_execute">executeCheck() を即時実行</string>
 
+    <!-- SMS送信 -->
+    <string name="test_label">【テスト】</string>
+    <string name="sms_message">%1$sこのメッセージは安否確認アプリ「守るくん」からの自動送信です。\n\n%2$sさんへの緊急連絡です。\n\n%3$sさんの活動が%4$s時間検知できませんでした。至急、安否確認をお願い致します。</string>
+    <string name="no_name_user">名前未登録のユーザー</string>
+
     <!-- 共通 -->
     <string name="menu_icon_description">メニュー</string>
     <string name="common_delete">削除</string>
