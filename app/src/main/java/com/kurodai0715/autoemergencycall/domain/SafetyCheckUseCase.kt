@@ -103,7 +103,7 @@ class SafetyCheckUseCase @Inject constructor(
             }
             if (elapsedTime >= defaultSmsThreshold) {
                 allContacts.forEach { contact ->
-                    triggerEmergencySmsSend(contact, 48)
+                    triggerSendSms(contact, 48)
                 }
             }
         } else {
@@ -122,7 +122,7 @@ class SafetyCheckUseCase @Inject constructor(
                     }
 
                     targets.forEach { contact ->
-                        triggerEmergencySmsSend(contact, config.thresholdHours)
+                        triggerSendSms(contact, config.thresholdHours)
                     }
                 }
             }
@@ -160,7 +160,7 @@ class SafetyCheckUseCase @Inject constructor(
         // TODO: ローカルでの緊急警報処理
     }
 
-    private fun triggerEmergencySmsSend(contact: Contact, hours: Int) {
+    private fun triggerSendSms(contact: Contact, hours: Int) {
         val debugStatus = if (DebugManager.isDebugging) "【デバッグモード】\n" else ""
         val displayTime = if (DebugManager.isDebugging)
             "${DEBUG_SMS_THRESHOLD / 1000}秒間（テストによる時間短縮）"
