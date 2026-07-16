@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 class SafetyCheckUseCase @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val store: SafetyCheckStore,
+    private val safetyCeckStore: SafetyCheckStore,
     private val contactStore: ContactStore,
     private val alertConfigStore: AlertConfigStore,
     private val smsSender: SmsSender,
@@ -46,7 +46,7 @@ class SafetyCheckUseCase @Inject constructor(
         val currentLevel = getBatteryLevel(batteryStatus)
         val isConnected = getIsConnected(batteryStatus)
 
-        val safetyData = store.loadSafetyData()
+        val safetyData = safetyCeckStore.loadSafetyData()
 
         // 初期値（初回起動時等）のフォールバック
         val lastLevel = safetyData.lastBatteryLevel ?: currentLevel
@@ -71,7 +71,7 @@ class SafetyCheckUseCase @Inject constructor(
             else -> lastActiveTime
         }
 
-        store.updateSafetyData(
+        safetyCeckStore.updateSafetyData(
             batteryLevel = currentLevel,
             activeTime = latestActiveTime,
             checkTime = currentTime,
@@ -86,7 +86,7 @@ class SafetyCheckUseCase @Inject constructor(
      * 経過時間と設定値を評価し、適切な連絡先にSMS送信を要求する。
      */
     private suspend fun evaluateAndTriggerSms(elapsedTime: Long) {
-        
+
         val allContacts = contactStore.loadContacts()
         if (allContacts.isEmpty()) {
             Log.w("SafetyCheck", "連絡先が0件のためSMSを送信できる状態ではありません。")
