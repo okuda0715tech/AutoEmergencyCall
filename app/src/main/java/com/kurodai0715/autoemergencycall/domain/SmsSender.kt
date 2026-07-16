@@ -5,6 +5,6 @@ interface SmsSender {
         phoneNumber: String,
         message: String,
         showNotification: Boolean,
-        targetName: String = ""
+        targetName: String,
     )
 }
