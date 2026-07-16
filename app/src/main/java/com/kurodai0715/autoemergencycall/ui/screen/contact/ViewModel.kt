@@ -7,7 +7,7 @@ import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kurodai0715.autoemergencycall.data.ConfigStore
+import com.kurodai0715.autoemergencycall.data.AlertConfigStore
 import com.kurodai0715.autoemergencycall.data.Contact
 import com.kurodai0715.autoemergencycall.data.ContactStore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ContactViewModel @Inject constructor(
     private val contactStore: ContactStore,
-    private val configStore: ConfigStore,
+    private val alertConfigStore: AlertConfigStore,
 ) : ViewModel() {
 
     private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
@@ -115,14 +115,14 @@ class ContactViewModel @Inject constructor(
     }
 
     private suspend fun deleteAlertConfig(contactId: String) {
-        val currentConfigs = configStore.loadAlertConfigs()
+        val currentConfigs = alertConfigStore.loadAlertConfigs()
         val updatedConfigs = currentConfigs.map { config ->
             config.copy(
                 // 除外したいID以外のリストを構築
                 targetContactIds = config.targetContactIds.filter { it != contactId }
             )
         }
-        configStore.saveAlertConfigs(updatedConfigs)
+        alertConfigStore.saveAlertConfigs(updatedConfigs)
     }
 
     private suspend fun deleteContact(id: String) {

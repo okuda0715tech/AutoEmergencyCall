@@ -12,7 +12,7 @@ import kotlinx.serialization.json.Json
 
 val Context.configDataStore: DataStore<Preferences> by preferencesDataStore(name = "config_prefs")
 
-class ConfigStore(private val context: Context) {
+class AlertConfigStore(private val context: Context) {
 
     companion object {
         private val KEY_ALERT_CONFIG_LIST_JSON = stringPreferencesKey("alert_config_list_json")

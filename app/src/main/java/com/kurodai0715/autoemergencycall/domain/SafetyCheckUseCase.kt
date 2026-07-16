@@ -5,7 +5,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.util.Log
-import com.kurodai0715.autoemergencycall.data.ConfigStore
+import com.kurodai0715.autoemergencycall.data.AlertConfigStore
 import com.kurodai0715.autoemergencycall.data.Contact
 import com.kurodai0715.autoemergencycall.data.ContactStore
 import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
@@ -17,7 +17,7 @@ class SafetyCheckUseCase @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val store: SafetyCheckStore,
     private val contactStore: ContactStore,
-    private val configStore: ConfigStore, // TODO AlertConfigStore という名前に後で変更する
+    private val alertConfigStore: AlertConfigStore,
     private val smsSender: SmsSender,
 ) {
 
@@ -82,7 +82,7 @@ class SafetyCheckUseCase @Inject constructor(
 
         // 連絡先データと動作設定データのロード
         val allContacts = contactStore.loadContacts()
-        val alertConfigs = configStore.loadAlertConfigs()
+        val alertConfigs = alertConfigStore.loadAlertConfigs()
 
         if (allContacts.isEmpty()) {
             Log.w(

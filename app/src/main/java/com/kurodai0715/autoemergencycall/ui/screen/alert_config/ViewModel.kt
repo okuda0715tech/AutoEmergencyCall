@@ -3,7 +3,7 @@ package com.kurodai0715.autoemergencycall.ui.screen.alert_config
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kurodai0715.autoemergencycall.data.AlertConfig
-import com.kurodai0715.autoemergencycall.data.ConfigStore
+import com.kurodai0715.autoemergencycall.data.AlertConfigStore
 import com.kurodai0715.autoemergencycall.data.Contact
 import com.kurodai0715.autoemergencycall.data.ContactStore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConfigViewModel @Inject constructor(
-    private val configStore: ConfigStore,
+    private val alertConfigStore: AlertConfigStore,
     private val contactStore: ContactStore // 連絡先一覧を選択肢として出すためにインジェクト
 ) : ViewModel() {
 
@@ -31,7 +31,7 @@ class ConfigViewModel @Inject constructor(
 
     fun loadData() {
         viewModelScope.launch {
-            _alertConfigs.value = configStore.loadAlertConfigs()
+            _alertConfigs.value = alertConfigStore.loadAlertConfigs()
             _availableContacts.value = contactStore.loadContacts()
         }
     }
@@ -58,7 +58,7 @@ class ConfigViewModel @Inject constructor(
                 }
             }
 
-            configStore.saveAlertConfigs(currentList)
+            alertConfigStore.saveAlertConfigs(currentList)
             loadData()
             onComplete()
         }
@@ -70,7 +70,7 @@ class ConfigViewModel @Inject constructor(
     fun deleteConfig(id: String, onComplete: () -> Unit) {
         viewModelScope.launch {
             val updatedList = _alertConfigs.value.filter { it.id != id }
-            configStore.saveAlertConfigs(updatedList)
+            alertConfigStore.saveAlertConfigs(updatedList)
             loadData()
             onComplete()
         }
