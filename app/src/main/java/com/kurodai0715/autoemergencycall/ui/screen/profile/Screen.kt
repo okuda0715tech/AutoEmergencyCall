@@ -17,7 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kurodai0715.autoemergencycall.R
 import com.kurodai0715.autoemergencycall.data.ProfileStore
 
 @Composable
@@ -39,13 +41,13 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "利用者の名前登録",
+            text = stringResource(R.string.profile_title),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onBackground
         )
 
         Text(
-            text = "緊急連絡SMSの本文に、ここで登録したお名前（例:「〇〇 太郎」さんの安否確認をお願い致します。）が記載されます。",
+            text = stringResource(R.string.profile_description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -57,14 +59,17 @@ fun ProfileScreen(
                 userName = it
                 if (isError) isError = false
             },
-            label = { Text("お名前") },
-            placeholder = { Text("例: 山田 太郎") },
+            label = { Text(stringResource(R.string.profile_label_name)) },
+            placeholder = { Text(stringResource(R.string.profile_placeholder_name)) },
             singleLine = true,
             isError = isError,
             modifier = Modifier.fillMaxWidth(),
             supportingText = {
                 if (isError) {
-                    Text("名前を入力してください", color = MaterialTheme.colorScheme.error)
+                    Text(
+                        text = stringResource(R.string.profile_error_empty),
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         )
@@ -83,7 +88,7 @@ fun ProfileScreen(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("設定を保存する")
+            Text(stringResource(R.string.profile_btn_save))
         }
     }
 }
