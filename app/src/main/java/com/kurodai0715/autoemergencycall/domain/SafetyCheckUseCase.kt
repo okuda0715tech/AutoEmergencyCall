@@ -9,6 +9,7 @@ import com.kurodai0715.autoemergencycall.data.ConfigStore
 import com.kurodai0715.autoemergencycall.data.Contact
 import com.kurodai0715.autoemergencycall.data.ContactStore
 import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
+import com.kurodai0715.autoemergencycall.data.UserSettings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -171,5 +172,16 @@ class SafetyCheckUseCase @Inject constructor(
             showNotification = true,
             targetName = contact.name,
         )
+    }
+
+    private fun getUserName(): String {
+        val userSettings = UserSettings(context)
+        val userName = userSettings.getUserName()
+
+        return if (userName.isNotBlank()) {
+            "${userName}さん"
+        } else {
+            "名前未登録のユーザー"
+        }
     }
 }
