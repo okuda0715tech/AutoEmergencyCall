@@ -160,14 +160,14 @@ class SafetyCheckUseCase @Inject constructor(
     }
 
     private fun triggerEmergencySmsSend(contact: Contact, hours: Int) {
-        val messagePrefix = if (DebugManager.isDebugging) "【アプリ動作テスト】\n" else ""
+        val debugStatus = if (DebugManager.isDebugging) "【デバッグモード】\n" else ""
         val displayTime = if (DebugManager.isDebugging)
             "${DEBUG_SMS_THRESHOLD / 1000}秒間（テストによる時間短縮）"
         else
             "${hours}時間"
         smsSender.sendSms(
             contact.phoneNumber,
-            message = "$messagePrefix${contact.name}さんへの安否確認SMS：端末の活動が${displayTime}検知できませんでした。",
+            message = "$debugStatus${contact.name}さんへの安否確認SMS：端末の活動が${displayTime}検知できませんでした。",
             showNotification = true,
             targetName = contact.name,
         )
