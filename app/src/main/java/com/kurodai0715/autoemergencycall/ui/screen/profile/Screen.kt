@@ -1,4 +1,4 @@
-package com.kurodai0715.autoemergencycall.ui.screen.user_settings
+package com.kurodai0715.autoemergencycall.ui.screen.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
