@@ -39,7 +39,7 @@ class TestSmsViewModel @Inject constructor(
             try {
                 smsSender.sendSms(
                     contact.phoneNumber,
-                    "【自動安否確認アプリ】【テスト】${contact.name}さんへの安否確認SMS：端末の活動が48時間検知できませんでした。",
+                    "【自動安否確認アプリ】【テスト】${contact.name}さんへの安否確認SMS：端末の活動が○時間検知できませんでした。",
                     showNotification = false,
                 )
                 onComplete(true)
