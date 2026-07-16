@@ -24,7 +24,7 @@ class SmsSenderImpl @Inject constructor(
         if (DebugManager.isDebugging) {
             Log.i(
                 "SmsSender",
-                "SMS送信をスキップします。 phoneNumber = $phoneNumber, message = $message"
+                "Skipping SMS transmission due to debug mode. phoneNumber = $phoneNumber, message = $message"
             )
         } else {
             smsManager?.sendTextMessage(
