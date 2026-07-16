@@ -165,7 +165,7 @@
     <!-- 開発者専用 画面 -->
     <string name="dev_error_toast_format">エラーが発生しました: %s</string>
     <string name="dev_warning_title">⚠️ 開発者警告</string>
-    <string name="dev_warning_description">本画面の機能はデバッグ専用です。\n\n* 以下のボタンを押すと見守りチェック処理の強制実行によってDataStoreのステータスが書き換わります。\n* SMSは実際には送信されなくなり、SMS送信済みの通知のみが表示されます。\n* SMSを送信するかどうかの閾値は1秒に設定されます。\n* WorkManagerの定期実行は通常通り動き続けますが、SMS送信とその判定の閾値は上記の通りです。</string>
+    <string name="dev_warning_description">本画面の機能はデバッグ専用です。\n\n* 以下のボタンを押すと見守りチェック処理の強制実行によってDataStoreのステータスが書き換わります。\n* SMSは実際には送信されなくなり、SMS送信済みのログのみが出力されます。\n* WorkManagerの定期実行は通常通り動き続けます。</string>
     <string name="dev_section_simulate">定期ジョブのシミュレート</string>
     <string name="dev_card_title_execute">安否確認ロジックの強制実行</string>
     <string name="dev_card_desc_execute">1時間に1回 WorkManager から呼び出される executeCheck() を、バックグラウンドのタイマーを待たずに今すぐ実行します。</string>
