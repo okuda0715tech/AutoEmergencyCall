@@ -3,8 +3,8 @@ package com.kurodai0715.autoemergencycall.di
 import android.content.Context
 import com.kurodai0715.autoemergencycall.data.AlertConfigStore
 import com.kurodai0715.autoemergencycall.data.ContactStore
+import com.kurodai0715.autoemergencycall.data.ProfileStore
 import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
-import com.kurodai0715.autoemergencycall.data.UserSettings
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,7 +44,7 @@ object DataModule {
     @Singleton
     fun provideUserSettings(
         @ApplicationContext context: Context
-    ): UserSettings {
-        return UserSettings(context)
+    ): ProfileStore {
+        return ProfileStore(context)
     }
 }

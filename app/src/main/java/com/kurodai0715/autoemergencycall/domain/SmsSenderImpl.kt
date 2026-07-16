@@ -4,14 +4,14 @@ import android.content.Context
 import android.telephony.SmsManager
 import android.util.Log
 import com.kurodai0715.autoemergencycall.R
-import com.kurodai0715.autoemergencycall.data.UserSettings
+import com.kurodai0715.autoemergencycall.data.ProfileStore
 import com.kurodai0715.autoemergencycall.util.NotificationHelper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class SmsSenderImpl @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val userSettings: UserSettings,
+    private val profileStore: ProfileStore,
 ) : SmsSender {
 
     override fun requestSendSms(
@@ -65,7 +65,7 @@ class SmsSenderImpl @Inject constructor(
     }
 
     private fun getSenderName(): String {
-        return userSettings.getUserName().ifBlank {
+        return profileStore.getUserName().ifBlank {
             context.getString(R.string.no_name_user)
         }
     }

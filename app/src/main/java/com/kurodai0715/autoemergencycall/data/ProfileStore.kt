@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 
-class UserSettings(context: Context) {
+class ProfileStore(context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("user_settings", Context.MODE_PRIVATE)
 

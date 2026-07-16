@@ -18,7 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.kurodai0715.autoemergencycall.data.UserSettings
+import com.kurodai0715.autoemergencycall.data.ProfileStore
 
 @Composable
 fun ProfileScreen(
@@ -26,10 +26,10 @@ fun ProfileScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val userSettings = remember { UserSettings(context) }
+    val profileStore = remember { ProfileStore(context) }
 
     // 💡 初期値として、保存されている名前をロード
-    var userName by remember { mutableStateOf(userSettings.getUserName()) }
+    var userName by remember { mutableStateOf(profileStore.getUserName()) }
     var isError by remember { mutableStateOf(false) }
 
     Column(
@@ -77,7 +77,7 @@ fun ProfileScreen(
                 if (userName.isBlank()) {
                     isError = true
                 } else {
-                    userSettings.saveUserName(userName)
+                    profileStore.saveUserName(userName)
                     onSaveSuccess()
                 }
             },
