@@ -90,7 +90,6 @@ fun HomeScreen(
 
     val isMonitoringEnabled by viewModel.isMonitoringEnabled.collectAsState()
     var showStopConfirmDialog by remember { mutableStateOf(false) }
-    var isConsentChecked by remember { mutableStateOf(false) }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -163,8 +162,6 @@ fun HomeScreen(
     // 停止確認ダイアログ
     if (showStopConfirmDialog) {
         StopConfirmDialog(
-            isConsentChecked = isConsentChecked,
-            onConsentChange = { isConsentChecked = it },
             onDismiss = { showStopConfirmDialog = false },
             onConfirm = {
                 viewModel.toggleMonitoringStatus(context, false) // 💡 停止を実行
@@ -232,7 +229,6 @@ fun HomeScreen(
                         .combinedClickable(
                             onLongClick = {
                                 if (isMonitoringEnabled) {
-                                    isConsentChecked = false
                                     showStopConfirmDialog = true
                                 } else {
                                     viewModel.toggleMonitoringStatus(context, true)
@@ -309,7 +305,7 @@ fun HomeScreen(
                             Icon(
                                 imageVector = Icons.Default.Info,
                                 contentDescription = stringResource(R.string.home_content_description_info),
-                                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f), // 💡 active側のカラーを指定
+                                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f), // active側のカラーを指定
                                 modifier = Modifier.fillMaxSize()
                             )
                         }
@@ -528,7 +524,7 @@ fun HomeScreen(
                 )
             }
 
-            // 見守り動作設定ボタン（「アラート設定」）
+            // 見守り動作設定ボタン（「SMS送信設定」）
             Button(
                 onClick = onNavigateToConfigs,
                 modifier = Modifier.fillMaxWidth()
@@ -670,12 +666,12 @@ private fun InfoDialog(title: String, text: String, iconColor: Color, onDismiss:
 
 @Composable
 private fun StopConfirmDialog(
-    isConsentChecked: Boolean,
-    onConsentChange: (Boolean) -> Unit,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
+    var isConsentChecked by remember { mutableStateOf(false) }
     val dialogScrollState = rememberScrollState()
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -693,11 +689,13 @@ private fun StopConfirmDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onConsentChange(!isConsentChecked) }
+                        .clickable { isConsentChecked = !isConsentChecked }
                         .padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Checkbox(checked = isConsentChecked, onCheckedChange = onConsentChange)
+                    Checkbox(
+                        checked = isConsentChecked,
+                        onCheckedChange = { isConsentChecked = it })
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         stringResource(R.string.stop_confirm_dialog_consent),
