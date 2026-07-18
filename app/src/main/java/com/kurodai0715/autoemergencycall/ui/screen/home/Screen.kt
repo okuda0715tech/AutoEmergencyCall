@@ -80,15 +80,12 @@ fun HomeScreen(
     val isAutoRevokeDisabled by viewModel.isAutoRevokeDisabled.collectAsState()
     val lastActiveTimeText by viewModel.lastActiveTimeText.collectAsState()
     val lastCheckTimeText by viewModel.lastCheckTimeText.collectAsState()
+    val isMonitoringEnabled by viewModel.isMonitoringEnabled.collectAsState()
 
     var showProminentDisclosureDialog by remember { mutableStateOf(false) }
     var showSettingsGuideDialog by remember { mutableStateOf(false) }
-
-    // 解説ダイアログ表示制御用の状態
     var showActiveTimeInfo by remember { mutableStateOf(false) }
     var showCheckTimeInfo by remember { mutableStateOf(false) }
-
-    val isMonitoringEnabled by viewModel.isMonitoringEnabled.collectAsState()
     var showStopConfirmDialog by remember { mutableStateOf(false) }
 
     DisposableEffect(lifecycleOwner) {
@@ -164,12 +161,13 @@ fun HomeScreen(
         StopConfirmDialog(
             onDismiss = { showStopConfirmDialog = false },
             onConfirm = {
-                viewModel.toggleMonitoringStatus(context, false) // 💡 停止を実行
+                viewModel.toggleMonitoringStatus(context, false) // 停止を実行
                 showStopConfirmDialog = false
             }
         )
     }
 
+    // --- メイン画面レイアウト ---
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -200,291 +198,61 @@ fun HomeScreen(
             fontWeight = FontWeight.Bold
         )
 
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = if (isSmsPermissionGranted && isAutoRevokeDisabled)
-                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                else MaterialTheme.colorScheme.surfaceVariant
-            ),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                val statusText =
-                    if (isMonitoringEnabled) stringResource(R.string.home_status_active) else stringResource(
-                        R.string.home_status_paused
-                    )
-                val statusColor =
-                    if (isMonitoringEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                val guideText =
-                    if (isMonitoringEnabled) stringResource(R.string.home_guide_to_pause) else stringResource(
-                        R.string.home_guide_to_resume
-                    )
-
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .combinedClickable(
-                            onLongClick = {
-                                if (isMonitoringEnabled) {
-                                    showStopConfirmDialog = true
-                                } else {
-                                    viewModel.toggleMonitoringStatus(context, true)
-                                }
-                            },
-                            onClick = {}
-                        )
-                        .padding(vertical = 6.dp),
-                    // アイテムとアイテムの間に均等なスペースを配置する
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    // 左側のステータス（アイコン＋テキスト）
-                    Row(
-                        // FlowRow 内で各アイテムの高さが異なる場合に、アイテムを垂直方向で中央寄せする
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        if (!isMonitoringEnabled) {
-                            Icon(
-                                imageVector = Icons.Default.Warning,
-                                contentDescription = stringResource(R.string.home_status_paused_desc),
-                                tint = Color(0xFFFBC02D)
-                            )
-                        } else {
-                            Text("●", color = statusColor)
-                        }
-
-                        Text(
-                            text = statusText,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = statusColor
-                        )
-                    }
-
-                    Text(
-                        // FlowRow 内で各アイテムの高さが異なる場合に、アイテムを垂直方向で中央寄せする
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        text = guideText,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+        // 稼働ステータスカード
+        MonitoringStatusCard(
+            isMonitoringEnabled = isMonitoringEnabled,
+            isSmsPermissionGranted = isSmsPermissionGranted,
+            isAutoRevokeDisabled = isAutoRevokeDisabled,
+            lastActiveTimeText = lastActiveTimeText,
+            lastCheckTimeText = lastCheckTimeText,
+            onStatusLongClick = {
+                if (isMonitoringEnabled) {
+                    showStopConfirmDialog = true
+                } else {
+                    viewModel.toggleMonitoringStatus(context, true)
                 }
+            },
+            onActiveTimeInfoClick = { showActiveTimeInfo = true },
+            onCheckTimeInfoClick = { showCheckTimeInfo = true }
+        )
 
-                HorizontalDivider(modifier = Modifier.padding(top = 2.dp, bottom = 6.dp))
+        // SMS権限チェックカード
+        SmsPermissionCard(
+            isSmsPermissionGranted = isSmsPermissionGranted,
+            onCardClick = {
+                if (!isSmsPermissionGranted && activity != null) {
+                    val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(
+                        activity,
+                        Manifest.permission.SEND_SMS
+                    )
+                    val hasRequestedBefore =
+                        context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                            .getBoolean("has_requested_sms", false)
 
-                // 1. 最終活動検知の行
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    val infoIcon = "info_icon"
-                    // テキストとインラインアイコンの位置を定義。
-                    // Annotated とは、装飾されたという意味。
-                    // buildAnnotatedString は StringBuilder の装飾有り版。
-                    val annotatedString = buildAnnotatedString {
-                        append(stringResource(R.string.home_label_active_time))
-                        append(" ") // テキストとアイコンの間にわずかな隙間を入れる
-                        appendInlineContent(infoIcon, "[info]")
+                    if (!showRationale && hasRequestedBefore) {
+                        showSettingsGuideDialog = true
+                    } else {
+                        context.getSharedPreferences("prefs", Context.MODE_PRIVATE).edit()
+                            .putBoolean("has_requested_sms", true).apply()
+                        showProminentDisclosureDialog = true
                     }
-
-                    // アイコンの見た目とサイズを定義
-                    val inlineContent = mapOf(
-                        infoIcon to InlineTextContent(
-                            // 埋め込みたい場所に確保する空間のサイズ（Placeholder）を決める
-                            Placeholder(
-                                width = 20.sp, // 文字サイズに連動するようspで指定
-                                height = 20.sp,
-                                placeholderVerticalAlign = PlaceholderVerticalAlign.Center
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Info,
-                                contentDescription = stringResource(R.string.home_content_description_info),
-                                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f), // active側のカラーを指定
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                    )
-
-                    // 左側：テキスト＋文末アイコン
-                    Text(
-                        text = annotatedString,
-                        inlineContent = inlineContent,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier
-                            .clickable { showActiveTimeInfo = true }
-                            .align(Alignment.CenterVertically)
-                    )
-
-                    // 右側：時刻テキスト
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        text = lastActiveTimeText,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-
-                // 2. 見守りチェック実施の行
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    val infoIcon = "info_icon"
-
-                    val annotatedString = buildAnnotatedString {
-                        append(stringResource(R.string.home_label_check_time))
-                        append(" ") // テキストとアイコンの間にわずかな隙間を入れる
-                        appendInlineContent(infoIcon, "[info]") // アイコンを差し込む位置の目印
-                    }
-
-                    // アイコンの見た目とサイズを定義
-                    val inlineContent = mapOf(
-                        infoIcon to InlineTextContent(
-                            // テキストの大きさに合わせてアイコンのサイズ（Placeholder）を決める
-                            Placeholder(
-                                width = 20.sp, // 文字サイズ（sp）に連動させると最大化時も綺麗です
-                                height = 20.sp,
-                                placeholderVerticalAlign = PlaceholderVerticalAlign.Center // 垂直中央揃え
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Info,
-                                contentDescription = stringResource(R.string.home_content_description_info),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                                modifier = Modifier.fillMaxSize() // Placeholderのサイズいっぱいに広げる
-                            )
-                        }
-                    )
-
-                    // 左側：テキスト＋文末アイコン
-                    Text(
-                        text = annotatedString,
-                        inlineContent = inlineContent,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier
-                            .clickable { showCheckTimeInfo = true }
-                            .align(Alignment.CenterVertically)
-                    )
-
-                    // 右側：時刻テキスト
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        text = lastCheckTimeText,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
-                    )
                 }
             }
-        }
+        )
 
-        // SMS状態確認カード
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = if (isSmsPermissionGranted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer.copy(
-                    alpha = 0.4f
-                )
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    if (!isSmsPermissionGranted && activity != null) {
-                        val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(
-                            activity,
-                            Manifest.permission.SEND_SMS
-                        )
-                        val hasRequestedBefore =
-                            context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
-                                .getBoolean("has_requested_sms", false)
-
-                        if (!showRationale && hasRequestedBefore) {
-                            showSettingsGuideDialog = true
-                        } else {
-                            context.getSharedPreferences("prefs", Context.MODE_PRIVATE).edit()
-                                .putBoolean("has_requested_sms", true).apply()
-                            showProminentDisclosureDialog = true
-                        }
-                    }
-                }
-        ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = if (isSmsPermissionGranted) Icons.Default.CheckCircle else Icons.Default.Warning,
-                    contentDescription = null,
-                    tint = if (isSmsPermissionGranted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = if (isSmsPermissionGranted) stringResource(R.string.home_sms_permission_granted) else stringResource(
-                            R.string.home_sms_permission_denied
-                        ), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = if (isSmsPermissionGranted) stringResource(R.string.home_sms_permission_granted_desc) else stringResource(
-                            R.string.home_sms_permission_denied_desc
-                        ), style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-        }
-
-        // アプリ自動停止の警告カード
+        // 自動停止警告カードのコンポーネント化
         if (!isAutoRevokeDisabled) {
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer.copy(
-                        alpha = 0.6f
-                    )
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        val intent = viewModel.createUnusedAppRestrictionsIntent(context)
-                        try {
-                            context.startActivity(intent)
-                        } catch (e: Exception) {
-                            val fallback = viewModel.createApplicationDetailsIntent(context)
-                            context.startActivity(fallback)
-                        }
-                    }
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        Icons.Default.Warning,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.home_auto_revoke_warning_title),
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Text(
-                            text = stringResource(R.string.home_auto_revoke_warning_desc),
-                            style = MaterialTheme.typography.bodySmall
-                        )
+            AutoRevokeWarningCard(
+                onCardClick = {
+                    val intent = viewModel.createUnusedAppRestrictionsIntent(context)
+                    try {
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        val fallback = viewModel.createApplicationDetailsIntent(context)
+                        context.startActivity(fallback)
                     }
                 }
-            }
+            )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -495,59 +263,346 @@ fun HomeScreen(
             fontWeight = FontWeight.Bold
         )
 
-        // 文字数が多いボタンの集合のため、 FlowRow は使わず、最初から Column で実装する。
+        // 💡 変更：画面遷移ボタン群のコンポーネント化
+        ManagementButtonMenu(
+            onNavigateToProfile = onNavigateToProfile,
+            onNavigateToContacts = onNavigateToContacts,
+            onNavigateToConfigs = onNavigateToConfigs,
+            onNavigateToTest = onNavigateToTest
+        )
+    }
+}
+
+@Composable
+private fun MonitoringStatusCard(
+    isMonitoringEnabled: Boolean,
+    isSmsPermissionGranted: Boolean,
+    isAutoRevokeDisabled: Boolean,
+    lastActiveTimeText: String,
+    lastCheckTimeText: String,
+    onStatusLongClick: () -> Unit,
+    onActiveTimeInfoClick: () -> Unit,
+    onCheckTimeInfoClick: () -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSmsPermissionGranted && isAutoRevokeDisabled)
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            else MaterialTheme.colorScheme.surfaceVariant
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp) // ボタン同士の縦の隙間
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // 利用者名の登録ボタン
-            Button(
-                onClick = onNavigateToProfile,
-                modifier = Modifier.fillMaxWidth()
+            val statusText =
+                if (isMonitoringEnabled) stringResource(R.string.home_status_active) else stringResource(
+                    R.string.home_status_paused
+                )
+            val statusColor =
+                if (isMonitoringEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+            val guideText =
+                if (isMonitoringEnabled) stringResource(R.string.home_guide_to_pause) else stringResource(
+                    R.string.home_guide_to_resume
+                )
+
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .combinedClickable(
+                        onLongClick = onStatusLongClick,
+                        onClick = {}
+                    )
+                    .padding(vertical = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
+                Row(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    if (!isMonitoringEnabled) {
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = stringResource(R.string.home_status_paused_desc),
+                            tint = Color(0xFFFBC02D)
+                        )
+                    } else {
+                        Text("●", color = statusColor)
+                    }
+
+                    Text(
+                        text = statusText,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = statusColor
+                    )
+                }
+
                 Text(
-                    text = stringResource(R.string.home_btn_profile),
-                    maxLines = 1,
-                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    // FlowRow 内で各アイテムの高さが異なる場合に、アイテムを垂直方向で中央寄せする
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    text = guideText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
-            // 緊急連絡先の登録ボタン（「連絡先設定」）
-            Button(
-                onClick = onNavigateToContacts,
-                modifier = Modifier.fillMaxWidth()
+            HorizontalDivider(modifier = Modifier.padding(top = 2.dp, bottom = 6.dp))
+
+            // 1. 最終活動検知の行
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+                val infoIcon = "info_icon"
+                // テキストとインラインアイコンの位置を定義。
+                // Annotated とは、装飾されたという意味。
+                // buildAnnotatedString は StringBuilder の装飾有り版。
+                val annotatedString = buildAnnotatedString {
+                    append(stringResource(R.string.home_label_active_time))
+                    append(" ") // テキストとアイコンの間にわずかな隙間を入れる
+                    appendInlineContent(infoIcon, "[info]")
+                }
+
+                // アイコンの見た目とサイズを定義
+                val inlineContent = mapOf(
+                    infoIcon to InlineTextContent(
+                        // 埋め込みたい場所に確保する空間のサイズ（Placeholder）を決める
+                        Placeholder(
+                            width = 20.sp, // 文字サイズに連動するようspで指定
+                            height = 20.sp,
+                            placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = stringResource(R.string.home_content_description_info),
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f), // active側のカラーを指定
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                )
+
+                // 左側：テキスト＋文末アイコン
                 Text(
-                    text = stringResource(R.string.home_btn_contacts),
-                    maxLines = 1,
-                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    text = annotatedString,
+                    inlineContent = inlineContent,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .clickable { onActiveTimeInfoClick() }
+                        .align(Alignment.CenterVertically)
+                )
+
+                // 右側：時刻テキスト
+                Text(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    text = lastActiveTimeText,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 
-            // 見守り動作設定ボタン（「SMS送信設定」）
-            Button(
-                onClick = onNavigateToConfigs,
-                modifier = Modifier.fillMaxWidth()
+            // 2. 見守りチェック実施の行
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.home_btn_configs),
-                    maxLines = 1,
-                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                )
-            }
+                val infoIcon = "info_icon"
+                val annotatedString = buildAnnotatedString {
+                    append(stringResource(R.string.home_label_check_time))
+                    append(" ") // テキストとアイコンの間にわずかな隙間を入れる
+                    appendInlineContent(infoIcon, "[info]")  // アイコンを差し込む位置の目印
+                }
 
-            // SMS送信テストボタン（「送信テストはこちら」）
-            OutlinedButton(
-                onClick = onNavigateToTest,
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
-                modifier = Modifier.fillMaxWidth()
-            ) {
+                // アイコンの見た目とサイズを定義
+                val inlineContent = mapOf(
+                    infoIcon to InlineTextContent(
+                        // テキストの大きさに合わせてアイコンのサイズ（Placeholder）を決める
+                        Placeholder(
+                            width = 20.sp, // 文字サイズ（sp）に連動させると最大化時も綺麗です
+                            height = 20.sp,
+                            placeholderVerticalAlign = PlaceholderVerticalAlign.Center // 垂直中央揃え
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = stringResource(R.string.home_content_description_info),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            modifier = Modifier.fillMaxSize() // Placeholderのサイズいっぱいに広げる
+                        )
+                    }
+                )
+
+                // 左側：テキスト＋文末アイコン
                 Text(
-                    text = stringResource(R.string.home_btn_test),
-                    maxLines = 2, // これだけは文字が長いため、極大フォント時にも備えて2行まで折り返し可能に
-                    style = MaterialTheme.typography.labelLarge
+                    text = annotatedString,
+                    inlineContent = inlineContent,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .clickable { onCheckTimeInfoClick() }
+                        .align(Alignment.CenterVertically)
+                )
+
+                // 右側：時刻テキスト
+                Text(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    text = lastCheckTimeText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun SmsPermissionCard(
+    isSmsPermissionGranted: Boolean,
+    onCardClick: () -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSmsPermissionGranted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer.copy(
+                alpha = 0.4f
+            )
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCardClick() }
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = if (isSmsPermissionGranted) Icons.Default.CheckCircle else Icons.Default.Warning,
+                contentDescription = null,
+                tint = if (isSmsPermissionGranted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = if (isSmsPermissionGranted) stringResource(R.string.home_sms_permission_granted) else stringResource(
+                        R.string.home_sms_permission_denied
+                    ),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = if (isSmsPermissionGranted) stringResource(R.string.home_sms_permission_granted_desc) else stringResource(
+                        R.string.home_sms_permission_denied_desc
+                    ),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AutoRevokeWarningCard(
+    onCardClick: () -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f)
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCardClick() }
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Default.Warning,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.home_auto_revoke_warning_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.error
+                )
+                Text(
+                    text = stringResource(R.string.home_auto_revoke_warning_desc),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ManagementButtonMenu(
+    onNavigateToProfile: () -> Unit,
+    onNavigateToContacts: () -> Unit,
+    onNavigateToConfigs: () -> Unit,
+    onNavigateToTest: () -> Unit
+) {
+    // 文字数が多いボタンの集合のため、 FlowRow は使わず、最初から Column で実装する。
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp) // ボタン同士の縦の隙間
+    ) {
+        // 利用者名の登録ボタン
+        Button(
+            onClick = onNavigateToProfile,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.home_btn_profile),
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+            )
+        }
+
+        // 緊急連絡先の登録ボタン（「連絡先設定」）
+        Button(
+            onClick = onNavigateToContacts,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.home_btn_contacts),
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+            )
+        }
+
+        // 見守り動作設定ボタン（「SMS送信設定」）
+        Button(
+            onClick = onNavigateToConfigs,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.home_btn_configs),
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+            )
+        }
+
+        // SMS送信テストボタン（「送信テストはこちら」）
+        OutlinedButton(
+            onClick = onNavigateToTest,
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.home_btn_test),
+                maxLines = 2, // これだけは文字が長いため、極大フォント時にも備えて2行まで折り返し可能に
+                style = MaterialTheme.typography.labelLarge
+            )
         }
     }
 }
