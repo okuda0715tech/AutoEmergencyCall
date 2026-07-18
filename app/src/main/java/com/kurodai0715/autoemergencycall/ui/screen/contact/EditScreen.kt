@@ -80,8 +80,7 @@ fun ContactEditScreen(
 
     // 電話番号が半角数字のみで構成されているかチェック
     // 空文字のときはエラーにしない（未入力は別途保存ボタン側でガード）
-    val isPhoneValid =
-        phoneInput.isEmpty() || (phoneInput1.all { it.isDigit() } && phoneInput2.all { it.isDigit() } && phoneInput3.all { it.isDigit() })
+    val isPhoneValid = phoneInput.isEmpty() || (phoneInput1.all { it.isDigit() } && phoneInput2.all { it.isDigit() } && phoneInput3.all { it.isDigit() })
 
     // ダイアログ制御用の状態
     var showSuccessDialog by remember { mutableStateOf(false) }
@@ -130,9 +129,7 @@ fun ContactEditScreen(
                     // 1. 戻るボタン
                     OutlinedButton(
                         onClick = onNavigateBack,
-                        modifier = Modifier
-                            .widthIn(min = 100.dp)
-                            .weight(1f)
+                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
                     ) {
                         Text(text = stringResource(R.string.contact_edit_btn_back), maxLines = 1)
                     }
@@ -149,9 +146,7 @@ fun ContactEditScreen(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                         enabled = contactId != null, // 新規のときは押せない
-                        modifier = Modifier
-                            .widthIn(min = 100.dp)
-                            .weight(1f)
+                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
                     ) {
                         Text(text = stringResource(R.string.contact_edit_btn_delete), maxLines = 1)
                     }
@@ -173,9 +168,7 @@ fun ContactEditScreen(
                             }
                         },
                         enabled = nameInput.isNotBlank() && phoneInput1.isNotBlank() && phoneInput2.isNotBlank() && phoneInput3.isNotBlank() && isPhoneValid,
-                        modifier = Modifier
-                            .widthIn(min = 100.dp)
-                            .weight(1f)
+                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
                     ) {
                         Text(text = stringResource(R.string.contact_edit_btn_save), maxLines = 1)
                     }
@@ -234,7 +227,8 @@ fun ContactEditScreen(
                 ) {
                     OutlinedTextField(
                         value = phoneInput1,
-                        onValueChange = { if (it.length <= 4) phoneInput1 = it },
+                        onValueChange = { if (it.length <= 3) phoneInput1 = it }, // 3桁制限に変更
+                        placeholder = { Text("3桁", style = MaterialTheme.typography.bodyLarge) }, // ヒント（プレースホルダー）を追加
                         singleLine = true,
                         maxLines = 1,
                         keyboardOptions = KeyboardOptions(
@@ -248,7 +242,8 @@ fun ContactEditScreen(
                     Text("-")
                     OutlinedTextField(
                         value = phoneInput2,
-                        onValueChange = { if (it.length <= 4) phoneInput2 = it },
+                        onValueChange = { if (it.length <= 4) phoneInput2 = it }, // 4桁制限
+                        placeholder = { Text("4桁", style = MaterialTheme.typography.bodyLarge) }, // ヒント（プレースホルダー）を追加
                         singleLine = true,
                         maxLines = 1,
                         keyboardOptions = KeyboardOptions(
@@ -261,7 +256,8 @@ fun ContactEditScreen(
                     Text("-")
                     OutlinedTextField(
                         value = phoneInput3,
-                        onValueChange = { if (it.length <= 4) phoneInput3 = it },
+                        onValueChange = { if (it.length <= 4) phoneInput3 = it }, // 4桁制限
+                        placeholder = { Text("4桁", style = MaterialTheme.typography.bodyLarge) }, // ヒント（プレースホルダー）を追加
                         singleLine = true,
                         maxLines = 1,
                         keyboardOptions = KeyboardOptions(
