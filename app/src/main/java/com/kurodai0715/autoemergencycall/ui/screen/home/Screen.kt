@@ -119,229 +119,56 @@ fun HomeScreen(
 
     // Google Play審査対策 「目立つ事前開示」ダイアログ
     if (showProminentDisclosureDialog) {
-        val dialogScrollState = rememberScrollState()
-        AlertDialog(
-            onDismissRequest = { showProminentDisclosureDialog = false },
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Warning,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                    Text(
-                        text = stringResource(R.string.sms_permission_dialog_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            },
-            text = {
-                Column(
-                    // スクロール可能にする
-                    modifier = Modifier.verticalScroll(dialogScrollState),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(text = stringResource(R.string.sms_permission_dialog_overview))
-
-                    Surface(
-                        color = MaterialTheme.colorScheme.errorContainer,
-                        shape = MaterialTheme.shapes.small,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = stringResource(R.string.sms_permission_dialog_warning),
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onErrorContainer,
-                            modifier = Modifier.padding(12.dp)
-                        )
-                    }
-                    Text(
-                        text = stringResource(R.string.sms_permission_dialog_privacy_note),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showProminentDisclosureDialog = false
-                        requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text(stringResource(R.string.sms_permission_dialog_confirm))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showProminentDisclosureDialog = false }) {
-                    Text(stringResource(R.string.common_cancel))
-                }
+        SmsPermissionDialog(
+            onDismiss = { showProminentDisclosureDialog = false },
+            onConfirm = {
+                showProminentDisclosureDialog = false
+                requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
             }
         )
     }
 
     // 永久拒否時のエスコートダイアログ
     if (showSettingsGuideDialog) {
-        val dialogScrollState = rememberScrollState()
-        AlertDialog(
-            onDismissRequest = { showSettingsGuideDialog = false },
-            title = { Text(stringResource(R.string.settings_guide_dialog_title)) },
-            text = {
-                Column(
-                    // スクロール可能にする
-                    modifier = Modifier.verticalScroll(dialogScrollState),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(stringResource(R.string.settings_guide_dialog_text))
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showSettingsGuideDialog = false
-                        val intent = viewModel.createApplicationDetailsIntent(context)
-                        context.startActivity(intent)
-                    }
-                ) { Text(stringResource(R.string.settings_guide_dialog_confirm)) }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showSettingsGuideDialog = false
-                }) { Text(stringResource(R.string.common_cancel)) }
+        SettingsGuideDialog(
+            onDismiss = { showSettingsGuideDialog = false },
+            onConfirm = {
+                showSettingsGuideDialog = false
+                val intent = viewModel.createApplicationDetailsIntent(context)
+                context.startActivity(intent)
             }
         )
     }
 
     // 「最終生存確認」の定義解説ダイアログ
     if (showActiveTimeInfo) {
-        val dialogScrollState = rememberScrollState()
-        AlertDialog(
-            onDismissRequest = { showActiveTimeInfo = false },
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Info,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        stringResource(R.string.active_time_info_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            },
-            text = {
-                Column(
-                    // スクロール可能にする
-                    modifier = Modifier.verticalScroll(dialogScrollState),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(stringResource(R.string.active_time_info_text))
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    showActiveTimeInfo = false
-                }) { Text(stringResource(R.string.common_close)) }
-            }
+        InfoDialog(
+            title = stringResource(R.string.active_time_info_title),
+            text = stringResource(R.string.active_time_info_text),
+            iconColor = MaterialTheme.colorScheme.primary,
+            onDismiss = { showActiveTimeInfo = false }
         )
     }
 
     // 「見守りチェック」の定義解説ダイアログ
     if (showCheckTimeInfo) {
-        val dialogScrollState = rememberScrollState()
-        AlertDialog(
-            onDismissRequest = { showCheckTimeInfo = false },
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Info,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary
-                    )
-                    Text(
-                        stringResource(R.string.check_time_info_title),
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            },
-            text = {
-                Column(
-                    // スクロール可能にする
-                    modifier = Modifier.verticalScroll(dialogScrollState),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(stringResource(R.string.check_time_info_text))
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    showCheckTimeInfo = false
-                }) { Text(stringResource(R.string.common_close)) }
-            }
+        InfoDialog(
+            title = stringResource(R.string.check_time_info_title),
+            text = stringResource(R.string.check_time_info_text),
+            iconColor = MaterialTheme.colorScheme.secondary,
+            onDismiss = { showCheckTimeInfo = false }
         )
     }
 
+    // 停止確認ダイアログ
     if (showStopConfirmDialog) {
-        val dialogScrollState = rememberScrollState()
-        AlertDialog(
-            onDismissRequest = { showStopConfirmDialog = false },
-            title = {
-                Text(
-                    stringResource(R.string.stop_confirm_dialog_title),
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            text = {
-                Column(
-                    // スクロール可能にする
-                    modifier = Modifier.verticalScroll(dialogScrollState),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(stringResource(R.string.stop_confirm_dialog_text))
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { isConsentChecked = !isConsentChecked }
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(
-                            checked = isConsentChecked,
-                            onCheckedChange = { isConsentChecked = it })
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            stringResource(R.string.stop_confirm_dialog_consent),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.toggleMonitoringStatus(context, false) // 💡 停止を実行
-                        showStopConfirmDialog = false
-                    },
-                    enabled = isConsentChecked, // 💡 チェックがないと押せない
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) { Text(stringResource(R.string.stop_confirm_dialog_confirm)) }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showStopConfirmDialog = false
-                }) { Text(stringResource(R.string.common_cancel)) }
+        StopConfirmDialog(
+            isConsentChecked = isConsentChecked,
+            onConsentChange = { isConsentChecked = it },
+            onDismiss = { showStopConfirmDialog = false },
+            onConfirm = {
+                viewModel.toggleMonitoringStatus(context, false) // 💡 停止を実行
+                showStopConfirmDialog = false
             }
         )
     }
@@ -727,4 +554,167 @@ fun HomeScreen(
             }
         }
     }
+}
+
+// ==========================================
+// 以下、切り出したダイアログコンポーネント群
+// ==========================================
+
+@Composable
+private fun SmsPermissionDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    val dialogScrollState = rememberScrollState()
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.Warning,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
+                )
+                Text(
+                    text = stringResource(R.string.sms_permission_dialog_title),
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.verticalScroll(dialogScrollState),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(text = stringResource(R.string.sms_permission_dialog_overview))
+                Surface(
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(R.string.sms_permission_dialog_warning),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.padding(12.dp)
+                    )
+                }
+                Text(
+                    text = stringResource(R.string.sms_permission_dialog_privacy_note),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text(stringResource(R.string.sms_permission_dialog_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) }
+        }
+    )
+}
+
+@Composable
+private fun SettingsGuideDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    val dialogScrollState = rememberScrollState()
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_guide_dialog_title)) },
+        text = {
+            Column(
+                modifier = Modifier.verticalScroll(dialogScrollState),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(stringResource(R.string.settings_guide_dialog_text))
+            }
+        },
+        confirmButton = {
+            Button(onClick = onConfirm) { Text(stringResource(R.string.settings_guide_dialog_confirm)) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) }
+        }
+    )
+}
+
+@Composable
+private fun InfoDialog(title: String, text: String, iconColor: Color, onDismiss: () -> Unit) {
+    val dialogScrollState = rememberScrollState()
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(Icons.Default.Info, contentDescription = null, tint = iconColor)
+                Text(title, fontWeight = FontWeight.Bold)
+            }
+        },
+        text = {
+            Column(modifier = Modifier.verticalScroll(dialogScrollState)) {
+                Text(text)
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_close)) }
+        }
+    )
+}
+
+@Composable
+private fun StopConfirmDialog(
+    isConsentChecked: Boolean,
+    onConsentChange: (Boolean) -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    val dialogScrollState = rememberScrollState()
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                stringResource(R.string.stop_confirm_dialog_title),
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier.verticalScroll(dialogScrollState),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(stringResource(R.string.stop_confirm_dialog_text))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onConsentChange(!isConsentChecked) }
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(checked = isConsentChecked, onCheckedChange = onConsentChange)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        stringResource(R.string.stop_confirm_dialog_consent),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                enabled = isConsentChecked,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) { Text(stringResource(R.string.stop_confirm_dialog_confirm)) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) }
+        }
+    )
 }
