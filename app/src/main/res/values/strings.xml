@@ -14,10 +14,10 @@
     <string name="home_screen_title">ホーム</string>
     <string name="profile_screen_title">利用者名 登録</string>
     <string name="sms_send_test_title">SMS送信テスト</string>
-    <string name="contact_list_screen_title">連絡先 一覧</string>
-    <string name="contact_edit_screen_title">連絡先 登録/編集</string>
-    <string name="alert_config_list_screen_title">アラート設定 一覧</string>
-    <string name="alert_config_edit_screen_title">アラート設定 登録/編集</string>
+    <string name="contact_list_screen_title">連絡先設定</string>
+    <string name="contact_edit_screen_title">連絡先設定</string>
+    <string name="alert_config_list_screen_title">SMS送信設定</string>
+    <string name="alert_config_edit_screen_title">SMS送信設定</string>
     <string name="developer_screen_title">開発者専用</string>
     <string name="app_info_screen_title">アプリ情報</string>
 
@@ -68,7 +68,7 @@
     <string name="home_section_management">各種設定・管理</string>
     <string name="home_btn_profile">名前設定</string>
     <string name="home_btn_contacts">連絡先設定</string>
-    <string name="home_btn_configs">アラート設定</string>
+    <string name="home_btn_configs">SMS送信設定</string>
     <string name="home_btn_test">送信テストはこちら</string>
 
     <!-- プロフィール登録 画面 -->
@@ -119,7 +119,7 @@
     <string name="contact_edit_dialog_btn_ok">OK</string>
 
     <!-- アラート設定一覧 画面 -->
-    <string name="config_list_title">アラートの設定</string>
+    <string name="config_list_title">SMS送信の設定</string>
     <string name="config_list_description">あなたの活動が検知できなくなってから、何時間後に緊急通報を行うかを設定します。\nまた、その際に誰にSMSを送信するかを設定できます。</string>
 
     <string name="config_list_default_status">現在のステータス: デフォルト動作</string>
@@ -133,8 +133,8 @@
     <string name="config_list_item_no_contacts">なし</string>
 
     <!-- アラート登録・編集 画面 -->
-    <string name="config_edit_title_add">アラート設定の追加</string>
-    <string name="config_edit_title_edit">アラート設定の編集</string>
+    <string name="config_edit_title_add">SMS送信設定の追加</string>
+    <string name="config_edit_title_edit">SMS送信設定の編集</string>
     <string name="config_edit_label_hours">何時間後にアラートを出すか（数値）</string>
     <string name="config_edit_error_hours_format">※誤通報防止のため、24時間以上の値を入力してください。</string>
 
