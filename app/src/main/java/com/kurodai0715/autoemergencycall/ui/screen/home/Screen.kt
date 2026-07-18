@@ -263,7 +263,7 @@ fun HomeScreen(
             fontWeight = FontWeight.Bold
         )
 
-        // 💡 変更：画面遷移ボタン群のコンポーネント化
+        // 画面遷移ボタン群のコンポーネント化
         ManagementButtonMenu(
             onNavigateToProfile = onNavigateToProfile,
             onNavigateToContacts = onNavigateToContacts,
