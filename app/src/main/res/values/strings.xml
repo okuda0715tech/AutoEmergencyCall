@@ -104,7 +104,7 @@
     <string name="contact_edit_title_add">連絡先の追加</string>
     <string name="contact_edit_title_edit">連絡先の編集</string>
     <string name="contact_edit_label_name">名前</string>
-    <string name="contact_edit_label_phone">電話番号（ハイフンなし）</string>
+    <string name="contact_edit_label_phone">電話番号</string>
     <string name="contact_edit_label_relation">関係性 (例: 長男、友人)</string>
     <string name="contact_edit_error_phone_format">※ハイフンなどの記号は含めず、数字のみで入力してください。</string>
 
