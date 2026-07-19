@@ -11,13 +11,15 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.PackageManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.WorkManager
-import com.kurodai0715.autoemergencycall.data.SafetyCheckStore // 💡 追加
+import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
 import com.kurodai0715.autoemergencycall.domain.SafetyCheckScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -26,7 +28,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val safetyCheckStore: SafetyCheckStore // 💡 コンストラクタでStoreを受け取るように変更
+    private val safetyCheckStore: SafetyCheckStore
 ) : ViewModel() {
 
     private val _isSmsPermissionGranted = MutableStateFlow(false)
@@ -35,19 +37,38 @@ class HomeViewModel @Inject constructor(
     private val _isAutoRevokeDisabled = MutableStateFlow(true)
     val isAutoRevokeDisabled: StateFlow<Boolean> = _isAutoRevokeDisabled.asStateFlow()
 
-    private val _lastActiveTimeText = MutableStateFlow("--:--")
-    val lastActiveTimeText: StateFlow<String> = _lastActiveTimeText.asStateFlow()
-
-    private val _lastCheckTimeText = MutableStateFlow("--:--")
-    val lastCheckTimeText: StateFlow<String> = _lastCheckTimeText.asStateFlow()
-
-    private val _isMonitoringEnabled = MutableStateFlow(true)
-    val isMonitoringEnabled: StateFlow<Boolean> = _isMonitoringEnabled.asStateFlow()
-
     private val timeFormatter = SimpleDateFormat("MM/dd HH:mm", Locale.getDefault())
 
+    val isMonitoringEnabled: StateFlow<Boolean> = safetyCheckStore.safetyDataFlow
+        .map { it.isMonitoringEnabled }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true
+        )
+
+    val lastActiveTimeText: StateFlow<String> = safetyCheckStore.safetyDataFlow
+        .map { data ->
+            data.lastActiveTime?.let { timeFormatter.format(Date(it)) } ?: "未検知"
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = "--:--"
+        )
+
+    val lastCheckTimeText: StateFlow<String> = safetyCheckStore.safetyDataFlow
+        .map { data ->
+            data.lastCheckTime?.let { timeFormatter.format(Date(it)) } ?: "--:--"
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = "--:--"
+        )
+
     /**
-     * ON_RESUME などのタイミングでアプリの状態を一括でリフレッシュする
+     * ON_RESUME などのタイミングでアプリの状態（権限等）を一括でリフレッシュする
      */
     fun refreshStatuses(context: Context) {
         // 1. SMS権限のチェック
@@ -64,30 +85,6 @@ class HomeViewModel @Inject constructor(
                 0
             }
             _isAutoRevokeDisabled.value = (status == 2 || status == 1)
-        }
-
-        // 3. 💡 DataStoreから実際の最終時刻データを読み込む
-        viewModelScope.launch {
-            try {
-                val safetyData = safetyCheckStore.loadSafetyData()
-
-                _isMonitoringEnabled.value = safetyData.isMonitoringEnabled
-
-                // 生存確認できた最終時刻の反映
-                _lastActiveTimeText.value = safetyData.lastActiveTime?.let {
-                    timeFormatter.format(Date(it))
-                } ?: "未検知"
-
-                // システムが最後にチェックした時刻（今回は現在の生存チェックデータ上の最新記録として反映）
-                // ※もし定期ジョブ側の実行ログ用Timeを別で保存している場合は、そちらの変数をバインドしてください
-                _lastCheckTimeText.value = safetyData.lastCheckTime?.let {
-                    timeFormatter.format(Date(it))
-                } ?: "--:--"
-
-            } catch (e: Exception) {
-                _lastActiveTimeText.value = "エラー"
-                _lastCheckTimeText.value = "エラー"
-            }
         }
     }
 
@@ -125,7 +122,6 @@ class HomeViewModel @Inject constructor(
     fun toggleMonitoringStatus(context: Context, enabled: Boolean) {
         viewModelScope.launch {
             safetyCheckStore.updateMonitoringStatus(enabled)
-            _isMonitoringEnabled.value = enabled
 
             // 内部で「有効なら登録、無効なら既存ワークをキャンセル」が自動実行されます
             SafetyCheckScheduler.setupPeriodicWork(context, safetyCheckStore)

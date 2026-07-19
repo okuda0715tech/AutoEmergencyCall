@@ -61,6 +61,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kurodai0715.autoemergencycall.R
 
 @Composable
@@ -76,11 +77,11 @@ fun HomeScreen(
     val scrollState = rememberScrollState()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    val isSmsPermissionGranted by viewModel.isSmsPermissionGranted.collectAsState()
-    val isAutoRevokeDisabled by viewModel.isAutoRevokeDisabled.collectAsState()
-    val lastActiveTimeText by viewModel.lastActiveTimeText.collectAsState()
-    val lastCheckTimeText by viewModel.lastCheckTimeText.collectAsState()
-    val isMonitoringEnabled by viewModel.isMonitoringEnabled.collectAsState()
+    val isSmsPermissionGranted by viewModel.isSmsPermissionGranted.collectAsStateWithLifecycle()
+    val isAutoRevokeDisabled by viewModel.isAutoRevokeDisabled.collectAsStateWithLifecycle()
+    val lastActiveTimeText by viewModel.lastActiveTimeText.collectAsStateWithLifecycle()
+    val lastCheckTimeText by viewModel.lastCheckTimeText.collectAsStateWithLifecycle()
+    val isMonitoringEnabled by viewModel.isMonitoringEnabled.collectAsStateWithLifecycle()
 
     var showProminentDisclosureDialog by remember { mutableStateOf(false) }
     var showSettingsGuideDialog by remember { mutableStateOf(false) }

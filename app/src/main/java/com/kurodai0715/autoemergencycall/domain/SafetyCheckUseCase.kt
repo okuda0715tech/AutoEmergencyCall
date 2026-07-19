@@ -10,6 +10,7 @@ import com.kurodai0715.autoemergencycall.data.Contact
 import com.kurodai0715.autoemergencycall.data.ContactStore
 import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class SafetyCheckUseCase @Inject constructor(
@@ -43,7 +44,7 @@ class SafetyCheckUseCase @Inject constructor(
         val currentLevel = getBatteryLevel(batteryStatus)
         val isConnected = getIsConnected(batteryStatus)
 
-        val safetyData = safetyCheckStore.loadSafetyData()
+        val safetyData = safetyCheckStore.safetyDataFlow.first()
 
         // 初期値（初回起動時等）のフォールバック
         val lastLevel = safetyData.lastBatteryLevel ?: currentLevel
@@ -98,7 +99,7 @@ class SafetyCheckUseCase @Inject constructor(
 
         if (alertConfigs.isEmpty()) {
             // A. デフォルト仕様
-            val safetyData = safetyCheckStore.loadSafetyData()
+            val safetyData = safetyCheckStore.safetyDataFlow.first()
             val lastSentTime = safetyData.lastDefaultSentTime ?: 0L
 
             // 最終送信時刻が最終活動時刻より新しければ、この最終活動時間では送信済みと判定

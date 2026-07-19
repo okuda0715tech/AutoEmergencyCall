@@ -6,6 +6,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.kurodai0715.autoemergencycall.BuildConfig
 import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
+import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
 
 object SafetyCheckScheduler {
@@ -14,10 +15,10 @@ object SafetyCheckScheduler {
     const val UNIQUE_WORK_NAME = "BatterySafetyCheckWork"
 
     suspend fun setupPeriodicWork(context: Context, safetyCheckStore: SafetyCheckStore) {
-        val safetyData = safetyCheckStore.loadSafetyData()
+        val safetyData = safetyCheckStore.safetyDataFlow.first()
 
         if (!safetyData.isMonitoringEnabled) {
-            // 🛑 一時停止中なら登録せず、既存のワークを安全にキャンセルして終了
+            // 一時停止中なら登録せず、既存のワークを安全にキャンセルして終了
             WorkManager.getInstance(context).cancelUniqueWork(UNIQUE_WORK_NAME)
             return
         }
