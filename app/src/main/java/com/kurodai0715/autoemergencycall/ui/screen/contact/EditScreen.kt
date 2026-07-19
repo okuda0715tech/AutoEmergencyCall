@@ -1,15 +1,12 @@
 package com.kurodai0715.autoemergencycall.ui.screen.contact
 
-import androidx.compose.foundation.horizontalScroll // 横スクロール用に追加
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -25,12 +22,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -51,37 +46,15 @@ fun ContactEditScreen(
 
     // 入力フォームの状態（既存データがあれば初期値として入れる）
     var nameInput by remember { mutableStateOf(existingContact?.name ?: "") }
+    var phoneInput by remember { mutableStateOf(existingContact?.phoneNumber ?: "") }
     var relationInput by remember { mutableStateOf(existingContact?.relation ?: "") }
-
-    // 電話番号の入力欄を3つに分けるためのステート
-    var phoneInput1 by remember { mutableStateOf("") }
-    var phoneInput2 by remember { mutableStateOf("") }
-    var phoneInput3 by remember { mutableStateOf("") }
-
-    // 既存データがある場合に3つの入力欄へ分解してセット
-    LaunchedEffect(existingContact) {
-        val fullPhone = existingContact?.phoneNumber ?: ""
-        if (fullPhone.length >= 11) {
-            phoneInput1 = fullPhone.substring(0, 3)
-            phoneInput2 = fullPhone.substring(3, 7)
-            phoneInput3 = fullPhone.substring(7, 11)
-        } else {
-            phoneInput1 = fullPhone
-        }
-    }
-
-    // 3つの入力欄を結合した全体の電話番号
-    val phoneInput = phoneInput1 + phoneInput2 + phoneInput3
 
     // コンテンツエリアのスクロール状態を管理するステートを記憶
     val scrollState = rememberScrollState()
-    // 電話番号の横スクロール状態を管理するステートを記憶
-    val phoneHorizontalScrollState = rememberScrollState()
 
     // 電話番号が半角数字のみで構成されているかチェック
     // 空文字のときはエラーにしない（未入力は別途保存ボタン側でガード）
-    val isPhoneValid =
-        phoneInput.isEmpty() || (phoneInput1.all { it.isDigit() } && phoneInput2.all { it.isDigit() } && phoneInput3.all { it.isDigit() })
+    val isPhoneValid = phoneInput.isEmpty() || phoneInput.all { it.isDigit() }
 
     // ダイアログ制御用の状態
     var showSuccessDialog by remember { mutableStateOf(false) }
@@ -130,9 +103,7 @@ fun ContactEditScreen(
                     // 1. 戻るボタン
                     OutlinedButton(
                         onClick = onNavigateBack,
-                        modifier = Modifier
-                            .widthIn(min = 100.dp)
-                            .weight(1f)
+                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
                     ) {
                         Text(text = stringResource(R.string.contact_edit_btn_back), maxLines = 1)
                     }
@@ -149,9 +120,7 @@ fun ContactEditScreen(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                         enabled = contactId != null, // 新規のときは押せない
-                        modifier = Modifier
-                            .widthIn(min = 100.dp)
-                            .weight(1f)
+                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
                     ) {
                         Text(text = stringResource(R.string.contact_edit_btn_delete), maxLines = 1)
                     }
@@ -172,10 +141,8 @@ fun ContactEditScreen(
                                 }
                             }
                         },
-                        enabled = nameInput.isNotBlank() && phoneInput1.isNotBlank() && phoneInput2.isNotBlank() && phoneInput3.isNotBlank() && isPhoneValid,
-                        modifier = Modifier
-                            .widthIn(min = 100.dp)
-                            .weight(1f)
+                        enabled = nameInput.isNotBlank() && phoneInput.isNotBlank() && isPhoneValid,
+                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
                     ) {
                         Text(text = stringResource(R.string.contact_edit_btn_save), maxLines = 1)
                     }
@@ -216,71 +183,31 @@ fun ContactEditScreen(
             )
 
             // 電話番号
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                // ラベルを別のUIとして切り出し
-                Text(
-                    text = stringResource(R.string.contact_edit_label_phone),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (!isPhoneValid) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                // 横スクロールできるように Row に horizontalScroll を適用
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(phoneHorizontalScrollState),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedTextField(
-                        value = phoneInput1,
-                        onValueChange = { if (it.length <= 4) phoneInput1 = it },
-                        singleLine = true,
-                        maxLines = 1,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Phone, // 電話番号用キーボード
-                            imeAction = ImeAction.Next
-                        ),
-                        isError = !isPhoneValid,
-                        // 横スクロール内では等倍率での自動縮小を防ぐため、固定幅を確保
-                        modifier = Modifier.width(110.dp)
-                    )
-                    Text("-")
-                    OutlinedTextField(
-                        value = phoneInput2,
-                        onValueChange = { if (it.length <= 4) phoneInput2 = it },
-                        singleLine = true,
-                        maxLines = 1,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Phone, // 電話番号用キーボード
-                            imeAction = ImeAction.Next
-                        ),
-                        isError = !isPhoneValid,
-                        modifier = Modifier.width(110.dp)
-                    )
-                    Text("-")
-                    OutlinedTextField(
-                        value = phoneInput3,
-                        onValueChange = { if (it.length <= 4) phoneInput3 = it },
-                        singleLine = true,
-                        maxLines = 1,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Phone, // 電話番号用キーボード
-                            imeAction = ImeAction.Next
-                        ),
-                        isError = !isPhoneValid,
-                        modifier = Modifier.width(110.dp)
-                    )
-                }
-
-                if (!isPhoneValid) {
-                    Text(
-                        text = stringResource(R.string.contact_edit_error_phone_format),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
+            OutlinedTextField(
+                value = phoneInput,
+                onValueChange = { phoneInput = it },
+                label = { Text(stringResource(R.string.contact_edit_label_phone)) },
+                singleLine = true,
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Phone, // 電話番号用キーボード
+                    imeAction = ImeAction.Next
+                ),
+                isError = !isPhoneValid,
+                supportingText =
+                    if (!isPhoneValid) {
+                        { // この中カッコは supportingText にコンポーザブル関数を渡すために必要
+                            Text(
+                                text = stringResource(R.string.contact_edit_error_phone_format),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    } else {
+                        // 正常時は supportingText 表示用のスペースを確保しないよう null を渡す
+                        null
+                    },
+                modifier = Modifier.fillMaxWidth()
+            )
 
             // 関係性
             OutlinedTextField(
