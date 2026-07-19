@@ -118,6 +118,17 @@
     <string name="contact_edit_dialog_msg_delete">連絡先を削除しました。</string>
     <string name="contact_edit_dialog_btn_ok">OK</string>
 
+    <string name="contact_edit_confirm_title_add">登録内容の確認</string>
+    <string name="contact_edit_confirm_title_edit">編集内容の確認</string>
+    <string name="contact_edit_confirm_message">以下の内容で保存します。電話番号にお間違いはありませんか？</string>
+    <string name="contact_edit_confirm_label_name">名前: %1$s</string>
+    <string name="contact_edit_confirm_label_phone">番号: %1$s</string>
+    <string name="contact_edit_confirm_btn_dismiss">修正する</string>
+    <string name="contact_edit_confirm_btn_confirm">このまま保存</string>
+
+    <string name="contact_edit_placeholder_phone">例: 09012345678</string>
+    <string name="contact_edit_counter_format">%1$d 文字</string>
+
     <!-- SMS送信設定 一覧 画面 -->
     <string name="config_list_title">SMSの送信設定</string>
     <string name="config_list_description">あなたの活動が検知できなくなってから、何時間後に緊急通報を行うかを設定します。\nまた、その際に誰にSMSを送信するかを設定できます。</string>

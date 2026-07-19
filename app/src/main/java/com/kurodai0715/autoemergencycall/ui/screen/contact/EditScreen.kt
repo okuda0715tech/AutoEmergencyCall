@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -15,6 +17,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -26,12 +30,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.kurodai0715.autoemergencycall.R
 
 @OptIn(ExperimentalLayoutApi::class) // FlowRow を使用するために追加
@@ -57,7 +65,7 @@ fun ContactEditScreen(
     val isPhoneValid = phoneInput.isEmpty() || phoneInput.all { it.isDigit() }
 
     // ダイアログ制御用の状態
-    var showSuccessDialog by remember { mutableStateOf(false) }
+    var showDialogType by remember { mutableStateOf<DialogType?>(null) }
     var dialogMessage by remember { mutableStateOf("") }
 
     // 各完了時のメッセージ文字列をコンポーザブル内で解決できるように定義
@@ -68,23 +76,105 @@ fun ContactEditScreen(
     // キーボードのフォーカス（次へ移動、閉じるなど）を制御するためのマネージャー
     val focusManager = LocalFocusManager.current
 
-    // 完了ダイアログ
-    if (showSuccessDialog) {
-        AlertDialog(
-            onDismissRequest = { /* 画面外タップは無視 */ },
-            title = { Text(stringResource(R.string.contact_edit_dialog_title)) },
-            text = { Text(dialogMessage) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showSuccessDialog = false
-                        onNavigateBack() // ダイアログを閉じたら一覧に戻る
+    // ダイアログの分岐処理
+    when (showDialogType) {
+        DialogType.ConfirmSave -> {
+            val dialogScrollState = rememberScrollState()
+
+            // 保存前の確認ダイアログ
+            AlertDialog(
+                onDismissRequest = { showDialogType = null },
+                title = {
+                    Text(
+                        text = if (contactId == null) {
+                            stringResource(R.string.contact_edit_confirm_title_add)
+                        } else {
+                            stringResource(R.string.contact_edit_confirm_title_edit)
+                        }
+                    )
+                },
+                text = {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(dialogScrollState),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(text = stringResource(R.string.contact_edit_confirm_message))
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(
+                                    text = stringResource(
+                                        R.string.contact_edit_confirm_label_name,
+                                        nameInput
+                                    ),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                // 確認画面では番号を大きく太字で見せる
+                                Text(
+                                    text = stringResource(
+                                        R.string.contact_edit_confirm_label_phone,
+                                        phoneInput
+                                    ),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     }
-                ) {
-                    Text(stringResource(R.string.contact_edit_dialog_btn_ok))
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialogType = null }) {
+                        Text(text = stringResource(R.string.contact_edit_confirm_btn_dismiss))
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showDialogType = null
+                            // 実際の保存処理を実行
+                            viewModel.saveContact(
+                                id = contactId,
+                                name = nameInput,
+                                phoneNumber = phoneInput,
+                                relation = relationInput
+                            ) {
+                                dialogMessage = if (contactId == null) messageAdd else messageUpdate
+                                showDialogType = DialogType.Success
+                            }
+                        }
+                    ) {
+                        Text(text = stringResource(R.string.contact_edit_confirm_btn_confirm))
+                    }
                 }
-            }
-        )
+            )
+        }
+
+        DialogType.Success -> {
+            // 完了ダイアログ
+            AlertDialog(
+                onDismissRequest = { /* 画面外タップは無視 */ },
+                title = { Text(stringResource(R.string.contact_edit_dialog_title)) },
+                text = { Text(dialogMessage) },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showDialogType = null
+                            onNavigateBack() // ダイアログを閉じたら一覧に戻る
+                        }
+                    ) {
+                        Text(stringResource(R.string.contact_edit_dialog_btn_ok))
+                    }
+                }
+            )
+        }
+
+        null -> {}
     }
 
     Scaffold(
@@ -103,7 +193,9 @@ fun ContactEditScreen(
                     // 1. 戻るボタン
                     OutlinedButton(
                         onClick = onNavigateBack,
-                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
+                        modifier = Modifier
+                            .widthIn(min = 100.dp)
+                            .weight(1f)
                     ) {
                         Text(text = stringResource(R.string.contact_edit_btn_back), maxLines = 1)
                     }
@@ -114,13 +206,15 @@ fun ContactEditScreen(
                             if (contactId != null) {
                                 viewModel.deleteContact(contactId) {
                                     dialogMessage = messageDelete
-                                    showSuccessDialog = true
+                                    showDialogType = DialogType.Success
                                 }
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                        enabled = contactId != null, // 新規のときは押せない
-                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
+                        enabled = contactId != null,
+                        modifier = Modifier
+                            .widthIn(min = 100.dp)
+                            .weight(1f)
                     ) {
                         Text(text = stringResource(R.string.contact_edit_btn_delete), maxLines = 1)
                     }
@@ -129,20 +223,13 @@ fun ContactEditScreen(
                     Button(
                         onClick = {
                             if (nameInput.isNotBlank() && phoneInput.isNotBlank() && phoneInput.all { it.isDigit() }) {
-                                viewModel.saveContact(
-                                    id = contactId,
-                                    name = nameInput,
-                                    phoneNumber = phoneInput,
-                                    relation = relationInput
-                                ) {
-                                    dialogMessage =
-                                        if (contactId == null) messageAdd else messageUpdate
-                                    showSuccessDialog = true
-                                }
+                                showDialogType = DialogType.ConfirmSave
                             }
                         },
                         enabled = nameInput.isNotBlank() && phoneInput.isNotBlank() && isPhoneValid,
-                        modifier = Modifier.widthIn(min = 100.dp).weight(1f)
+                        modifier = Modifier
+                            .widthIn(min = 100.dp)
+                            .weight(1f)
                     ) {
                         Text(text = stringResource(R.string.contact_edit_btn_save), maxLines = 1)
                     }
@@ -189,23 +276,37 @@ fun ContactEditScreen(
                 label = { Text(stringResource(R.string.contact_edit_label_phone)) },
                 singleLine = true,
                 maxLines = 1,
+                textStyle = TextStyle(
+                    // 視認性をよくして、入力間違いを減らす
+                    fontSize = 20.sp,
+                    letterSpacing = 2.sp
+                ),
+                placeholder = { Text(text = stringResource(R.string.contact_edit_placeholder_phone)) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Phone, // 電話番号用キーボード
                     imeAction = ImeAction.Next
                 ),
                 isError = !isPhoneValid,
-                supportingText =
+                supportingText = {
                     if (!isPhoneValid) {
-                        { // この中カッコは supportingText にコンポーザブル関数を渡すために必要
+                        Text(
+                            text = stringResource(R.string.contact_edit_error_phone_format),
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    } else {
+                        Column(modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                text = stringResource(R.string.contact_edit_error_phone_format),
-                                color = MaterialTheme.colorScheme.error
+                                text = stringResource(
+                                    R.string.contact_edit_counter_format,
+                                    phoneInput.length
+                                ),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.align(Alignment.End)
                             )
                         }
-                    } else {
-                        // 正常時は supportingText 表示用のスペースを確保しないよう null を渡す
-                        null
-                    },
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -227,4 +328,9 @@ fun ContactEditScreen(
             )
         }
     }
+}
+
+private enum class DialogType {
+    ConfirmSave,
+    Success
 }
