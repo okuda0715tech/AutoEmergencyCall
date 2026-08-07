@@ -8,13 +8,17 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 // Contextの拡張プロパティとしてDataStoreを定義
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "safety_check_prefs")
 
-class SafetyCheckStore(private val context: Context) {
+class SafetyCheckStore @Inject constructor(
+    @param:ApplicationContext private val context: Context
+) {
 
     companion object {
         val KEY_LAST_BATTERY = intPreferencesKey("last_battery_level")
