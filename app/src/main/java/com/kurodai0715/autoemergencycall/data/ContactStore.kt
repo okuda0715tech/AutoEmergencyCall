@@ -5,13 +5,19 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
-val Context.contactDataStoreByJson: androidx.datastore.core.DataStore<Preferences> by preferencesDataStore(name = "contact_json_prefs")
+val Context.contactDataStoreByJson: androidx.datastore.core.DataStore<Preferences> by preferencesDataStore(
+    name = "contact_json_prefs"
+)
 
-class ContactStore(private val context: Context) {
+class ContactStore @Inject constructor(
+    @param:ApplicationContext private val context: Context
+) {
 
     companion object {
         private val KEY_CONTACT_LIST_JSON = stringPreferencesKey("contact_list_json")
