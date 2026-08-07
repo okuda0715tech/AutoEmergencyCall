@@ -6,13 +6,17 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
 val Context.configDataStore: DataStore<Preferences> by preferencesDataStore(name = "config_prefs")
 
-class AlertConfigStore(private val context: Context) {
+class AlertConfigStore @Inject constructor(
+    @param:ApplicationContext private val context: Context
+) {
 
     companion object {
         private val KEY_ALERT_CONFIG_LIST_JSON = stringPreferencesKey("alert_config_list_json")
