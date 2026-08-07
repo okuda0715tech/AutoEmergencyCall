@@ -3,8 +3,12 @@ package com.kurodai0715.autoemergencycall.data
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class ProfileStore(context: Context) {
+class ProfileStore @Inject constructor(
+    @param:ApplicationContext private val context: Context
+) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("profile_prefs", Context.MODE_PRIVATE)
 
