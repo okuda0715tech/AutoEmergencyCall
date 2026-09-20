@@ -22,7 +22,10 @@ class SafetyCheckUseCase @Inject constructor(
 ) {
 
     companion object {
-        private const val DEFAULT_SMS_THRESHOLD = 48 * 60 * 60 * 1000L // 48時間のミリ秒
+        // デフォルトのSMS送信を実行するためのしきい値（単位：時間）
+        private const val DEFAULT_SMS_THRESHOLD_H = 48
+        // デフォルトのSMS送信を実行するためのしきい値（単位：ミリ秒）
+        private const val DEFAULT_SMS_THRESHOLD_MS = DEFAULT_SMS_THRESHOLD_H * 60 * 60 * 1000L
     }
 
     suspend fun executeCheck() {
@@ -105,9 +108,9 @@ class SafetyCheckUseCase @Inject constructor(
             // 最終送信時刻が最終活動時刻より新しければ、この最終活動時間では送信済みと判定
             val hasSentForLastActive = lastSentTime >= latestActiveTime
 
-            if (elapsedTime >= DEFAULT_SMS_THRESHOLD && !hasSentForLastActive) {
+            if (elapsedTime >= DEFAULT_SMS_THRESHOLD_MS && !hasSentForLastActive) {
                 allContacts.forEach { contact ->
-                    triggerSendSms(contact, 48)
+                    triggerSendSms(contact, DEFAULT_SMS_THRESHOLD_H)
                 }
                 // 送信した「現在時刻」を最終送信時刻として保存
                 safetyCheckStore.updateLastDefaultSentTime(currentTime)
@@ -175,12 +178,12 @@ class SafetyCheckUseCase @Inject constructor(
                 plugStatus == BatteryManager.BATTERY_PLUGGED_WIRELESS
     }
 
-    private fun triggerSendSms(contact: Contact, hours: Int) {
+    private fun triggerSendSms(contact: Contact, elapsed: Int) {
         smsSender.requestSendSms(
             phoneNumber = contact.phoneNumber,
             showNotification = true,
             receiverName = contact.name,
-            elapsedTime = hours.toString(),
+            elapsedTime = elapsed.toString(),
         )
     }
 }
