@@ -1,6 +1,7 @@
 package com.kurodai0715.autoemergencycall.data
 
 import android.content.Context
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -11,7 +12,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
-private val Context.contactDataStoreByJson: androidx.datastore.core.DataStore<Preferences> by preferencesDataStore(
+private val Context.contactDataStoreByJson: DataStore<Preferences> by preferencesDataStore(
     name = "contact_json_prefs"
 )
 
