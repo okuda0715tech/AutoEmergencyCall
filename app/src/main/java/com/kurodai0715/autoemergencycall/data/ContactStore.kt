@@ -11,7 +11,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
-val Context.contactDataStoreByJson: androidx.datastore.core.DataStore<Preferences> by preferencesDataStore(
+private val Context.contactDataStoreByJson: androidx.datastore.core.DataStore<Preferences> by preferencesDataStore(
     name = "contact_json_prefs"
 )
 

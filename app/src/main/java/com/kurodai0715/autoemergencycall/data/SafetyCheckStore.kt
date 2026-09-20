@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 // Contextの拡張プロパティとしてDataStoreを定義
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "safety_check_prefs")
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "safety_check_prefs")
 
 class SafetyCheckStore @Inject constructor(
     @param:ApplicationContext private val context: Context

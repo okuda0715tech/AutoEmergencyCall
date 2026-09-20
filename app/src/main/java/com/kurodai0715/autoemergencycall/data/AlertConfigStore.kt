@@ -12,7 +12,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
-val Context.configDataStore: DataStore<Preferences> by preferencesDataStore(name = "config_prefs")
+private val Context.configDataStore: DataStore<Preferences> by preferencesDataStore(name = "config_prefs")
 
 class AlertConfigStore @Inject constructor(
     @param:ApplicationContext private val context: Context
