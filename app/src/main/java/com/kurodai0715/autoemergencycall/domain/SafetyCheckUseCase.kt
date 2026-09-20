@@ -12,6 +12,7 @@ import com.kurodai0715.autoemergencycall.data.SafetyCheckStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.hours
 
 class SafetyCheckUseCase @Inject constructor(
     @param:ApplicationContext private val context: Context,
@@ -25,7 +26,7 @@ class SafetyCheckUseCase @Inject constructor(
         // デフォルトのSMS送信を実行するためのしきい値（単位：時間）
         private const val DEFAULT_SMS_THRESHOLD_H = 48
         // デフォルトのSMS送信を実行するためのしきい値（単位：ミリ秒）
-        private const val DEFAULT_SMS_THRESHOLD_MS = DEFAULT_SMS_THRESHOLD_H * 60 * 60 * 1000L
+        private val DEFAULT_SMS_THRESHOLD_MS = DEFAULT_SMS_THRESHOLD_H.hours.inWholeMilliseconds
     }
 
     suspend fun executeCheck() {
@@ -120,7 +121,8 @@ class SafetyCheckUseCase @Inject constructor(
             // B. ユーザー設定仕様
             var isAnyConfigUpdated = false
             val updatedConfigs = alertConfigs.map { config ->
-                val thresholdMillis = config.thresholdHours * 60 * 60 * 1000L
+                // 値の取得および時間からミリ秒への単位変換
+                val thresholdMillis = config.thresholdHours.hours.inWholeMilliseconds
                 val lastSentTime = config.lastSentTime ?: 0L
 
                 // 最終送信時刻が最終活動時刻より新しければ、この最終活動時刻では送信済みと判定
